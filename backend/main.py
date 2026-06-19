@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from database import engine
 from dotenv import load_dotenv
 import os
 
@@ -31,4 +33,12 @@ def health_check():
     }
 
 
+@app.get("/db-check")
+def db_check():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {"database": "conectada ✅"}
+    except Exception as e:
+        return {"database": "error ❌", "detalle": str(e)}
     
