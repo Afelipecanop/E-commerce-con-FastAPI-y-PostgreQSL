@@ -5,6 +5,8 @@ from database import engine
 from dotenv import load_dotenv
 import os
 
+from routes.auth import router as auth_router
+
 load_dotenv()
 
 app = FastAPI(
@@ -21,16 +23,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Rutas
+app.include_router(auth_router)
+
+
 @app.get("/")
 def root():
     return {"mensaje": "API funcionando ✅"}
 
+
 @app.get("/health")
 def health_check():
-    return {
-        "status": "ok",
-        "version": "1.0.0"
-    }
+    return {"status": "ok", "version": "1.0.0"}
 
 
 @app.get("/db-check")
