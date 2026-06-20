@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 
 from routes.auth import router as auth_router
+from routes.products import router as products_router
+from routes.cart import router as cart_router
 
 load_dotenv()
 
@@ -25,6 +27,8 @@ app.add_middleware(
 
 # Rutas
 app.include_router(auth_router)
+app.include_router(products_router)
+app.include_router(cart_router)
 
 
 @app.get("/")
