@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tienda</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">🛍️ Mi Tienda</a>
+        <div class="nav-links">
+            <a href="cart.html">🛒 Carrito</a>
+            <span id="nav-user"></span>
+            <a href="#" id="nav-logout" style="display:none" onclick="logout()">Salir</a>
+            <a href="login.html" id="nav-login">Entrar</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Nuestros Productos</h1>
+            <a href="admin.html" id="admin-link" style="display:none" class="btn btn-outline">
+                ⚙️ Admin
+            </a>
+        </div>
+        <div id="products" class="products-grid">
+            <div class="loading">Cargando productos...</div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function init() {
+            // Actualizar navbar según si hay sesión
+            if (isLoggedIn()) {
+                document.getElementById("nav-login").style.display = "none";
+                document.getElementById("nav-logout").style.display = "block";
+                try {
+                    const me = await getMe();
+                    document.getElementById("nav-user").textContent = `Hola, ${me.full_name.split(" ")[0]}`;
+                    if (me.is_admin) document.getElementById("admin-link").style.display = "block";
+                } catch (e) {}
+            }
+
+            // Cargar productos
+            try {
+                const products = await getProducts();
+                const grid = document.getElementById("products");
+
+                if (products.length === 0) {
+                    grid.innerHTML = `<p class="loading">No hay productos disponibles aún.</p>`;
+                    return;
+                }
+
+                grid.innerHTML = products.map(p => `
+                    <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'">
+                        <img src="${p.image_url || 'https://via.placeholder.com/400x200?text=Sin+imagen'}"
+                             alt="${p.name}">
+                        <div class="card-body">
+                            <h3>${p.name}</h3>
+                            <div class="price">$${p.price.toFixed(2)}</div>
+                            <div class="stock">${p.stock > 0 ? `${p.stock} disponibles` : '⚠️ Sin stock'}</div>
+                            <button class="btn btn-primary" style="width:100%"
+                                onclick="event.stopPropagation(); addItem('${p.id}', '${p.name}')">
+                                Agregar al carrito
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            } catch (e) {
+                document.getElementById("products").innerHTML =
+                    `<div class="alert alert-error">Error cargando productos: ${e.message}</div>`;
+            }
+        }
+
+        async function addItem(productId, name) {
+            if (!isLoggedIn()) {
+                window.location.href = "login.html";
+                return;
+            }
+            try {
+                await addToCart(productId, 1);
+                alert(`✅ "${name}" agregado al carrito`);
+            } catch (e) {
+                alert(`❌ ${e.message}`);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

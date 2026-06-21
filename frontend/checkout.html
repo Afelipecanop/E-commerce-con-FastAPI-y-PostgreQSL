@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago — Mi Tienda</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .result-box {
+            max-width: 500px;
+            margin: 6rem auto;
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .result-box .icon { font-size: 4rem; margin-bottom: 1rem; }
+        .result-box h2 { margin-bottom: 1rem; }
+        .result-box p { color: var(--gray-500); margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="result-box" id="result">
+        <div class="loading">Procesando...</div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const box = document.getElementById("result");
+
+        if (params.get("success")) {
+            box.innerHTML = `
+                <div class="icon">🎉</div>
+                <h2>¡Pago exitoso!</h2>
+                <p>Tu pedido ha sido confirmado y está siendo procesado.</p>
+                <a href="index.html" class="btn btn-primary">Seguir comprando</a>
+            `;
+        } else if (params.get("cancelled")) {
+            box.innerHTML = `
+                <div class="icon">😕</div>
+                <h2>Pago cancelado</h2>
+                <p>No se realizó ningún cobro. Tu carrito sigue intacto.</p>
+                <a href="cart.html" class="btn btn-outline">Volver al carrito</a>
+            `;
+        } else {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

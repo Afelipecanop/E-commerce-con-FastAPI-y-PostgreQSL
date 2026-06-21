@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Mi Tienda</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container {
+            max-width: 420px;
+            margin: 4rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid var(--primary);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>🛍️ Mi Tienda</h2>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('login')">Iniciar sesión</button>
+            <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+        </div>
+
+        <div id="alert"></div>
+
+        <!-- Formulario Login -->
+        <div id="login-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">
+                Entrar
+            </button>
+        </div>
+
+        <!-- Formulario Registro -->
+        <div id="register-form" style="display:none">
+            <div class="form-group">
+                <label>Nombre completo</label>
+                <input type="text" id="reg-name" placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">
+                Crear cuenta
+            </button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Si ya está logueado, redirigir a la tienda
+        if (isLoggedIn()) window.location.href = "index.html";
+
+        function showTab(tab) {
+            document.getElementById("login-form").style.display = tab === "login" ? "block" : "none";
+            document.getElementById("register-form").style.display = tab === "register" ? "block" : "none";
+            document.querySelectorAll(".tab-btn").forEach((btn, i) => {
+                btn.classList.toggle("active", (i === 0 && tab === "login") || (i === 1 && tab === "register"));
+            });
+        }
+
+        function showAlert(message, type = "error") {
+            document.getElementById("alert").innerHTML =
+                `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+            if (!email || !password) return showAlert("Completa todos los campos");
+            try {
+                await login(email, password);
+                window.location.href = "index.html";
+            } catch (e) {
+                showAlert(e.message);
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById("reg-name").value;
+            const email = document.getElementById("reg-email").value;
+            const password = document.getElementById("reg-password").value;
+            if (!name || !email || !password) return showAlert("Completa todos los campos");
+            try {
+                await register(email, password, name);
+                showAlert("¡Cuenta creada! Ahora inicia sesión.", "success");
+                showTab("login");
+            } catch (e) {
+                showAlert(e.message);
+            }
+        }
+    </script>
+</body>
+</html>

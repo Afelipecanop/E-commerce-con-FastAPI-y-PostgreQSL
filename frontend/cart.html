@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito — Mi Tienda</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">🛍️ Mi Tienda</a>
+        <div class="nav-links">
+            <a href="index.html">← Seguir comprando</a>
+            <a href="#" onclick="logout()">Salir</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 1.5rem">Tu carrito</h1>
+        <div id="cart-content">
+            <div class="loading">Cargando carrito...</div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = "login.html";
+
+        async function loadCart() {
+            try {
+                const cart = await getCart();
+                const container = document.getElementById("cart-content");
+
+                if (cart.items.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading">
+                            Tu carrito está vacío.<br><br>
+                            <a href="index.html" class="btn btn-primary">Ver productos</a>
+                        </div>`;
+                    return;
+                }
+
+                const itemsHTML = cart.items.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.product.image_url || 'https://via.placeholder.com/80'}"
+                             alt="${item.product.name}">
+                        <div class="item-info">
+                            <div class="item-name">${item.product.name}</div>
+                            <div class="item-price">$${item.product.price.toFixed(2)} c/u</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.5rem">
+                            <button class="btn btn-outline" onclick="changeQty('${item.id}', ${item.quantity - 1})">−</button>
+                            <span style="min-width:2rem; text-align:center; font-weight:600">${item.quantity}</span>
+                            <button class="btn btn-outline" onclick="changeQty('${item.id}', ${item.quantity + 1})">+</button>
+                        </div>
+                        <div style="font-weight:700; min-width:80px; text-align:right">
+                            $${(item.product.price * item.quantity).toFixed(2)}
+                        </div>
+                        <button class="btn btn-danger" onclick="removeItem('${item.id}')">✕</button>
+                    </div>
+                `).join("");
+
+                container.innerHTML = `
+                    ${itemsHTML}
+                    <div class="cart-total">
+                        <div class="total-amount">Total: $${cart.total.toFixed(2)}</div>
+                        <button class="btn btn-primary" onclick="handleCheckout()">
+                            💳 Proceder al pago
+                        </button>
+                    </div>`;
+            } catch (e) {
+                document.getElementById("cart-content").innerHTML =
+                    `<div class="alert alert-error">${e.message}</div>`;
+            }
+        }
+
+        async function changeQty(itemId, newQty) {
+            try {
+                await updateCartItem(itemId, newQty);
+                loadCart();
+            } catch (e) { alert(e.message); }
+        }
+
+        async function removeItem(itemId) {
+            try {
+                await removeFromCart(itemId);
+                loadCart();
+            } catch (e) { alert(e.message); }
+        }
+
+        async function handleCheckout() {
+            try {
+                const data = await checkout();
+                window.location.href = data.checkout_url;
+            } catch (e) { alert(`❌ ${e.message}`); }
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Mi Tienda</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+        th { background: var(--primary); color: white; padding: 0.8rem 1rem; text-align: left; }
+        td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--gray-200); }
+        .form-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">🛍️ Mi Tienda</a>
+        <div class="nav-links">
+            <a href="index.html">← Tienda</a>
+            <a href="#" onclick="logout()">Salir</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Panel de administración</h1>
+        <div class="admin-grid">
+            <!-- Formulario nuevo producto -->
+            <div class="form-card">
+                <h2 style="margin-bottom:1.2rem">➕ Nuevo producto</h2>
+                <div id="form-alert"></div>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="p-name" placeholder="Nombre del producto">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="p-desc" rows="3" placeholder="Descripción opcional"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Precio (USD)</label>
+                    <input type="number" id="p-price" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Stock</label>
+                    <input type="number" id="p-stock" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>URL de imagen</label>
+                    <input type="text" id="p-image" placeholder="https://...">
+                </div>
+                <button class="btn btn-primary" onclick="handleCreate()">Crear producto</button>
+            </div>
+
+            <!-- Lista de productos -->
+            <div>
+                <h2 style="margin-bottom:1.2rem">📦 Productos activos</h2>
+                <div id="products-table"><div class="loading">Cargando...</div></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Solo admins pueden entrar
+        async function checkAdmin() {
+            if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+            try {
+                const me = await getMe();
+                if (!me.is_admin) window.location.href = "index.html";
+            } catch (e) { window.location.href = "login.html"; }
+        }
+
+        async function loadProducts() {
+            try {
+                const products = await getProducts();
+                const container = document.getElementById("products-table");
+                if (products.length === 0) {
+                    container.innerHTML = `<p>No hay productos aún.</p>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr><th>Nombre</th><th>Precio</th><th>Stock</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            ${products.map(p => `
+                                <tr>
+                                    <td>${p.name}</td>
+                                    <td>$${p.price.toFixed(2)}</td>
+                                    <td>${p.stock}</td>
+                                    <td>
+                                        <button class="btn btn-danger"
+                                            onclick="handleDelete('${p.id}', '${p.name}')">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>`;
+            } catch (e) {
+                document.getElementById("products-table").innerHTML =
+                    `<div class="alert alert-error">${e.message}</div>`;
+            }
+        }
+
+        async function handleCreate() {
+            const data = {
+                name: document.getElementById("p-name").value,
+                description: document.getElementById("p-desc").value,
+                price: parseFloat(document.getElementById("p-price").value),
+                stock: parseInt(document.getElementById("p-stock").value),
+                image_url: document.getElementById("p-image").value || null
+            };
+            if (!data.name || !data.price || !data.stock) {
+                document.getElementById("form-alert").innerHTML =
+                    `<div class="alert alert-error">Nombre, precio y stock son obligatorios</div>`;
+                return;
+            }
+            try {
+                await createProduct(data);
+                document.getElementById("form-alert").innerHTML =
+                    `<div class="alert alert-success">✅ Producto creado</div>`;
+                loadProducts();
+            } catch (e) {
+                document.getElementById("form-alert").innerHTML =
+                    `<div class="alert alert-error">${e.message}</div>`;
+            }
+        }
+
+        async function handleDelete(id, name) {
+            if (!confirm(`¿Eliminar "${name}"?`)) return;
+            try {
+                await deleteProduct(id);
+                loadProducts();
+            } catch (e) { alert(e.message); }
+        }
+
+        checkAdmin();
+        loadProducts();
+    </script>
+</body>
+</html>
