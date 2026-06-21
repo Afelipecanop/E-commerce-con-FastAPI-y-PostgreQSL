@@ -19,7 +19,8 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:5500",
         "http://localhost:5500",
-        FRONTEND_URL
+        "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app",
+        os.getenv("FRONTEND_URL", "http://127.0.0.1:5500")
     ],
     allow_credentials=True,
     allow_methods=["*"],
