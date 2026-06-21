@@ -1,4 +1,4 @@
-const API_URL = "postgresql://postgres:tSNXhfPAnfCTGESJkMFVbNHrXfBMoNWP@thomas.proxy.rlwy.net:23406/railway";
+const API_URL = "e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 
 // ─── TOKEN ───────────────────────────────────────────────────────────────────
 
