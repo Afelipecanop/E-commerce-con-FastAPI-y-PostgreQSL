@@ -27,6 +27,7 @@ app.add_middleware(
         "http://127.0.0.1:5500",
         "http://localhost:5500",
         "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app",
+        "https://e-commerceutcocina.netlify.app",
         FRONTEND_URL
     ],
     allow_credentials=True,
