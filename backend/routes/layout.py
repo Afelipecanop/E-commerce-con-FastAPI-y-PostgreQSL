@@ -8,6 +8,7 @@ from database import get_db
 from models.layout import StoreLayout
 from schemas.layout import LayoutUpdate, BlockResponse
 from middleware.auth import get_current_admin
+from schemas.layout import LayoutUpdate, BlockResponse, BlockConfig
 
 router = APIRouter(prefix="/layout", tags=["Layout de la tienda"])
 
