@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor — Mi Tienda</title>
     <link rel="stylesheet" href="css/styles.css">
+    .quick-prompt {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.2s;
+}
+.quick-prompt:hover { background: #ede9fe; border-color: #7c3aed; color: #7c3aed; }
     <style>
         * { box-sizing: border-box; }
 
@@ -298,6 +309,63 @@
         .toast.error { background: #dc2626; }
     </style>
 </head>
+
+<!-- Modal IA -->
+<div id="ai-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9998; align-items:center; justify-content:center">
+    <div style="background:white; border-radius:12px; padding:1.5rem; width:580px; max-width:90vw; max-height:85vh; overflow-y:auto">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+            <h3 style="font-size:1rem; color:#1e293b">✨ Generar sección con IA</h3>
+            <button onclick="closeAIModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b">✕</button>
+        </div>
+        <div class="prop-group">
+            <label>Describe lo que quieres crear</label>
+            <textarea id="ai-prompt" rows="4" placeholder="Ej: Una sección de características con 3 columnas, íconos grandes y fondo azul oscuro. Cada columna tiene un título y descripción corta..."></textarea>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem">
+            <span style="font-size:0.75rem; color:#64748b; width:100%; margin-bottom:0.3rem">Ejemplos rápidos:</span>
+            <button class="quick-prompt" onclick="setPrompt(this)">Sección de características con 3 columnas</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Banner de oferta con cuenta regresiva</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Sección de equipo con fotos y nombres</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Tabla comparativa de planes/precios</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Galería de imágenes en grid</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Formulario de contacto estilizado</button>
+        </div>
+        <button id="ai-generate-btn" onclick="generateWithAI()"
+            style="width:100%; padding:0.7rem; background:#7c3aed; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem; margin-bottom:1rem">
+             Generar
+        </button>
+        <div id="ai-loading" style="display:none; text-align:center; padding:1rem; color:#7c3aed; font-weight:500">
+             Generando tu sección...
+        </div>
+        <div id="ai-result" style="display:none">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.8rem">
+                <div class="prop-group" style="margin:0">
+                    <label>HTML generado</label>
+                    <textarea id="ai-html-output" rows="8" style="font-family:monospace; font-size:0.75rem"></textarea>
+                </div>
+                <div class="prop-group" style="margin:0">
+                    <label>CSS generado</label>
+                    <textarea id="ai-css-output" rows="8" style="font-family:monospace; font-size:0.75rem"></textarea>
+                </div>
+            </div>
+            <div style="background:#f8fafc; border-radius:8px; padding:1rem; margin-bottom:1rem; border:1px solid #e2e8f0">
+                <p style="font-size:0.75rem; color:#64748b; margin-bottom:0.5rem; font-weight:600">PREVIEW</p>
+                <iframe id="ai-preview-frame" style="width:100%; height:200px; border:none; border-radius:6px; background:white"></iframe>
+            </div>
+            <div style="display:flex; gap:0.5rem">
+                <button onclick="applyAIResult()"
+                    style="flex:1; padding:0.6rem; background:#16a34a; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer">
+                    ✅ Aplicar al bloque
+                </button>
+                <button onclick="generateWithAI()"
+                    style="flex:1; padding:0.6rem; background:#7c3aed; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer">
+                    🔄 Regenerar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <body>
 
 <!-- Topbar -->
@@ -354,6 +422,9 @@
                 </div>
                 <div class="block-btn" onclick="addBlock('footer')">
                     <span class="block-icon">📋</span>Footer
+                </div>
+                <div class="block-btn" onclick="addBlock('custom_html')" style="grid-column:span 2; border-color:#7c3aed; color:#7c3aed">
+                    <span class="block-icon">💻</span>Sección personalizada (HTML/CSS)
                 </div>
             </div>
         </div>
@@ -485,6 +556,105 @@ let layout = [];
 let selectedBlockId = null;
 let currentDevice = 'desktop';
 
+// ── Asistente de IA ───────────────────────────────────────────────────────────
+let currentAIBlockId = null;
+
+function openAIAssistant(blockId) {
+    currentAIBlockId = blockId;
+    document.getElementById("ai-modal").style.display = "flex";
+    document.getElementById("ai-result").style.display = "none";
+    document.getElementById("ai-loading").style.display = "none";
+    document.getElementById("ai-prompt").value = "";
+}
+
+function closeAIModal() {
+    document.getElementById("ai-modal").style.display = "none";
+}
+
+function setPrompt(btn) {
+    document.getElementById("ai-prompt").value = btn.textContent;
+}
+
+async function generateWithAI() {
+    const prompt = document.getElementById("ai-prompt").value.trim();
+    if (!prompt) { showToast("Describe lo que quieres crear", "error"); return; }
+
+    document.getElementById("ai-loading").style.display = "block";
+    document.getElementById("ai-result").style.display = "none";
+    document.getElementById("ai-generate-btn").disabled = true;
+
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-6",
+                max_tokens: 1000,
+                messages: [{
+                    role: "user",
+                    content: `Eres un experto en HTML y CSS para e-commerce. 
+Genera una sección HTML/CSS profesional para una tienda online.
+
+La sección debe:
+- Tener diseño moderno y limpio
+- Usar colores que combinen con azul (#2563eb) como color primario
+- Ser responsive
+- NO usar frameworks externos (solo HTML y CSS puro)
+- El CSS debe ir en etiquetas <style> dentro del HTML O separado
+
+El usuario quiere: "${prompt}"
+
+Responde SOLO con un objeto JSON con esta estructura exacta, sin explicaciones ni markdown:
+{"html": "el HTML completo aquí", "css": "el CSS adicional aquí si lo separaste"}
+
+El HTML puede incluir estilos inline o una etiqueta <style> interna.`
+                }]
+            })
+        });
+
+        const data = await response.json();
+        const text = data.content[0].text;
+
+        let parsed;
+        try {
+            const clean = text.replace(/```json|```/g, "").trim();
+            parsed = JSON.parse(clean);
+        } catch(e) {
+            // Si no viene como JSON intenta extraer el HTML directamente
+            parsed = { html: text, css: "" };
+        }
+
+        document.getElementById("ai-html-output").value = parsed.html || "";
+        document.getElementById("ai-css-output").value = parsed.css || "";
+
+        // Preview del resultado
+        const previewFrame = document.getElementById("ai-preview-frame");
+        previewFrame.srcdoc = `<style>${parsed.css || ''}</style>${parsed.html || ''}`;
+
+        document.getElementById("ai-result").style.display = "block";
+
+    } catch(e) {
+        showToast("Error generando: " + e.message, "error");
+    } finally {
+        document.getElementById("ai-loading").style.display = "none";
+        document.getElementById("ai-generate-btn").disabled = false;
+    }
+}
+
+function applyAIResult() {
+    const html = document.getElementById("ai-html-output").value;
+    const css = document.getElementById("ai-css-output").value;
+    const block = layout.find(b => b.id === currentAIBlockId);
+    if (block) {
+        block.config.html = html;
+        block.config.css = css;
+        renderPreview();
+        renderProps();
+        showToast("✅ Sección aplicada al bloque", "success");
+    }
+    closeAIModal();
+}
+
 // ── Configuraciones por defecto de cada tipo de bloque ───────────────────────
 const BLOCK_DEFAULTS = {
     announcement_bar: {
@@ -535,6 +705,13 @@ const BLOCK_DEFAULTS = {
         email: "contacto@mitienda.com",
         background_color: "#1e293b",
         text_color: "#94a3b8"
+    },
+    custom_html: {
+        html: `<div style="padding: 3rem 2rem; text-align: center; background: #f8fafc;">
+  <h2 style="color: #1e293b; margin-bottom: 1rem">Tu sección personalizada</h2>
+  <p style="color: #64748b">Edita el HTML y CSS desde el panel de propiedades</p>
+</div>`,
+        css: `/* Escribe tu CSS aquí */`
     }
 };
 
@@ -546,7 +723,8 @@ const BLOCK_NAMES = {
     testimonials: "⭐ Testimonios",
     categories: "🏷️ Categorías",
     image_banner: "🌄 Banner imagen",
-    footer: "📋 Footer"
+    footer: "📋 Footer",
+     custom_html: "💻 Sección personalizada"
 };
 
 // ── Inicialización ────────────────────────────────────────────────────────────
@@ -706,6 +884,28 @@ function renderProps() {
             ${propText("email", "Email de contacto", c.email)}
             ${propColor("background_color", "Color de fondo", c.background_color)}
             ${propColor("text_color", "Color del texto", c.text_color)}
+        `;
+    } else if (block.block_type === "custom_html") {
+        fields = `
+            <div class="prop-group">
+                <label>HTML</label>
+                <textarea id="custom-html-input"
+                    style="font-family: monospace; font-size: 0.8rem; min-height: 200px"
+                    oninput="updateConfig('${block.id}', 'html', this.value)">${c.html || ''}</textarea>
+            </div>
+            <div class="prop-group">
+                <label>CSS</label>
+                <textarea id="custom-css-input"
+                    style="font-family: monospace; font-size: 0.8rem; min-height: 120px"
+                    oninput="updateConfig('${block.id}', 'css', this.value)">${c.css || ''}</textarea>
+            </div>
+            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:6px; padding:0.7rem; font-size:0.78rem; color:#92400e; margin-top:0.5rem">
+                 Escribe HTML y CSS directamente. Los cambios se ven en tiempo real en el preview.
+            </div>
+            <button onclick="openAIAssistant('${block.id}')"
+                style="width:100%; margin-top:0.8rem; padding:0.6rem; background:#7c3aed; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.85rem">
+                 Generar con IA
+            </button>
         `;
     }
 
@@ -888,6 +1088,11 @@ function renderBlock(block) {
                 <p style="font-size:0.8rem">✉️ ${c.email}</p>
                 <p style="font-size:0.75rem;margin-top:1rem;opacity:0.6">© ${new Date().getFullYear()} ${c.store_name}. Todos los derechos reservados.</p>
             </footer>`;
+        case "custom_html":
+            return `
+                <style>${c.css || ''}</style>
+                ${c.html || ''}
+            `;
 
         default:
             return `<div style="padding:2rem;text-align:center;color:#94a3b8;border:2px dashed #e2e8f0;margin:1rem">
