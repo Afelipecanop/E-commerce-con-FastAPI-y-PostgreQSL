@@ -3,32 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin — Mi Tienda</title>
+    <title>Editor — Mi Tienda</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-        th { background: var(--primary); color: white; padding: 0.8rem 1rem; text-align: left; }
-        td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--gray-200); }
-        .form-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+        * { box-sizing: border-box; }
+
+        body { margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* ── Topbar ── */
+        .topbar {
+            background: #1e293b;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+        .topbar .logo { font-weight: 700; font-size: 1rem; color: white; text-decoration: none; }
+        .topbar .tabs { display: flex; gap: 0.3rem; }
+        .topbar .tab {
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .topbar .tab.active { background: #2563eb; color: white; }
+        .topbar .actions { display: flex; gap: 0.5rem; }
+        .topbar .btn-save {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .topbar .btn-preview {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* ── Layout principal ── */
+        .editor-body { display: flex; flex: 1; overflow: hidden; }
+
+        /* ── Panel izquierdo ── */
+        .sidebar {
+            width: 280px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+        }
+        .sidebar-tab {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .sidebar-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 1rem; }
+
+        /* ── Bloques disponibles ── */
+        .block-library { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .block-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        .block-btn:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .block-btn .block-icon { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+
+        /* ── Lista de bloques activos ── */
+        .block-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .block-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .block-item:hover { border-color: #2563eb; }
+        .block-item.selected { border-color: #2563eb; background: #eff6ff; }
+        .block-item.hidden-block { opacity: 0.5; }
+        .block-item .drag-handle { color: #94a3b8; cursor: grab; font-size: 1rem; }
+        .block-item .block-name { flex: 1; font-size: 0.82rem; font-weight: 600; color: #334155; }
+        .block-item .block-actions { display: flex; gap: 0.3rem; }
+        .block-item .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .block-item .action-btn:hover { background: #e2e8f0; }
+
+        /* ── Panel de propiedades ── */
+        .props-panel { padding: 0; }
+        .props-header {
+            background: #1e293b;
+            color: white;
+            padding: 0.8rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .prop-group { margin-bottom: 1.2rem; }
+        .prop-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+        .prop-group input,
+        .prop-group textarea,
+        .prop-group select {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        .prop-group input:focus,
+        .prop-group textarea:focus { outline: none; border-color: #2563eb; }
+        .prop-group textarea { resize: vertical; min-height: 80px; }
+        .color-row { display: flex; gap: 0.5rem; align-items: center; }
+        .color-row input[type="color"] {
+            width: 42px;
+            height: 36px;
+            padding: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .color-row input[type="text"] { flex: 1; }
+        .no-selection {
+            text-align: center;
+            color: #94a3b8;
+            padding: 2rem 1rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .no-selection .hint-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+        /* ── Preview central ── */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #cbd5e1;
+            overflow: hidden;
+        }
+        .preview-toolbar {
+            background: #334155;
+            padding: 0.4rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .preview-toolbar span { color: #94a3b8; font-size: 0.75rem; flex: 1; text-align: center; }
+        .device-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .device-btn.active { color: white; background: #2563eb; }
+        .preview-frame-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1rem;
+            overflow: auto;
+        }
+        #preview-frame {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            background: white;
+            transition: width 0.3s;
+        }
+
+        /* ── Panel derecho de productos ── */
+        .right-panel {
+            width: 260px;
+            background: #f8fafc;
+            border-left: 1px solid #e2e8f0;
+            overflow-y: auto;
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+        .right-panel h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .mini-product {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.7rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .mini-product img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: #f1f5f9; }
+        .mini-product .mini-info { flex: 1; }
+        .mini-product .mini-name { font-size: 0.8rem; font-weight: 600; color: #334155; }
+        .mini-product .mini-price { font-size: 0.75rem; color: #2563eb; font-weight: 700; }
+        .btn-add-product {
+            width: 100%;
+            padding: 0.6rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e293b;
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #16a34a; }
+        .toast.error { background: #dc2626; }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="logo">🛍️ Mi Tienda</a>
-        <div class="nav-links">
-            <a href="index.html">← Tienda</a>
-            <a href="#" onclick="logout()">Salir</a>
-        </div>
-    </nav>
 
-    <div class="container">
-        <h1>Panel de administración</h1>
-        <div class="admin-grid">
-            <!-- Formulario nuevo producto -->
-            <div class="form-card">
-                <h2 style="margin-bottom:1.2rem">➕ Nuevo producto</h2>
-                <div id="form-alert"></div>
+<!-- Topbar -->
+<div class="topbar">
+    <a href="index.html" class="logo">🛍️ Mi Tienda</a>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('editor')">✏️ Editor</button>
+        <button class="tab" onclick="switchTab('products')">📦 Productos</button>
+        <button class="tab" onclick="switchTab('settings')">⚙️ Ajustes</button>
+    </div>
+    <div class="actions">
+        <button class="btn-preview" onclick="openPreview()">👁️ Ver tienda</button>
+        <button class="btn-save" onclick="saveLayout()">💾 Guardar cambios</button>
+    </div>
+</div>
+
+<!-- Cuerpo del editor -->
+<div class="editor-body" id="editor-tab">
+
+    <!-- Sidebar izquierdo -->
+    <div class="sidebar">
+        <div class="sidebar-tabs">
+            <button class="sidebar-tab active" onclick="showSidebarTab('blocks')">Bloques</button>
+            <button class="sidebar-tab" onclick="showSidebarTab('layers')">Capas</button>
+            <button class="sidebar-tab" onclick="showSidebarTab('props')">Propiedades</button>
+        </div>
+
+        <!-- Tab: Librería de bloques -->
+        <div class="sidebar-content" id="tab-blocks">
+            <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.8rem">
+                Haz clic en un bloque para agregarlo a la tienda
+            </p>
+            <div class="block-library">
+                <div class="block-btn" onclick="addBlock('announcement_bar')">
+                    <span class="block-icon">📢</span>Anuncio
+                </div>
+                <div class="block-btn" onclick="addBlock('hero_banner')">
+                    <span class="block-icon">🖼️</span>Banner
+                </div>
+                <div class="block-btn" onclick="addBlock('product_grid')">
+                    <span class="block-icon">🛍️</span>Productos
+                </div>
+                <div class="block-btn" onclick="addBlock('text_section')">
+                    <span class="block-icon">📝</span>Texto
+                </div>
+                <div class="block-btn" onclick="addBlock('testimonials')">
+                    <span class="block-icon">⭐</span>Testimonios
+                </div>
+                <div class="block-btn" onclick="addBlock('categories')">
+                    <span class="block-icon">🏷️</span>Categorías
+                </div>
+                <div class="block-btn" onclick="addBlock('image_banner')">
+                    <span class="block-icon">🌄</span>Imagen
+                </div>
+                <div class="block-btn" onclick="addBlock('footer')">
+                    <span class="block-icon">📋</span>Footer
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Capas -->
+        <div class="sidebar-content" id="tab-layers" style="display:none">
+            <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.8rem">
+                Haz clic para seleccionar · 👁️ para mostrar/ocultar · 🗑️ para eliminar
+            </p>
+            <div class="block-list" id="layers-list"></div>
+        </div>
+
+        <!-- Tab: Propiedades -->
+        <div class="sidebar-content" id="tab-props" style="display:none">
+            <div id="props-content">
+                <div class="no-selection">
+                    <div class="hint-icon">👆</div>
+                    Selecciona un bloque en <strong>Capas</strong> para editar sus propiedades
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview central -->
+    <div class="preview-area">
+        <div class="preview-toolbar">
+            <button class="device-btn active" title="Desktop" onclick="setDevice('desktop', this)">🖥️</button>
+            <button class="device-btn" title="Tablet" onclick="setDevice('tablet', this)">📱</button>
+            <button class="device-btn" title="Mobile" onclick="setDevice('mobile', this)">📲</button>
+            <span id="preview-url">Vista previa en tiempo real</span>
+        </div>
+        <div class="preview-frame-wrapper">
+            <iframe id="preview-frame" width="100%" height="800"></iframe>
+        </div>
+    </div>
+
+    <!-- Panel derecho: productos -->
+    <div class="right-panel">
+        <h3>📦 Productos</h3>
+        <button class="btn-add-product" onclick="switchTab('products')">+ Nuevo producto</button>
+        <div id="mini-products"></div>
+    </div>
+</div>
+
+<!-- Tab Productos -->
+<div id="products-tab" style="display:none; padding:2rem; overflow-y:auto; flex:1">
+    <div style="max-width:900px; margin:0 auto">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+            <h2>Gestión de productos</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem">
+            <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+                <h3 style="margin-bottom:1.2rem">➕ Nuevo producto</h3>
+                <div id="product-form-alert"></div>
                 <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" id="p-name" placeholder="Nombre del producto">
@@ -37,109 +416,680 @@
                     <label>Descripción</label>
                     <textarea id="p-desc" rows="3" placeholder="Descripción opcional"></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Precio (USD)</label>
-                    <input type="number" id="p-price" placeholder="0.00" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label>Stock</label>
-                    <input type="number" id="p-stock" placeholder="0">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                    <div class="form-group">
+                        <label>Precio (USD)</label>
+                        <input type="number" id="p-price" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock</label>
+                        <input type="number" id="p-stock" placeholder="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>URL de imagen</label>
                     <input type="text" id="p-image" placeholder="https://...">
                 </div>
-                <button class="btn btn-primary" onclick="handleCreate()">Crear producto</button>
+                <button class="btn btn-primary" onclick="handleCreateProduct()" style="width:100%">
+                    Crear producto
+                </button>
             </div>
-
-            <!-- Lista de productos -->
             <div>
-                <h2 style="margin-bottom:1.2rem">📦 Productos activos</h2>
-                <div id="products-table"><div class="loading">Cargando...</div></div>
+                <h3 style="margin-bottom:1.2rem">📦 Productos activos</h3>
+                <div id="products-table"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="js/api.js"></script>
-    <script>
-        // Solo admins pueden entrar
-        async function checkAdmin() {
-            if (!isLoggedIn()) { window.location.href = "login.html"; return; }
-            try {
-                const me = await getMe();
-                if (!me.is_admin) window.location.href = "index.html";
-            } catch (e) { window.location.href = "login.html"; }
-        }
+<!-- Tab Ajustes -->
+<div id="settings-tab" style="display:none; padding:2rem; overflow-y:auto; flex:1">
+    <div style="max-width:700px; margin:0 auto">
+        <h2 style="margin-bottom:1.5rem">Ajustes generales</h2>
+        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:1rem">
+            <h3 style="margin-bottom:1.2rem">🏪 Identidad de la tienda</h3>
+            <div class="form-group"><label>Nombre</label><input type="text" id="s-name"></div>
+            <div class="form-group"><label>Slogan</label><input type="text" id="s-slogan"></div>
+            <div class="form-group"><label>URL del logo</label><input type="text" id="s-logo"></div>
+            <div class="form-group">
+                <label>Color primario</label>
+                <div class="color-row">
+                    <input type="color" id="s-color-preview">
+                    <input type="text" id="s-primary" placeholder="#2563eb">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tipografía</label>
+                <select id="s-font">
+                    <option value="Segoe UI">Segoe UI</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                </select>
+            </div>
+        </div>
+        <div id="settings-alert"></div>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar ajustes</button>
+    </div>
+</div>
 
-        async function loadProducts() {
-            try {
-                const products = await getProducts();
-                const container = document.getElementById("products-table");
-                if (products.length === 0) {
-                    container.innerHTML = `<p>No hay productos aún.</p>`;
-                    return;
+<!-- Toast de notificaciones -->
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+
+// ── Estado global ─────────────────────────────────────────────────────────────
+let layout = [];
+let selectedBlockId = null;
+let currentDevice = 'desktop';
+
+// ── Configuraciones por defecto de cada tipo de bloque ───────────────────────
+const BLOCK_DEFAULTS = {
+    announcement_bar: {
+        text: "🚚 Envío gratis en compras mayores a $50",
+        background_color: "#2563eb",
+        text_color: "#ffffff"
+    },
+    hero_banner: {
+        title: "Bienvenido a nuestra tienda",
+        subtitle: "Descubre nuestra colección exclusiva",
+        button_text: "Ver productos",
+        image_url: "",
+        background_color: "#1e293b",
+        text_color: "#ffffff"
+    },
+    product_grid: {
+        title: "Nuestros productos",
+        columns: 3,
+        show_all: true,
+        limit: 6
+    },
+    text_section: {
+        title: "Sobre nosotros",
+        content: "Somos una tienda dedicada a ofrecerte los mejores productos.",
+        background_color: "#f8fafc",
+        text_align: "center"
+    },
+    testimonials: {
+        title: "Lo que dicen nuestros clientes",
+        items: [
+            { name: "María García", text: "Excelente servicio.", rating: 5 },
+            { name: "Carlos López", text: "Muy buena experiencia.", rating: 5 }
+        ]
+    },
+    categories: {
+        title: "Categorías",
+        items: ["Ropa", "Accesorios", "Calzado", "Ofertas"]
+    },
+    image_banner: {
+        image_url: "",
+        alt_text: "Banner de la tienda",
+        link_url: "",
+        height: "300"
+    },
+    footer: {
+        store_name: "Mi Tienda",
+        tagline: "Tu tienda de confianza",
+        email: "contacto@mitienda.com",
+        background_color: "#1e293b",
+        text_color: "#94a3b8"
+    }
+};
+
+const BLOCK_NAMES = {
+    announcement_bar: "📢 Barra de anuncio",
+    hero_banner: "🖼️ Banner principal",
+    product_grid: "🛍️ Grid de productos",
+    text_section: "📝 Sección de texto",
+    testimonials: "⭐ Testimonios",
+    categories: "🏷️ Categorías",
+    image_banner: "🌄 Banner imagen",
+    footer: "📋 Footer"
+};
+
+// ── Inicialización ────────────────────────────────────────────────────────────
+async function init() {
+    if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    try {
+        const me = await getMe();
+        if (!me.is_admin) { window.location.href = "index.html"; return; }
+    } catch(e) { window.location.href = "login.html"; return; }
+
+    await loadLayout();
+    await loadMiniProducts();
+    await loadSettings();
+    loadProducts();
+    renderPreview();
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+async function loadLayout() {
+    try {
+        const blocks = await apiFetch("/layout/");
+        layout = blocks;
+        renderLayers();
+    } catch(e) { showToast("Error cargando el layout", "error"); }
+}
+
+function renderLayers() {
+    const list = document.getElementById("layers-list");
+    list.innerHTML = layout.map(block => `
+        <div class="block-item ${block.is_visible ? '' : 'hidden-block'} ${selectedBlockId === block.id ? 'selected' : ''}"
+             onclick="selectBlock('${block.id}')">
+            <span class="drag-handle">⠿</span>
+            <span class="block-name">${BLOCK_NAMES[block.block_type] || block.block_type}</span>
+            <div class="block-actions">
+                <button class="action-btn" title="${block.is_visible ? 'Ocultar' : 'Mostrar'}"
+                    onclick="event.stopPropagation(); toggleVisibility('${block.id}')">
+                    ${block.is_visible ? '👁️' : '🙈'}
+                </button>
+                <button class="action-btn" title="Eliminar"
+                    onclick="event.stopPropagation(); removeBlock('${block.id}')">
+                    🗑️
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function selectBlock(id) {
+    selectedBlockId = id;
+    renderLayers();
+    showSidebarTab('props');
+    renderProps();
+}
+
+function toggleVisibility(id) {
+    const block = layout.find(b => b.id === id);
+    if (block) {
+        block.is_visible = !block.is_visible;
+        renderLayers();
+        renderPreview();
+    }
+}
+
+function removeBlock(id) {
+    if (!confirm("¿Eliminar este bloque?")) return;
+    layout = layout.filter(b => b.id !== id);
+    if (selectedBlockId === id) selectedBlockId = null;
+    renderLayers();
+    renderPreview();
+}
+
+function addBlock(type) {
+    const newBlock = {
+        id: "block-" + Date.now(),
+        block_type: type,
+        order_index: layout.length,
+        is_visible: true,
+        config: { ...BLOCK_DEFAULTS[type] }
+    };
+    layout.push(newBlock);
+    renderLayers();
+    renderPreview();
+    selectBlock(newBlock.id);
+    showSidebarTab('layers');
+    showToast(`${BLOCK_NAMES[type]} agregado ✅`);
+}
+
+// ── Propiedades ───────────────────────────────────────────────────────────────
+function renderProps() {
+    const block = layout.find(b => b.id === selectedBlockId);
+    const container = document.getElementById("props-content");
+    if (!block) {
+        container.innerHTML = `<div class="no-selection"><div class="hint-icon">👆</div>Selecciona un bloque para editar</div>`;
+        return;
+    }
+
+    const c = block.config;
+    let fields = "";
+
+    if (block.block_type === "announcement_bar") {
+        fields = `
+            ${propText("text", "Texto del anuncio", c.text)}
+            ${propColor("background_color", "Color de fondo", c.background_color)}
+            ${propColor("text_color", "Color del texto", c.text_color)}
+        `;
+    } else if (block.block_type === "hero_banner") {
+        fields = `
+            ${propText("title", "Título", c.title)}
+            ${propText("subtitle", "Subtítulo", c.subtitle)}
+            ${propText("button_text", "Texto del botón", c.button_text)}
+            ${propText("image_url", "URL de imagen de fondo", c.image_url)}
+            ${propColor("background_color", "Color de fondo", c.background_color)}
+            ${propColor("text_color", "Color del texto", c.text_color)}
+        `;
+    } else if (block.block_type === "product_grid") {
+        fields = `
+            ${propText("title", "Título de la sección", c.title)}
+            ${propSelect("columns", "Columnas", c.columns, [2, 3, 4])}
+            ${propText("limit", "Máximo de productos", c.limit)}
+        `;
+    } else if (block.block_type === "text_section") {
+        fields = `
+            ${propText("title", "Título", c.title)}
+            ${propTextarea("content", "Contenido", c.content)}
+            ${propColor("background_color", "Color de fondo", c.background_color)}
+            ${propSelect("text_align", "Alineación", c.text_align, ["left", "center", "right"])}
+        `;
+    } else if (block.block_type === "testimonials") {
+        fields = `
+            ${propText("title", "Título de la sección", c.title)}
+            <div class="prop-group">
+                <label>Testimonios (JSON)</label>
+                <textarea onchange="updateConfig('${block.id}', 'items', JSON.parse(this.value))"
+                    rows="6">${JSON.stringify(c.items, null, 2)}</textarea>
+            </div>
+        `;
+    } else if (block.block_type === "categories") {
+        fields = `
+            ${propText("title", "Título", c.title)}
+            <div class="prop-group">
+                <label>Categorías (una por línea)</label>
+                <textarea onchange="updateConfig('${block.id}', 'items', this.value.split('\\n').filter(Boolean))"
+                    rows="5">${(c.items || []).join('\n')}</textarea>
+            </div>
+        `;
+    } else if (block.block_type === "image_banner") {
+        fields = `
+            ${propText("image_url", "URL de imagen", c.image_url)}
+            ${propText("alt_text", "Texto alternativo", c.alt_text)}
+            ${propText("link_url", "Enlace al hacer clic", c.link_url)}
+            ${propText("height", "Altura (px)", c.height)}
+        `;
+    } else if (block.block_type === "footer") {
+        fields = `
+            ${propText("store_name", "Nombre de la tienda", c.store_name)}
+            ${propText("tagline", "Tagline", c.tagline)}
+            ${propText("email", "Email de contacto", c.email)}
+            ${propColor("background_color", "Color de fondo", c.background_color)}
+            ${propColor("text_color", "Color del texto", c.text_color)}
+        `;
+    }
+
+    container.innerHTML = `
+        <div class="props-header">${BLOCK_NAMES[block.block_type]}</div>
+        <div class="props-panel">${fields}</div>
+    `;
+}
+
+// Helpers para generar campos de propiedades
+function propText(key, label, value) {
+    return `
+        <div class="prop-group">
+            <label>${label}</label>
+            <input type="text" value="${value || ''}"
+                oninput="updateConfig('${selectedBlockId}', '${key}', this.value)">
+        </div>`;
+}
+
+function propTextarea(key, label, value) {
+    return `
+        <div class="prop-group">
+            <label>${label}</label>
+            <textarea oninput="updateConfig('${selectedBlockId}', '${key}', this.value)">${value || ''}</textarea>
+        </div>`;
+}
+
+function propColor(key, label, value) {
+    return `
+        <div class="prop-group">
+            <label>${label}</label>
+            <div class="color-row">
+                <input type="color" value="${value || '#000000'}"
+                    oninput="this.nextElementSibling.value=this.value; updateConfig('${selectedBlockId}', '${key}', this.value)">
+                <input type="text" value="${value || ''}"
+                    oninput="this.previousElementSibling.value=this.value; updateConfig('${selectedBlockId}', '${key}', this.value)">
+            </div>
+        </div>`;
+}
+
+function propSelect(key, label, value, options) {
+    const opts = options.map(o =>
+        `<option value="${o}" ${o == value ? 'selected' : ''}>${o}</option>`
+    ).join('');
+    return `
+        <div class="prop-group">
+            <label>${label}</label>
+            <select onchange="updateConfig('${selectedBlockId}', '${key}', this.value)">
+                ${opts}
+            </select>
+        </div>`;
+}
+
+function updateConfig(blockId, key, value) {
+    const block = layout.find(b => b.id === blockId);
+    if (block) {
+        block.config[key] = value;
+        renderPreview();
+    }
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
+function renderPreview() {
+    const frame = document.getElementById("preview-frame");
+    const html = generatePreviewHTML();
+    frame.srcdoc = html;
+}
+
+function generatePreviewHTML() {
+    const visibleBlocks = layout.filter(b => b.is_visible);
+    let blocksHTML = visibleBlocks.map(block => renderBlock(block)).join("\n");
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; }
+nav { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+nav .logo { font-size: 1.3rem; font-weight: 700; color: #2563eb; text-decoration: none; }
+nav .nav-links { display: flex; gap: 1rem; }
+nav .nav-links a { text-decoration: none; color: #374151; font-size: 0.9rem; }
+.products-grid { display: grid; gap: 1.2rem; padding: 0 2rem 2rem; }
+.product-card { background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
+.product-card img { width: 100%; height: 180px; object-fit: cover; background: #f1f5f9; }
+.product-card .card-body { padding: 1rem; }
+.product-card h3 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #1e293b; }
+.product-card .price { font-size: 1.1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.6rem; }
+.btn-cart { width: 100%; padding: 0.5rem; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<nav>
+    <a class="logo" href="#">🛍️ Mi Tienda</a>
+    <div class="nav-links">
+        <a href="#">Carrito</a>
+        <a href="#">Mi cuenta</a>
+    </div>
+</nav>
+${blocksHTML}
+</body>
+</html>`;
+}
+
+function renderBlock(block) {
+    const c = block.config;
+    switch(block.block_type) {
+        case "announcement_bar":
+            return `<div style="background:${c.background_color};color:${c.text_color};text-align:center;padding:0.6rem;font-size:0.85rem;font-weight:500">${c.text}</div>`;
+
+        case "hero_banner":
+            return `<div style="background:${c.image_url ? `url('${c.image_url}') center/cover no-repeat` : c.background_color};min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem;color:${c.text_color}">
+                <h1 style="font-size:2.2rem;margin-bottom:0.8rem;text-shadow:0 2px 8px rgba(0,0,0,0.3)">${c.title}</h1>
+                <p style="font-size:1.1rem;margin-bottom:1.5rem;opacity:0.9">${c.subtitle}</p>
+                <button style="background:${c.text_color};color:${c.background_color};border:none;padding:0.8rem 2rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">${c.button_text}</button>
+            </div>`;
+
+        case "product_grid":
+            return `<div style="padding:2.5rem 2rem">
+                <h2 style="text-align:center;margin-bottom:1.5rem;font-size:1.5rem;color:#1e293b">${c.title}</h2>
+                <div class="products-grid" style="grid-template-columns:repeat(${c.columns},1fr)">
+                    ${[1,2,3,4,5,6].slice(0, parseInt(c.limit) || 6).map(i => `
+                    <div class="product-card">
+                        <div style="width:100%;height:180px;background:linear-gradient(135deg,#e2e8f0,#cbd5e1);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:2rem">🛍️</div>
+                        <div class="card-body">
+                            <h3>Producto ejemplo ${i}</h3>
+                            <div class="price">$29.99</div>
+                            <button class="btn-cart">Agregar al carrito</button>
+                        </div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+
+        case "text_section":
+            return `<div style="background:${c.background_color};padding:3rem 2rem;text-align:${c.text_align}">
+                <h2 style="font-size:1.6rem;color:#1e293b;margin-bottom:1rem">${c.title}</h2>
+                <p style="font-size:1rem;color:#64748b;max-width:700px;margin:0 auto;line-height:1.7">${c.content}</p>
+            </div>`;
+
+        case "testimonials":
+            const items = c.items || [];
+            return `<div style="background:#f8fafc;padding:3rem 2rem">
+                <h2 style="text-align:center;font-size:1.5rem;color:#1e293b;margin-bottom:1.5rem">${c.title}</h2>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;max-width:900px;margin:0 auto">
+                    ${items.map(item => `
+                    <div style="background:white;border-radius:10px;padding:1.2rem;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+                        <div style="color:#f59e0b;margin-bottom:0.5rem">${'⭐'.repeat(item.rating || 5)}</div>
+                        <p style="color:#475569;font-size:0.9rem;margin-bottom:0.7rem;line-height:1.5">"${item.text}"</p>
+                        <strong style="font-size:0.85rem;color:#1e293b">— ${item.name}</strong>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+
+        case "categories":
+            const cats = c.items || [];
+            return `<div style="padding:2rem;text-align:center">
+                <h2 style="font-size:1.4rem;color:#1e293b;margin-bottom:1.2rem">${c.title}</h2>
+                <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
+                    ${cats.map(cat => `
+                    <div style="background:#eff6ff;color:#2563eb;border:2px solid #bfdbfe;padding:0.6rem 1.4rem;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer">
+                        ${cat}
+                    </div>`).join('')}
+                </div>
+            </div>`;
+
+        case "image_banner":
+            return `<div style="width:100%;height:${c.height || 300}px;background:#e2e8f0;overflow:hidden">
+                ${c.image_url
+                    ? `<img src="${c.image_url}" alt="${c.alt_text}" style="width:100%;height:100%;object-fit:cover">`
+                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:1.2rem">🌄 Agrega una URL de imagen</div>`
                 }
-                container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr><th>Nombre</th><th>Precio</th><th>Stock</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            ${products.map(p => `
-                                <tr>
-                                    <td>${p.name}</td>
-                                    <td>$${p.price.toFixed(2)}</td>
-                                    <td>${p.stock}</td>
-                                    <td>
-                                        <button class="btn btn-danger"
-                                            onclick="handleDelete('${p.id}', '${p.name}')">
-                                            Eliminar
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join("")}
-                        </tbody>
-                    </table>`;
-            } catch (e) {
-                document.getElementById("products-table").innerHTML =
-                    `<div class="alert alert-error">${e.message}</div>`;
-            }
-        }
+            </div>`;
 
-        async function handleCreate() {
-            const data = {
-                name: document.getElementById("p-name").value,
-                description: document.getElementById("p-desc").value,
-                price: parseFloat(document.getElementById("p-price").value),
-                stock: parseInt(document.getElementById("p-stock").value),
-                image_url: document.getElementById("p-image").value || null
-            };
-            if (!data.name || !data.price || !data.stock) {
-                document.getElementById("form-alert").innerHTML =
-                    `<div class="alert alert-error">Nombre, precio y stock son obligatorios</div>`;
-                return;
-            }
-            try {
-                await createProduct(data);
-                document.getElementById("form-alert").innerHTML =
-                    `<div class="alert alert-success">✅ Producto creado</div>`;
-                loadProducts();
-            } catch (e) {
-                document.getElementById("form-alert").innerHTML =
-                    `<div class="alert alert-error">${e.message}</div>`;
-            }
-        }
+        case "footer":
+            return `<footer style="background:${c.background_color};color:${c.text_color};padding:2.5rem 2rem;text-align:center;margin-top:2rem">
+                <h3 style="font-size:1.2rem;color:white;margin-bottom:0.4rem">${c.store_name}</h3>
+                <p style="font-size:0.85rem;margin-bottom:0.8rem">${c.tagline}</p>
+                <p style="font-size:0.8rem">✉️ ${c.email}</p>
+                <p style="font-size:0.75rem;margin-top:1rem;opacity:0.6">© ${new Date().getFullYear()} ${c.store_name}. Todos los derechos reservados.</p>
+            </footer>`;
 
-        async function handleDelete(id, name) {
-            if (!confirm(`¿Eliminar "${name}"?`)) return;
-            try {
-                await deleteProduct(id);
-                loadProducts();
-            } catch (e) { alert(e.message); }
-        }
+        default:
+            return `<div style="padding:2rem;text-align:center;color:#94a3b8;border:2px dashed #e2e8f0;margin:1rem">
+                Bloque: ${block.block_type}
+            </div>`;
+    }
+}
 
-        checkAdmin();
+// ── Guardar layout ────────────────────────────────────────────────────────────
+async function saveLayout() {
+    try {
+        await apiFetch("/layout/", {
+            method: "PUT",
+            body: JSON.stringify({ blocks: layout })
+        });
+        showToast("Layout guardado ✅", "success");
+    } catch(e) {
+        showToast("Error guardando: " + e.message, "error");
+    }
+}
+
+// ── Dispositivos ──────────────────────────────────────────────────────────────
+function setDevice(device, btn) {
+    currentDevice = device;
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const frame = document.getElementById("preview-frame");
+    const widths = { desktop: "100%", tablet: "768px", mobile: "390px" };
+    frame.style.width = widths[device];
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+    document.getElementById("editor-tab").style.display = tab === "editor" ? "flex" : "none";
+    document.getElementById("products-tab").style.display = tab === "products" ? "block" : "none";
+    document.getElementById("settings-tab").style.display = tab === "settings" ? "block" : "none";
+    document.querySelectorAll(".topbar .tab").forEach((btn, i) => {
+        btn.classList.toggle("active", ["editor","products","settings"][i] === tab);
+    });
+}
+
+function showSidebarTab(tab) {
+    ["blocks","layers","props"].forEach(t => {
+        document.getElementById("tab-" + t).style.display = t === tab ? "block" : "none";
+    });
+    document.querySelectorAll(".sidebar-tab").forEach((btn, i) => {
+        btn.classList.toggle("active", ["blocks","layers","props"][i] === tab);
+    });
+}
+
+// ── Mini productos (panel derecho) ────────────────────────────────────────────
+async function loadMiniProducts() {
+    try {
+        const products = await getProducts();
+        const container = document.getElementById("mini-products");
+        if (products.length === 0) {
+            container.innerHTML = `<p style="font-size:0.8rem;color:#94a3b8">No hay productos aún.</p>`;
+            return;
+        }
+        container.innerHTML = products.slice(0, 8).map(p => `
+            <div class="mini-product">
+                <img src="${p.image_url || 'https://via.placeholder.com/40'}" alt="${p.name}">
+                <div class="mini-info">
+                    <div class="mini-name">${p.name}</div>
+                    <div class="mini-price">$${p.price.toFixed(2)}</div>
+                </div>
+            </div>
+        `).join("");
+    } catch(e) {}
+}
+
+// ── Productos ─────────────────────────────────────────────────────────────────
+async function loadProducts() {
+    try {
+        const products = await getProducts();
+        const container = document.getElementById("products-table");
+        if (products.length === 0) {
+            container.innerHTML = `<p>No hay productos aún.</p>`;
+            return;
+        }
+        container.innerHTML = `
+            <table style="width:100%;border-collapse:collapse;background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+                <thead>
+                    <tr style="background:#2563eb;color:white">
+                        <th style="padding:0.8rem 1rem;text-align:left">Nombre</th>
+                        <th style="padding:0.8rem 1rem;text-align:left">Precio</th>
+                        <th style="padding:0.8rem 1rem;text-align:left">Stock</th>
+                        <th style="padding:0.8rem 1rem"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${products.map(p => `
+                    <tr style="border-bottom:1px solid #f1f5f9">
+                        <td style="padding:0.8rem 1rem">${p.name}</td>
+                        <td style="padding:0.8rem 1rem">$${p.price.toFixed(2)}</td>
+                        <td style="padding:0.8rem 1rem">${p.stock}</td>
+                        <td style="padding:0.8rem 1rem">
+                            <button onclick="handleDeleteProduct('${p.id}','${p.name}')"
+                                style="background:#dc2626;color:white;border:none;padding:0.3rem 0.7rem;border-radius:5px;cursor:pointer;font-size:0.8rem">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>`).join("")}
+                </tbody>
+            </table>`;
+    } catch(e) {}
+}
+
+async function handleCreateProduct() {
+    const data = {
+        name: document.getElementById("p-name").value,
+        description: document.getElementById("p-desc").value,
+        price: parseFloat(document.getElementById("p-price").value),
+        stock: parseInt(document.getElementById("p-stock").value),
+        image_url: document.getElementById("p-image").value || null
+    };
+    if (!data.name || !data.price || !data.stock) {
+        document.getElementById("product-form-alert").innerHTML =
+            `<div class="alert alert-error">Nombre, precio y stock son obligatorios</div>`;
+        return;
+    }
+    try {
+        await createProduct(data);
+        document.getElementById("product-form-alert").innerHTML =
+            `<div class="alert alert-success">✅ Producto creado</div>`;
         loadProducts();
-    </script>
+        loadMiniProducts();
+        renderPreview();
+    } catch(e) {
+        document.getElementById("product-form-alert").innerHTML =
+            `<div class="alert alert-error">${e.message}</div>`;
+    }
+}
+
+async function handleDeleteProduct(id, name) {
+    if (!confirm(`¿Eliminar "${name}"?`)) return;
+    try {
+        await deleteProduct(id);
+        loadProducts();
+        loadMiniProducts();
+    } catch(e) { showToast(e.message, "error"); }
+}
+
+// ── Ajustes generales ─────────────────────────────────────────────────────────
+async function loadSettings() {
+    try {
+        const s = await getSettings();
+        document.getElementById("s-name").value = s.store_name || "";
+        document.getElementById("s-slogan").value = s.store_slogan || "";
+        document.getElementById("s-logo").value = s.logo_url || "";
+        document.getElementById("s-primary").value = s.primary_color || "#2563eb";
+        document.getElementById("s-color-preview").value = s.primary_color || "#2563eb";
+        document.getElementById("s-font").value = s.font_family || "Segoe UI";
+    } catch(e) {}
+}
+
+async function saveSettings() {
+    const data = {
+        store_name: document.getElementById("s-name").value,
+        store_slogan: document.getElementById("s-slogan").value,
+        logo_url: document.getElementById("s-logo").value,
+        primary_color: document.getElementById("s-primary").value,
+        font_family: document.getElementById("s-font").value,
+    };
+    try {
+        await apiFetch("/settings/", { method: "PUT", body: JSON.stringify(data) });
+        showToast("Ajustes guardados ✅", "success");
+    } catch(e) { showToast(e.message, "error"); }
+}
+
+// ── Preview externo ───────────────────────────────────────────────────────────
+function openPreview() {
+    window.open("index.html", "_blank");
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = "") {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.className = "toast show " + type;
+    setTimeout(() => { toast.className = "toast"; }, 3000);
+}
+
+// ── Función apiFetch local ────────────────────────────────────────────────────
+async function apiFetch(endpoint, options = {}) {
+    const token = getToken();
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const response = await fetch(`${API}${endpoint}`, {
+        ...options,
+        headers: { ...headers, ...options.headers }
+    });
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: "Error desconocido" }));
+        throw new Error(error.detail || "Error en la solicitud");
+    }
+    if (response.status === 204) return null;
+    return response.json();
+}
+
+// ── Iniciar ───────────────────────────────────────────────────────────────────
+init();
+</script>
 </body>
 </html>
