@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import json
 import uuid
+import httpx
 import os
 import requests as http_requests
 
@@ -12,6 +13,62 @@ from schemas.layout import LayoutUpdate, BlockResponse, BlockConfig, AIGenerateR
 from middleware.auth import get_current_admin
 
 router = APIRouter(prefix="/layout", tags=["Layout de la tienda"])
+
+
+@router.post("/generate-block")
+async def generate_block(
+    request: dict,
+    admin=Depends(get_current_admin)
+):
+    """Genera HTML/CSS con IA para un bloque personalizado."""
+    prompt = request.get("prompt", "")
+    
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    if not anthropic_key:
+        raise HTTPException(status_code=500, detail="Asistente IA no configurado")
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": anthropic_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-sonnet-4-6",
+                "max_tokens": 1000,
+                "messages": [{
+                    "role": "user",
+                    "content": f"""Eres un experto en HTML y CSS para e-commerce.
+Genera una sección HTML/CSS profesional para una tienda online.
+
+La sección debe:
+- Tener diseño moderno y limpio
+- Usar colores que combinen con azul (#2563eb) como color primario
+- Ser responsive
+- NO usar frameworks externos (solo HTML y CSS puro)
+
+El usuario quiere: "{prompt}"
+
+Responde SOLO con un objeto JSON con esta estructura exacta, sin explicaciones ni markdown:
+{{"html": "el HTML completo aquí", "css": "el CSS adicional aquí"}}"""
+                }]
+            },
+            timeout=30.0
+        )
+        
+        data = response.json()
+        text = data["content"][0]["text"]
+        
+        try:
+            import json
+            clean = text.replace("```json", "").replace("```", "").strip()
+            parsed = json.loads(clean)
+        except:
+            parsed = {"html": text, "css": ""}
+            
+        return parsed
 
 # Bloques por defecto que tiene la tienda al inicio
 DEFAULT_BLOCKS = [

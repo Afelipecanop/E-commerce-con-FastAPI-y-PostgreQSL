@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor — Mi Tienda</title>
     <link rel="stylesheet" href="css/styles.css">
-    .quick-prompt {
+    <style>
+
+        .quick-prompt {
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 20px;
@@ -16,7 +18,7 @@
     transition: all 0.2s;
 }
 .quick-prompt:hover { background: #ede9fe; border-color: #7c3aed; color: #7c3aed; }
-    <style>
+
         * { box-sizing: border-box; }
 
         body { margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -584,16 +586,16 @@ async function generateWithAI() {
     document.getElementById("ai-generate-btn").disabled = true;
 
     try {
-        const data = await apiFetch("/layout/ai-generate", {
+        const parsed = await apiFetch("/layout/generate-block", {
             method: "POST",
             body: JSON.stringify({ prompt })
         });
 
-        document.getElementById("ai-html-output").value = data.html || "";
-        document.getElementById("ai-css-output").value = data.css || "";
+        document.getElementById("ai-html-output").value = parsed.html || "";
+        document.getElementById("ai-css-output").value = parsed.css || "";
 
         const previewFrame = document.getElementById("ai-preview-frame");
-        previewFrame.srcdoc = `<style>${data.css || ''}</style>${data.html || ''}`;
+        previewFrame.srcdoc = `<style>${parsed.css || ''}</style>${parsed.html || ''}`;
 
         document.getElementById("ai-result").style.display = "block";
 
