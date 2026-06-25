@@ -33,8 +33,8 @@ app.add_middleware(
         "https://e-commerceutcocina.netlify.app",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # Rutas
@@ -61,6 +61,6 @@ def db_check():
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return {"database": "conectada ✅"}
-    except Exception as e:
-        return {"database": "error ❌", "detalle": str(e)}
+    except Exception:
+        return {"database": "error ❌"}
     

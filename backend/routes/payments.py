@@ -100,13 +100,12 @@ def create_checkout(
             metadata={"order_id": str(order.id)}  # Guardamos el ID para el webhook
         )
 
-    except stripe.StripeError as e:
-        # Si Stripe falla, cancelamos la orden
+    except stripe.StripeError:
         order.status = "cancelled"
         db.commit()
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Error al crear sesión de pago: {str(e)}"
+            detail="Error al procesar el pago. Intenta de nuevo."
         )
 
     # 7. Guardar el ID de la sesión Stripe en la orden
@@ -138,45 +137,38 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     # Procesar el evento de pago exitoso
     if event["type"] == "checkout.session.completed":
-      session = event["data"]["object"]
-       
-      # Acceso compatible con versiones nuevas de Stripe
-    metadata = session.get("metadata") if isinstance(session, dict) else session.metadata
-    order_id = metadata.get("order_id") if isinstance(metadata, dict) else metadata["order_id"]
-
-    if order_id:
         from uuid import UUID as PyUUID
-        try:
-            order_uuid = PyUUID(order_id)
-        except ValueError:
-            return {"status": "invalid order_id"}
 
-        order = db.query(Order).filter(Order.id == order_uuid).first()
-        if order and order.status == "pending":
+        session = event["data"]["object"]
+        metadata = session.get("metadata") if isinstance(session, dict) else session.metadata
+        order_id = metadata.get("order_id") if isinstance(metadata, dict) else metadata["order_id"]
 
-            # Marcar la orden como pagada
-            order.status = "paid"
-            db.commit()
+        if order_id:
+            try:
+                order_uuid = PyUUID(order_id)
+            except ValueError:
+                return {"status": "invalid order_id"}
 
-            # Descontar el stock de cada producto
-            for item in order.items:
-                product = db.query(Product).filter(
-                    Product.id == item.product_id
-                ).first()
-                if product:
-                    product.stock -= item.quantity
+            order = db.query(Order).filter(Order.id == order_uuid).first()
+            if order and order.status == "pending":
+                order.status = "paid"
+                db.commit()
+
+                for item in order.items:
+                    product = db.query(Product).filter(
+                        Product.id == item.product_id
+                    ).first()
+                    if product:
+                        product.stock = max(0, product.stock - item.quantity)
+
+                db.commit()
+
+                cart = db.query(Cart).filter(Cart.user_id == order.user_id).first()
+                if cart:
+                    for cart_item in cart.items:
+                        db.delete(cart_item)
                     db.commit()
 
-            # Vaciar el carrito del usuario
-            cart = db.query(Cart).filter(
-                Cart.user_id == order.user_id
-            ).first()
-            if cart:
-                for cart_item in cart.items:
-                    db.delete(cart_item)
-                db.commit() 
-
-        
     return {"status": "ok"}
 
 

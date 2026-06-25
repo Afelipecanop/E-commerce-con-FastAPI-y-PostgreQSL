@@ -584,52 +584,16 @@ async function generateWithAI() {
     document.getElementById("ai-generate-btn").disabled = true;
 
     try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
+        const data = await apiFetch("/layout/ai-generate", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-6",
-                max_tokens: 1000,
-                messages: [{
-                    role: "user",
-                    content: `Eres un experto en HTML y CSS para e-commerce. 
-Genera una sección HTML/CSS profesional para una tienda online.
-
-La sección debe:
-- Tener diseño moderno y limpio
-- Usar colores que combinen con azul (#2563eb) como color primario
-- Ser responsive
-- NO usar frameworks externos (solo HTML y CSS puro)
-- El CSS debe ir en etiquetas <style> dentro del HTML O separado
-
-El usuario quiere: "${prompt}"
-
-Responde SOLO con un objeto JSON con esta estructura exacta, sin explicaciones ni markdown:
-{"html": "el HTML completo aquí", "css": "el CSS adicional aquí si lo separaste"}
-
-El HTML puede incluir estilos inline o una etiqueta <style> interna.`
-                }]
-            })
+            body: JSON.stringify({ prompt })
         });
 
-        const data = await response.json();
-        const text = data.content[0].text;
+        document.getElementById("ai-html-output").value = data.html || "";
+        document.getElementById("ai-css-output").value = data.css || "";
 
-        let parsed;
-        try {
-            const clean = text.replace(/```json|```/g, "").trim();
-            parsed = JSON.parse(clean);
-        } catch(e) {
-            // Si no viene como JSON intenta extraer el HTML directamente
-            parsed = { html: text, css: "" };
-        }
-
-        document.getElementById("ai-html-output").value = parsed.html || "";
-        document.getElementById("ai-css-output").value = parsed.css || "";
-
-        // Preview del resultado
         const previewFrame = document.getElementById("ai-preview-frame");
-        previewFrame.srcdoc = `<style>${parsed.css || ''}</style>${parsed.html || ''}`;
+        previewFrame.srcdoc = `<style>${data.css || ''}</style>${data.html || ''}`;
 
         document.getElementById("ai-result").style.display = "block";
 

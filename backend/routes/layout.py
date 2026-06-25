@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 import json
 import uuid
+import os
+import requests as http_requests
 
 from database import get_db
 from models.layout import StoreLayout
-from schemas.layout import LayoutUpdate, BlockResponse
+from schemas.layout import LayoutUpdate, BlockResponse, BlockConfig, AIGenerateRequest
 from middleware.auth import get_current_admin
-from schemas.layout import LayoutUpdate, BlockResponse, BlockConfig
 
 router = APIRouter(prefix="/layout", tags=["Layout de la tienda"])
 
@@ -211,3 +212,57 @@ def delete_block(
         db.delete(block)
         db.commit()
     return {"mensaje": "Bloque eliminado ✅"}
+
+
+@router.post("/ai-generate")
+def ai_generate(
+    data: AIGenerateRequest,
+    admin=Depends(get_current_admin)
+):
+    """Genera HTML/CSS con IA para bloques personalizados. Solo administradores."""
+    api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="Asistente IA no configurado (falta ANTHROPIC_API_KEY)")
+
+    system_prompt = (
+        "Eres un experto en HTML y CSS para e-commerce. "
+        "Genera una sección HTML/CSS profesional para una tienda online. "
+        "La sección debe: tener diseño moderno y limpio, usar colores que combinen con azul (#2563eb) como color primario, "
+        "ser responsive, NO usar frameworks externos (solo HTML y CSS puro). "
+        "Responde SOLO con un objeto JSON con esta estructura exacta, sin explicaciones ni markdown: "
+        '{"html": "el HTML completo aquí", "css": "el CSS adicional aquí si lo separaste"}. '
+        "El HTML puede incluir estilos inline o una etiqueta <style> interna."
+    )
+
+    try:
+        resp = http_requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-sonnet-4-6",
+                "max_tokens": 1500,
+                "system": system_prompt,
+                "messages": [{"role": "user", "content": data.prompt}],
+            },
+            timeout=30,
+        )
+    except http_requests.exceptions.Timeout:
+        raise HTTPException(status_code=504, detail="El servicio de IA tardó demasiado, intenta de nuevo")
+    except http_requests.exceptions.RequestException:
+        raise HTTPException(status_code=502, detail="No se pudo contactar el servicio de IA")
+
+    if resp.status_code != 200:
+        raise HTTPException(status_code=502, detail="Error al generar contenido con IA")
+
+    text = resp.json()["content"][0]["text"]
+    try:
+        clean = text.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(clean)
+    except Exception:
+        parsed = {"html": text, "css": ""}
+
+    return {"html": parsed.get("html", ""), "css": parsed.get("css", "")}

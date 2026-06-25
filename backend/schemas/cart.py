@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
 from typing import List
@@ -7,11 +7,11 @@ from .product import ProductResponse
 
 class CartItemAdd(BaseModel):
     product_id: UUID
-    quantity: int = 1
+    quantity: int = Field(default=1, ge=1, le=999)
 
 
 class CartItemUpdate(BaseModel):
-    quantity: int
+    quantity: int = Field(ge=0, le=999)
 
 
 class CartItemResponse(BaseModel):
