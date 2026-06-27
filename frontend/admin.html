@@ -930,141 +930,21 @@ function updateConfig(blockId, key, value) {
     if (block) {
         block.config[key] = value;
         renderPreview();
+        // Auto-guardar después de 1.5 segundos de inactividad
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => {
+            saveLayout();
+        }, 1500);
     }
 }
+
+let autoSaveTimeout = null;
 
 // ── Preview ───────────────────────────────────────────────────────────────────
 function renderPreview() {
     const frame = document.getElementById("preview-frame");
-    const html = generatePreviewHTML();
-    frame.srcdoc = html;
-}
-
-function generatePreviewHTML() {
-    const visibleBlocks = layout.filter(b => b.is_visible);
-    let blocksHTML = visibleBlocks.map(block => renderBlock(block)).join("\n");
-
-    return `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; }
-nav { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-nav .logo { font-size: 1.3rem; font-weight: 700; color: #2563eb; text-decoration: none; }
-nav .nav-links { display: flex; gap: 1rem; }
-nav .nav-links a { text-decoration: none; color: #374151; font-size: 0.9rem; }
-.products-grid { display: grid; gap: 1.2rem; padding: 0 2rem 2rem; }
-.product-card { background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
-.product-card img { width: 100%; height: 180px; object-fit: cover; background: #f1f5f9; }
-.product-card .card-body { padding: 1rem; }
-.product-card h3 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #1e293b; }
-.product-card .price { font-size: 1.1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.6rem; }
-.btn-cart { width: 100%; padding: 0.5rem; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-</style>
-</head>
-<body>
-<nav>
-    <a class="logo text-brand" href="#">Velo<span class="accent">nox</span></a>
-    <div class="nav-links">
-        <a href="#">Carrito</a>
-        <a href="#">Mi cuenta</a>
-    </div>
-</nav>
-${blocksHTML}
-</body>
-</html>`;
-}
-
-function renderBlock(block) {
-    const c = block.config;
-    switch(block.block_type) {
-        case "announcement_bar":
-            return `<div style="background:${c.background_color};color:${c.text_color};text-align:center;padding:0.6rem;font-size:0.85rem;font-weight:500">${c.text}</div>`;
-
-        case "hero_banner":
-            return `<div style="background:${c.image_url ? `url('${c.image_url}') center/cover no-repeat` : c.background_color};min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem;color:${c.text_color}">
-                <h1 style="font-size:2.2rem;margin-bottom:0.8rem;text-shadow:0 2px 8px rgba(0,0,0,0.3)">${c.title}</h1>
-                <p style="font-size:1.1rem;margin-bottom:1.5rem;opacity:0.9">${c.subtitle}</p>
-                <button style="background:${c.text_color};color:${c.background_color};border:none;padding:0.8rem 2rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">${c.button_text}</button>
-            </div>`;
-
-        case "product_grid":
-            return `<div style="padding:2.5rem 2rem">
-                <h2 style="text-align:center;margin-bottom:1.5rem;font-size:1.5rem;color:#1e293b">${c.title}</h2>
-                <div class="products-grid" style="grid-template-columns:repeat(${c.columns},1fr)">
-                    ${[1,2,3,4,5,6].slice(0, parseInt(c.limit) || 6).map(i => `
-                    <div class="product-card">
-                        <div style="width:100%;height:180px;background:linear-gradient(135deg,#e2e8f0,#cbd5e1);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:2rem">🛍️</div>
-                        <div class="card-body">
-                            <h3>Producto ejemplo ${i}</h3>
-                            <div class="price">$29.99</div>
-                            <button class="btn-cart">Agregar al carrito</button>
-                        </div>
-                    </div>`).join('')}
-                </div>
-            </div>`;
-
-        case "text_section":
-            return `<div style="background:${c.background_color};padding:3rem 2rem;text-align:${c.text_align}">
-                <h2 style="font-size:1.6rem;color:#1e293b;margin-bottom:1rem">${c.title}</h2>
-                <p style="font-size:1rem;color:#64748b;max-width:700px;margin:0 auto;line-height:1.7">${c.content}</p>
-            </div>`;
-
-        case "testimonials":
-            const items = c.items || [];
-            return `<div style="background:#f8fafc;padding:3rem 2rem">
-                <h2 style="text-align:center;font-size:1.5rem;color:#1e293b;margin-bottom:1.5rem">${c.title}</h2>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;max-width:900px;margin:0 auto">
-                    ${items.map(item => `
-                    <div style="background:white;border-radius:10px;padding:1.2rem;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
-                        <div style="color:#f59e0b;margin-bottom:0.5rem">${'⭐'.repeat(item.rating || 5)}</div>
-                        <p style="color:#475569;font-size:0.9rem;margin-bottom:0.7rem;line-height:1.5">"${item.text}"</p>
-                        <strong style="font-size:0.85rem;color:#1e293b">— ${item.name}</strong>
-                    </div>`).join('')}
-                </div>
-            </div>`;
-
-        case "categories":
-            const cats = c.items || [];
-            return `<div style="padding:2rem;text-align:center">
-                <h2 style="font-size:1.4rem;color:#1e293b;margin-bottom:1.2rem">${c.title}</h2>
-                <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
-                    ${cats.map(cat => `
-                    <div style="background:#eff6ff;color:#2563eb;border:2px solid #bfdbfe;padding:0.6rem 1.4rem;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer">
-                        ${cat}
-                    </div>`).join('')}
-                </div>
-            </div>`;
-
-        case "image_banner":
-            return `<div style="width:100%;height:${c.height || 300}px;background:#e2e8f0;overflow:hidden">
-                ${c.image_url
-                    ? `<img src="${c.image_url}" alt="${c.alt_text}" style="width:100%;height:100%;object-fit:cover">`
-                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:1.2rem">🌄 Agrega una URL de imagen</div>`
-                }
-            </div>`;
-
-        case "footer":
-            return `<footer style="background:${c.background_color};color:${c.text_color};padding:2.5rem 2rem;text-align:center;margin-top:2rem">
-                <h3 style="font-size:1.2rem;color:white;margin-bottom:0.4rem">${c.store_name}</h3>
-                <p style="font-size:0.85rem;margin-bottom:0.8rem">${c.tagline}</p>
-                <p style="font-size:0.8rem">✉️ ${c.email}</p>
-                <p style="font-size:0.75rem;margin-top:1rem;opacity:0.6">© ${new Date().getFullYear()} ${c.store_name}. Todos los derechos reservados.</p>
-            </footer>`;
-        case "custom_html":
-            return `
-                <style>${c.css || ''}</style>
-                ${c.html || ''}
-            `;
-
-        default:
-            return `<div style="padding:2rem;text-align:center;color:#94a3b8;border:2px dashed #e2e8f0;margin:1rem">
-                Bloque: ${block.block_type}
-            </div>`;
-    }
+    const API_URL = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+    frame.src = `${API_URL}/layout/render?t=${Date.now()}`;
 }
 
 // ── Guardar layout ────────────────────────────────────────────────────────────
@@ -1074,9 +954,9 @@ async function saveLayout() {
             method: "PUT",
             body: JSON.stringify({ blocks: layout })
         });
-        showToast("Layout guardado ✅", "success");
+        showToast("✅ Cambios guardados", "success");
     } catch(e) {
-        showToast("Error guardando: " + e.message, "error");
+        showToast("❌ Error guardando: " + e.message, "error");
     }
 }
 
