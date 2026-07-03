@@ -146,34 +146,6 @@
     </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-    <p class="hero-eyebrow">Acero inoxidable · Grado 304</p>
-    <h1 class="hero-title">
-        <span class="w1">Cocina de</span>
-        <span class="w2">por vida.</span>
-    </h1>
-    <div class="hero-cut"></div>
-    <p class="hero-sub">
-        Sin teflón. Sin tóxicos. Sin excusas.<br>
-        Equipos de cocina en acero inoxidable que duran <em>décadas,</em> no temporadas.
-    </p>
-    <div class="hero-actions">
-        <button class="btn-primary" onclick="document.getElementById('productos').scrollIntoView({behavior:'smooth'})">
-            Ver colección
-        </button>
-        <button class="btn-ghost" onclick="document.getElementById('why').scrollIntoView({behavior:'smooth'})">
-            ¿Por qué acero?
-        </button>
-    </div>
-    <div class="hero-badge">
-        <div class="hero-badge-ring">
-            <span class="num">304</span>
-            <span class="txt">Grado<br>acero</span>
-        </div>
-    </div>
-</section>
-
 <!-- TRUST BAR -->
 <div class="trust">
     <div class="trust-item"><i class="ti ti-truck"></i><span><strong>Envío gratis</strong> +$80 USD</span></div>
@@ -183,35 +155,8 @@
     <div class="trust-item"><i class="ti ti-world"></i><span><strong>Envíos</strong> a toda LATAM</span></div>
 </div>
 
-<!-- CATEGORÍAS -->
-<section class="sec">
-    <div class="sec-header">
-        <h2 class="sec-title">Explora por categoría</h2>
-        <a href="#productos" class="sec-link">Ver todo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
-    </div>
-    <div class="cat-grid">
-        <div class="cat-card">
-            <div class="cat-icon"><i class="ti ti-soup"></i></div>
-            <p class="cat-name">Ollas y cacerolas</p>
-        </div>
-        <div class="cat-card">
-            <div class="cat-icon"><i class="ti ti-eggs"></i></div>
-            <p class="cat-name">Sartenes</p>
-        </div>
-        <div class="cat-card">
-            <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
-            <p class="cat-name">Utensilios</p>
-        </div>
-        <div class="cat-card">
-            <div class="cat-icon"><i class="ti ti-slice"></i></div>
-            <p class="cat-name">Accesorios</p>
-        </div>
-        <div class="cat-card">
-            <div class="cat-icon"><i class="ti ti-gift"></i></div>
-            <p class="cat-name">Sets regalo</p>
-        </div>
-    </div>
-</section>
+<!-- Aquí se renderizan los bloques del layout dinámicamente -->
+<div id="layout-container"></div>
 
 <!-- WHY STEEL -->
 <section class="why" id="why">
@@ -240,66 +185,8 @@
     </div>
 </section>
 
-<!-- PRODUCTOS -->
-<section class="sec" id="productos" style="background:#F5F5F3">
-    <div class="sec-header">
-        <h2 class="sec-title">Más vendidos</h2>
-        <a href="#" class="sec-link">Ver catálogo completo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
-    </div>
-    <div class="prod-grid" id="prod-grid">
-        <div class="prod-empty">Cargando productos...</div>
-    </div>
-</section>
-
-<!-- GIFT CTA -->
-<section class="gift">
-    <p class="gift-eyebrow">Sets de regalo</p>
-    <h2 class="gift-title">El regalo que <em>nunca</em> se regresa.</h2>
-    <p class="gift-sub">Diseñamos sets para matrimonios, baby showers y cumpleaños. Caja de presentación incluida, envío directo a quien quieras.</p>
-    <button class="btn-primary" style="margin-top:.5rem">Ver sets de regalo</button>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-top">
-        <div class="footer-brand">
-            <div><span class="a">Velo</span><span class="b">nox</span></div>
-            <p class="footer-tagline">Cocina de por vida.</p>
-        </div>
-        <div class="footer-col">
-            <p>Tienda</p>
-            <a href="#">Catálogo</a>
-            <a href="#">Sets regalo</a>
-            <a href="#">Ofertas</a>
-            <a href="#">Nuevos</a>
-        </div>
-        <div class="footer-col">
-            <p>Ayuda</p>
-            <a href="#">Envíos y tiempos</a>
-            <a href="#">Devoluciones</a>
-            <a href="#">Garantía</a>
-            <a href="#">Contacto</a>
-        </div>
-        <div class="footer-col">
-            <p>Nosotros</p>
-            <a href="#">Nuestra historia</a>
-            <a href="#">Por qué acero</a>
-            <a href="#">Blog de cocina</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p class="footer-copy">© 2025 Velonox. Todos los derechos reservados.</p>
-        <div class="footer-social">
-            <i class="ti ti-brand-instagram"></i>
-            <i class="ti ti-brand-tiktok"></i>
-            <i class="ti ti-brand-facebook"></i>
-        </div>
-    </div>
-</footer>
-
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 <script src="js/api.js"></script>
 <script>
     const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
@@ -322,6 +209,11 @@
                 if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
             } catch(e) {}
         }
+
+        // Cargar bloques del layout desde la DB
+        try {
+            if (typeof loadLayoutBlocks === 'function') await loadLayoutBlocks();
+        } catch(e) { console.warn('loadLayoutBlocks error', e); }
 
         // Cargar productos
         try {
