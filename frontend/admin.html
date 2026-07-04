@@ -1092,9 +1092,13 @@ async function saveLayout() {
             body: JSON.stringify({ blocks: layout })
         });
         showToast("Layout guardado ✅", "success");
-        // Recarga el iframe con la tienda real
-        const frame = document.getElementById("preview-frame");
-        frame.src = "index.html";
+        // Recarga el iframe para mostrar los cambios
+        setTimeout(() => {
+            const frame = document.getElementById("preview-frame");
+            const currentSrc = frame.src;
+            frame.src = "";
+            setTimeout(() => { frame.src = currentSrc; }, 100);
+        }, 500);
     } catch(e) {
         showToast("Error guardando: " + e.message, "error");
     }
