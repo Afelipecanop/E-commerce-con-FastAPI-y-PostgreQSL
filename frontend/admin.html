@@ -453,11 +453,19 @@
     <!-- Preview central -->
     <div class="preview-area">
         <div class="preview-toolbar">
-            <button class="device-btn active" title="Desktop" onclick="setDevice('desktop', this)">🖥️</button>
-            <button class="device-btn" title="Tablet" onclick="setDevice('tablet', this)">📱</button>
-            <button class="device-btn" title="Mobile" onclick="setDevice('mobile', this)">📲</button>
-            <span id="preview-url">Vista previa en tiempo real</span>
-        </div>
+    <button class="device-btn active" title="Desktop" onclick="setDevice('desktop', this)">🖥️</button>
+    <button class="device-btn" title="Tablet" onclick="setDevice('tablet', this)">📱</button>
+    <button class="device-btn" title="Mobile" onclick="setDevice('mobile', this)">📲</button>
+    <select id="page-selector" onchange="loadPage(this.value)"
+        style="background:#1A2820;color:#C8D8C0;border:1px solid #2A4A38;border-radius:4px;padding:0.3rem 0.6rem;font-size:0.8rem;cursor:pointer">
+        <option value="index.html">🏠 Página principal</option>
+        <option value="cart.html">🛒 Carrito</option>
+        <option value="login.html">🔐 Login</option>
+        <option value="product.html">📦 Producto</option>
+        <option value="checkout.html">💳 Checkout</option>
+    </select>
+    <span id="preview-url" style="flex:1;text-align:center;font-size:0.75rem;color:#4A6A5A">Vista previa en tiempo real</span>
+</div>
         <div class="preview-frame-wrapper">
             <iframe id="preview-frame" width="100%" height="800"></iframe>
         </div>
@@ -936,8 +944,13 @@ function updateConfig(blockId, key, value) {
 // ── Preview ───────────────────────────────────────────────────────────────────
 function renderPreview() {
     const frame = document.getElementById("preview-frame");
-    const html = generatePreviewHTML();
-    frame.srcdoc = html;
+    // Carga la tienda real en el iframe
+    if (!frame.src || frame.src === 'about:blank' || frame.src === '') {
+        frame.src = "index.html";
+    } else {
+        // Recarga para reflejar cambios guardados
+        frame.contentWindow.location.reload();
+    }
 }
 
 function generatePreviewHTML() {
@@ -1075,6 +1088,9 @@ async function saveLayout() {
             body: JSON.stringify({ blocks: layout })
         });
         showToast("Layout guardado ✅", "success");
+        // Recarga el iframe con la tienda real
+        const frame = document.getElementById("preview-frame");
+        frame.src = "index.html";
     } catch(e) {
         showToast("Error guardando: " + e.message, "error");
     }
