@@ -714,6 +714,7 @@ async function init() {
     await loadSettings();
     loadProducts();
     renderPreview();
+    document.getElementById("preview-frame").src = "index.html";
 }
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -944,13 +945,16 @@ function updateConfig(blockId, key, value) {
 // ── Preview ───────────────────────────────────────────────────────────────────
 function renderPreview() {
     const frame = document.getElementById("preview-frame");
-    // Carga la tienda real en el iframe
-    if (!frame.src || frame.src === 'about:blank' || frame.src === '') {
+    if (!frame.src || frame.src === 'about:blank' || frame.src === '' || frame.src === window.location.href) {
         frame.src = "index.html";
-    } else {
-        // Recarga para reflejar cambios guardados
-        frame.contentWindow.location.reload();
     }
+    // El preview solo se recarga al guardar, no en cada cambio
+}
+
+function loadPage(url) {
+    const frame = document.getElementById("preview-frame");
+    frame.src = url;
+    document.getElementById("preview-url").textContent = "Viendo: " + url;
 }
 
 function generatePreviewHTML() {
@@ -1243,6 +1247,25 @@ async function saveSettings() {
         await apiFetch("/settings/", { method: "PUT", body: JSON.stringify(data) });
         showToast("Ajustes guardados ✅", "success");
     } catch(e) { showToast(e.message, "error"); }
+}
+
+// ── Guardar layout ────────────────────────────────────────────────────────────
+async function saveLayout() {
+    try {
+        await apiFetch("/layout/", {
+            method: "PUT",
+            body: JSON.stringify({ blocks: layout })
+        });
+        showToast("Layout guardado ✅", "success");
+        setTimeout(() => {
+            const frame = document.getElementById("preview-frame");
+            const currentSrc = frame.src;
+            frame.src = "";
+            setTimeout(() => { frame.src = currentSrc; }, 100);
+        }, 500);
+    } catch(e) {
+        showToast("Error guardando: " + e.message, "error");
+    }
 }
 
 // ── Preview externo ───────────────────────────────────────────────────────────
