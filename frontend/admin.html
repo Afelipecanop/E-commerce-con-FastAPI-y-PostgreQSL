@@ -4,438 +4,279 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor — Velonox</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
+        /* ── Paleta de marca Velonox ── */
+        :root{
+            --ink:#0F1A14;        /* verde muy oscuro */
+            --ink-2:#1A2820;      /* verde oscuro paneles */
+            --line-dark:#243B2C;  /* bordes sobre oscuro */
+            --green:#1D7A4F;      /* acento */
+            --green-hi:#22904F;   /* acento hover */
+            --sand:#D6C5A0;       /* arena */
+            --sage:#C8D8C0;       /* texto claro sobre oscuro */
+            --muted:#6B8A7A;      /* texto secundario oscuro */
+            --paper:#F5F5F3;      /* fondo claro */
+            --card:#FFFFFF;
+            --line:#E4E7E2;       /* bordes claros */
+            --text:#0F1A14;
+            --text-2:#5B6B62;
+            --danger:#B4433A;
+        }
 
-        .quick-prompt {
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    color: #475569;
-    transition: all 0.2s;
-}
-.quick-prompt:hover { background: #ede9fe; border-color: #7c3aed; color: #7c3aed; }
-
-        * { box-sizing: border-box; }
-
-        body { margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        *{box-sizing:border-box}
+        body{margin:0;display:flex;flex-direction:column;height:100vh;overflow:hidden;
+            font-family:'DM Sans',sans-serif;color:var(--text);background:var(--paper);
+            font-size:14px;-webkit-font-smoothing:antialiased}
+        button{font-family:inherit}
+        ::-webkit-scrollbar{width:9px;height:9px}
+        ::-webkit-scrollbar-thumb{background:#cdd4ce;border-radius:6px}
+        ::-webkit-scrollbar-thumb:hover{background:#b4bdb5}
 
         /* ── Topbar ── */
-        .topbar {
-            background: #1e293b;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            z-index: 100;
-            flex-shrink: 0;
-        }
-        .topbar .logo { font-weight: 700; font-size: 1rem; color: white; text-decoration: none; }
-        .topbar .tabs { display: flex; gap: 0.3rem; }
-        .topbar .tab {
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .topbar .tab.active { background: #2563eb; color: white; }
-        .topbar .actions { display: flex; gap: 0.5rem; }
-        .topbar .btn-save {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .topbar .btn-preview {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
+        .topbar{background:var(--ink);color:var(--sage);padding:0 1.1rem;height:54px;
+            display:flex;align-items:center;justify-content:space-between;gap:1rem;
+            flex-shrink:0;border-bottom:1px solid var(--line-dark);z-index:100}
+        .topbar .logo{display:flex;align-items:baseline;gap:0;text-decoration:none;
+            font-family:'Playfair Display',serif;font-size:20px;font-weight:700;letter-spacing:-.5px}
+        .topbar .logo .a{color:var(--sage)}
+        .topbar .logo .b{color:var(--green)}
+        .topbar .divider{width:1px;height:24px;background:var(--line-dark);margin:0 .3rem}
+        .topbar .tabs{display:flex;gap:.15rem}
+        .topbar .tab{display:flex;align-items:center;gap:.4rem;padding:.45rem .85rem;border-radius:6px;
+            border:none;background:transparent;color:var(--muted);cursor:pointer;
+            font-size:13px;font-weight:500;transition:all .15s}
+        .topbar .tab i{font-size:16px}
+        .topbar .tab:hover{color:var(--sage);background:rgba(255,255,255,.04)}
+        .topbar .tab.active{background:var(--ink-2);color:var(--sage)}
+        .topbar .tab.active i{color:var(--green)}
+        .topbar .spacer{flex:1}
+        .topbar .actions{display:flex;gap:.5rem;align-items:center}
+        .btn-ghost-top{display:flex;align-items:center;gap:.4rem;background:transparent;
+            color:var(--sage);border:1px solid var(--line-dark);padding:.45rem .9rem;border-radius:6px;
+            cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+        .btn-ghost-top:hover{border-color:var(--green);color:#fff}
+        .btn-save{display:flex;align-items:center;gap:.4rem;background:var(--green);color:#fff;border:none;
+            padding:.5rem 1.1rem;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:background .15s}
+        .btn-save:hover{background:var(--green-hi)}
+        .btn-save i,.btn-ghost-top i{font-size:16px}
 
         /* ── Layout principal ── */
-        .editor-body { display: flex; flex: 1; overflow: hidden; }
+        .editor-body{display:flex;flex:1;overflow:hidden}
 
         /* ── Panel izquierdo ── */
-        .sidebar {
-            width: 280px;
-            background: #f8fafc;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .sidebar-tabs {
-            display: flex;
-            border-bottom: 1px solid #e2e8f0;
-            background: white;
-        }
-        .sidebar-tab {
-            flex: 1;
-            padding: 0.7rem;
-            border: none;
-            background: transparent;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .sidebar-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 1rem; }
+        .sidebar{width:300px;background:var(--card);border-right:1px solid var(--line);
+            display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+        .sidebar-tabs{display:flex;border-bottom:1px solid var(--line);background:var(--paper)}
+        .sidebar-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:.35rem;
+            padding:.75rem .4rem;border:none;background:transparent;font-size:12.5px;font-weight:600;
+            color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+        .sidebar-tab i{font-size:15px}
+        .sidebar-tab:hover{color:var(--text)}
+        .sidebar-tab.active{color:var(--green);border-bottom-color:var(--green)}
+        .sidebar-content{flex:1;overflow-y:auto;padding:1.1rem}
+        .side-hint{font-size:12px;color:var(--text-2);margin-bottom:1rem;line-height:1.5}
 
-        /* ── Bloques disponibles ── */
-        .block-library { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-        .block-btn {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.8rem 0.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #475569;
-        }
-        .block-btn:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
-        .block-btn .block-icon { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+        /* ── Librería de bloques ── */
+        .block-library{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+        .block-btn{background:var(--card);border:1px solid var(--line);border-radius:8px;
+            padding:.95rem .5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;
+            text-align:center;cursor:pointer;transition:all .15s;font-size:12px;font-weight:600;color:var(--text)}
+        .block-btn i{font-size:22px;color:var(--green);transition:color .15s}
+        .block-btn:hover{border-color:var(--green);background:#F1F6F2;box-shadow:0 2px 8px rgba(29,122,79,.08)}
+        .block-btn.full{grid-column:span 2;flex-direction:row;justify-content:center;gap:.6rem}
+        .block-btn.full i{font-size:18px}
 
-        /* ── Lista de bloques activos ── */
-        .block-list { display: flex; flex-direction: column; gap: 0.5rem; }
-        .block-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .block-item:hover { border-color: #2563eb; }
-        .block-item.selected { border-color: #2563eb; background: #eff6ff; }
-        .block-item.hidden-block { opacity: 0.5; }
-        .block-item .drag-handle { color: #94a3b8; cursor: grab; font-size: 1rem; }
-        .block-item .block-name { flex: 1; font-size: 0.82rem; font-weight: 600; color: #334155; }
-        .block-item .block-actions { display: flex; gap: 0.3rem; }
-        .block-item .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 0.2rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .block-item .action-btn:hover { background: #e2e8f0; }
+        /* ── Lista de capas ── */
+        .block-list{display:flex;flex-direction:column;gap:.45rem}
+        .block-item{background:var(--card);border:1px solid var(--line);border-radius:8px;
+            padding:.6rem .7rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.55rem}
+        .block-item:hover{border-color:#bcd2c4;background:#FAFBFA}
+        .block-item.selected{border-color:var(--green);background:#F1F6F2;box-shadow:inset 3px 0 0 var(--green)}
+        .block-item.hidden-block{opacity:.55}
+        .block-item .drag-handle{color:#b6bfb8;cursor:grab;font-size:17px;display:flex}
+        .block-item .layer-icon{color:var(--green);font-size:16px;display:flex}
+        .block-item .block-name{flex:1;font-size:13px;font-weight:600;color:var(--text);
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .block-item .block-actions{display:flex;gap:.1rem}
+        .block-item .action-btn{background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-2);
+            padding:.28rem;border-radius:5px;display:flex;transition:all .15s}
+        .block-item .action-btn:hover{background:var(--line);color:var(--text)}
+        .block-item .action-btn.danger:hover{background:#FBEAE8;color:var(--danger)}
+        .block-item.dragging{opacity:.4}
+        .block-item.drag-over{border-color:var(--green);box-shadow:0 -2px 0 var(--green)}
 
         /* ── Panel de propiedades ── */
-        .props-panel { padding: 0; }
-        .props-header {
-            background: #1e293b;
-            color: white;
-            padding: 0.8rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-        .prop-group { margin-bottom: 1.2rem; }
-        .prop-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.4rem;
-        }
-        .prop-group input,
-        .prop-group textarea,
-        .prop-group select {
-            width: 100%;
-            padding: 0.5rem 0.7rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            transition: border-color 0.2s;
-            background: white;
-        }
-        .prop-group input:focus,
-        .prop-group textarea:focus { outline: none; border-color: #2563eb; }
-        .prop-group textarea { resize: vertical; min-height: 80px; }
-        .color-row { display: flex; gap: 0.5rem; align-items: center; }
-        .color-row input[type="color"] {
-            width: 42px;
-            height: 36px;
-            padding: 2px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .color-row input[type="text"] { flex: 1; }
-        .no-selection {
-            text-align: center;
-            color: #94a3b8;
-            padding: 2rem 1rem;
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
-        .no-selection .hint-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .props-header{display:flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--sage);
+            padding:.7rem .9rem;font-size:13px;font-weight:600;border-radius:8px;margin-bottom:1.1rem}
+        .props-header i{font-size:17px;color:var(--green)}
+        .prop-group{margin-bottom:1.05rem}
+        .prop-group label{display:block;font-size:11px;font-weight:600;color:var(--text-2);
+            text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+        .prop-group input,.prop-group textarea,.prop-group select{width:100%;padding:.55rem .7rem;
+            border:1px solid var(--line);border-radius:6px;font-size:13.5px;font-family:inherit;
+            transition:all .15s;background:var(--card);color:var(--text)}
+        .prop-group input:focus,.prop-group textarea:focus,.prop-group select:focus{
+            outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(29,122,79,.12)}
+        .prop-group textarea{resize:vertical;min-height:80px;line-height:1.5}
+        .color-row{display:flex;gap:.5rem;align-items:center}
+        .color-row input[type="color"]{width:42px;height:38px;padding:2px;border-radius:6px;cursor:pointer;flex-shrink:0}
+        .color-row input[type="text"]{flex:1}
+        .prop-note{background:#F4F7F1;border:1px solid #D9E4D4;border-radius:6px;padding:.65rem .75rem;
+            font-size:12px;color:#3F5A48;line-height:1.5;display:flex;gap:.5rem;align-items:flex-start;margin-top:.4rem}
+        .prop-note i{color:var(--green);font-size:15px;flex-shrink:0;margin-top:1px}
+        .btn-ai{width:100%;margin-top:.9rem;display:flex;align-items:center;justify-content:center;gap:.45rem;
+            padding:.6rem;background:var(--ink);color:var(--sage);border:1px solid var(--line-dark);border-radius:6px;
+            cursor:pointer;font-weight:600;font-size:13px;transition:all .15s}
+        .btn-ai:hover{border-color:var(--green);color:#fff}
+        .btn-ai i{color:var(--sand);font-size:16px}
+        .no-selection{text-align:center;color:var(--text-2);padding:2.5rem 1rem;font-size:13px;line-height:1.6}
+        .no-selection i{font-size:30px;color:#c2ccc4;display:block;margin-bottom:.6rem}
 
         /* ── Preview central ── */
-        .preview-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #cbd5e1;
-            overflow: hidden;
-        }
-        .preview-toolbar {
-            background: #334155;
-            padding: 0.4rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .preview-toolbar span { color: #94a3b8; font-size: 0.75rem; flex: 1; text-align: center; }
-        .device-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0.3rem;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        .device-btn.active { color: white; background: #2563eb; }
-        .preview-frame-wrapper {
-            flex: 1;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 1rem;
-            overflow: auto;
-        }
-        #preview-frame {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-            background: white;
-            transition: width 0.3s;
-        }
+        .preview-area{flex:1;display:flex;flex-direction:column;background:#E4E9E3;overflow:hidden}
+        .preview-toolbar{background:var(--ink);padding:.4rem .9rem;display:flex;align-items:center;gap:.6rem;
+            border-bottom:1px solid var(--line-dark)}
+        .device-group{display:flex;gap:.15rem;background:var(--ink-2);padding:.2rem;border-radius:7px}
+        .device-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;
+            padding:.35rem .5rem;border-radius:5px;display:flex;transition:all .15s}
+        .device-btn:hover{color:var(--sage)}
+        .device-btn.active{color:#fff;background:var(--green)}
+        .page-selector{background:var(--ink-2);color:var(--sage);border:1px solid var(--line-dark);
+            border-radius:6px;padding:.4rem .7rem;font-size:12.5px;font-family:inherit;cursor:pointer}
+        .preview-url{flex:1;text-align:center;font-size:12px;color:var(--muted);display:flex;
+            align-items:center;justify-content:center;gap:.4rem}
+        .preview-url i{font-size:14px;color:var(--green)}
+        .preview-frame-wrapper{flex:1;display:flex;align-items:flex-start;justify-content:center;
+            padding:1.4rem;overflow:auto}
+        #preview-frame{border:none;border-radius:10px;box-shadow:0 8px 30px rgba(15,26,20,.18);
+            background:#fff;transition:width .3s ease;width:100%;min-height:100%}
 
-        /* ── Panel derecho de productos ── */
-        .right-panel {
-            width: 260px;
-            background: #f8fafc;
-            border-left: 1px solid #e2e8f0;
-            overflow-y: auto;
-            padding: 1rem;
-            flex-shrink: 0;
-        }
-        .right-panel h3 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .mini-product {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.7rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .mini-product img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: #f1f5f9; }
-        .mini-product .mini-info { flex: 1; }
-        .mini-product .mini-name { font-size: 0.8rem; font-weight: 600; color: #334155; }
-        .mini-product .mini-price { font-size: 0.75rem; color: #2563eb; font-weight: 700; }
-        .btn-add-product {
-            width: 100%;
-            padding: 0.6rem;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.82rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
+        /* ── Panel derecho: productos ── */
+        .right-panel{width:270px;background:var(--card);border-left:1px solid var(--line);
+            overflow-y:auto;padding:1.1rem;flex-shrink:0}
+        .right-panel .rp-title{display:flex;align-items:center;gap:.45rem;font-size:12px;font-weight:700;
+            color:var(--text);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.06em}
+        .right-panel .rp-title i{font-size:16px;color:var(--green)}
+        .mini-product{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.55rem;
+            margin-bottom:.5rem;display:flex;gap:.6rem;align-items:center}
+        .mini-product img{width:40px;height:40px;object-fit:cover;border-radius:6px;background:#EEF1EC;flex-shrink:0}
+        .mini-product .mini-info{flex:1;min-width:0}
+        .mini-product .mini-name{font-size:12.5px;font-weight:600;color:var(--text);
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .mini-product .mini-price{font-size:12px;color:var(--green);font-weight:700}
+        .btn-add-product{width:100%;display:flex;align-items:center;justify-content:center;gap:.4rem;
+            padding:.6rem;background:var(--green);color:#fff;border:none;border-radius:6px;cursor:pointer;
+            font-size:13px;font-weight:600;margin-bottom:1rem;transition:background .15s}
+        .btn-add-product:hover{background:var(--green-hi)}
+
+        /* ── Vistas Productos / Ajustes ── */
+        .page-view{display:none;padding:2.5rem;overflow-y:auto;flex:1;background:var(--paper)}
+        .page-view h2{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;color:var(--text)}
+        .panel-card{background:var(--card);border:1px solid var(--line);padding:1.5rem;border-radius:12px}
+        .panel-card h3{display:flex;align-items:center;gap:.5rem;font-size:15px;font-weight:700;
+            color:var(--text);margin:0 0 1.2rem}
+        .panel-card h3 i{color:var(--green);font-size:18px}
+        .form-group{margin-bottom:1rem}
+        .form-group label{display:block;font-size:11px;font-weight:600;color:var(--text-2);
+            text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:.6rem .75rem;
+            border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:inherit;background:var(--card)}
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{
+            outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(29,122,79,.12)}
+        .btn-primary{background:var(--green);color:#fff;border:none;padding:.7rem 1.4rem;border-radius:6px;
+            cursor:pointer;font-weight:600;font-size:14px;transition:background .15s}
+        .btn-primary:hover{background:var(--green-hi)}
+        .alert{padding:.7rem .9rem;border-radius:6px;font-size:13px;margin-bottom:1rem}
+        .alert-success{background:#E9F4EC;color:#1D7A4F;border:1px solid #BFE0CB}
+        .alert-error{background:#FBEAE8;color:#B4433A;border:1px solid #F0C9C4}
+        .data-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;
+            overflow:hidden;border:1px solid var(--line)}
+        .data-table thead tr{background:var(--ink);color:var(--sage)}
+        .data-table th{padding:.75rem 1rem;text-align:left;font-size:12px;font-weight:600;
+            text-transform:uppercase;letter-spacing:.04em}
+        .data-table td{padding:.75rem 1rem;font-size:13.5px;border-bottom:1px solid var(--line)}
+        .data-table tr:last-child td{border-bottom:none}
+        .btn-del{display:inline-flex;align-items:center;gap:.3rem;background:transparent;color:var(--danger);
+            border:1px solid #F0C9C4;padding:.35rem .7rem;border-radius:5px;cursor:pointer;font-size:12.5px;font-weight:500}
+        .btn-del:hover{background:#FBEAE8}
+
+        /* ── Modal IA ── */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,26,20,.55);z-index:9998;
+            align-items:center;justify-content:center}
+        .modal-box{background:var(--card);border-radius:14px;padding:1.6rem;width:600px;max-width:92vw;
+            max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+        .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem}
+        .modal-head h3{display:flex;align-items:center;gap:.5rem;font-family:'Playfair Display',serif;
+            font-size:19px;font-weight:700;color:var(--text);margin:0}
+        .modal-head h3 i{color:var(--green);font-size:20px}
+        .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-2);display:flex}
+        .modal-close:hover{color:var(--text)}
+        .quick-prompt{background:var(--paper);border:1px solid var(--line);border-radius:20px;
+            padding:.35rem .8rem;font-size:12px;cursor:pointer;color:var(--text-2);transition:all .15s}
+        .quick-prompt:hover{background:#F1F6F2;border-color:var(--green);color:var(--green)}
 
         /* ── Toast ── */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: #1e293b;
-            color: white;
-            padding: 0.8rem 1.2rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s;
-            z-index: 9999;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #16a34a; }
-        .toast.error { background: #dc2626; }
+        .toast{position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:var(--sage);
+            padding:.75rem 1.2rem;border-radius:8px;font-size:13.5px;font-weight:500;opacity:0;
+            transform:translateY(10px);transition:all .3s;z-index:9999;pointer-events:none;
+            border-left:3px solid var(--green);display:flex;align-items:center;gap:.55rem}
+        .toast i{font-size:17px}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.success{border-left-color:var(--green)}
+        .toast.error{border-left-color:var(--danger)}
+        .toast.error i{color:var(--danger)}
     </style>
 </head>
-
-<!-- Modal IA -->
-<div id="ai-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9998; align-items:center; justify-content:center">
-    <div style="background:white; border-radius:12px; padding:1.5rem; width:580px; max-width:90vw; max-height:85vh; overflow-y:auto">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-            <h3 style="font-size:1rem; color:#1e293b">✨ Generar sección con IA</h3>
-            <button onclick="closeAIModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b">✕</button>
-        </div>
-        <div class="prop-group">
-            <label>Describe lo que quieres crear</label>
-            <textarea id="ai-prompt" rows="4" placeholder="Ej: Una sección de características con 3 columnas, íconos grandes y fondo azul oscuro. Cada columna tiene un título y descripción corta..."></textarea>
-        </div>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem">
-            <span style="font-size:0.75rem; color:#64748b; width:100%; margin-bottom:0.3rem">Ejemplos rápidos:</span>
-            <button class="quick-prompt" onclick="setPrompt(this)">Sección de características con 3 columnas</button>
-            <button class="quick-prompt" onclick="setPrompt(this)">Banner de oferta con cuenta regresiva</button>
-            <button class="quick-prompt" onclick="setPrompt(this)">Sección de equipo con fotos y nombres</button>
-            <button class="quick-prompt" onclick="setPrompt(this)">Tabla comparativa de planes/precios</button>
-            <button class="quick-prompt" onclick="setPrompt(this)">Galería de imágenes en grid</button>
-            <button class="quick-prompt" onclick="setPrompt(this)">Formulario de contacto estilizado</button>
-        </div>
-        <button id="ai-generate-btn" onclick="generateWithAI()"
-            style="width:100%; padding:0.7rem; background:#7c3aed; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem; margin-bottom:1rem">
-             Generar
-        </button>
-        <div id="ai-loading" style="display:none; text-align:center; padding:1rem; color:#7c3aed; font-weight:500">
-             Generando tu sección...
-        </div>
-        <div id="ai-result" style="display:none">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.8rem">
-                <div class="prop-group" style="margin:0">
-                    <label>HTML generado</label>
-                    <textarea id="ai-html-output" rows="8" style="font-family:monospace; font-size:0.75rem"></textarea>
-                </div>
-                <div class="prop-group" style="margin:0">
-                    <label>CSS generado</label>
-                    <textarea id="ai-css-output" rows="8" style="font-family:monospace; font-size:0.75rem"></textarea>
-                </div>
-            </div>
-            <div style="background:#f8fafc; border-radius:8px; padding:1rem; margin-bottom:1rem; border:1px solid #e2e8f0">
-                <p style="font-size:0.75rem; color:#64748b; margin-bottom:0.5rem; font-weight:600">PREVIEW</p>
-                <iframe id="ai-preview-frame" style="width:100%; height:200px; border:none; border-radius:6px; background:white"></iframe>
-            </div>
-            <div style="display:flex; gap:0.5rem">
-                <button onclick="applyAIResult()"
-                    style="flex:1; padding:0.6rem; background:#16a34a; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer">
-                    ✅ Aplicar al bloque
-                </button>
-                <button onclick="generateWithAI()"
-                    style="flex:1; padding:0.6rem; background:#7c3aed; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer">
-                    🔄 Regenerar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <body>
 
-<!-- Topbar -->
+<!-- ── Topbar ── -->
 <div class="topbar">
-    <a href="index.html" class="logo text-brand">Velo<span class="accent">nox</span></a>
+    <a href="index.html" class="logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="divider"></div>
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('editor')">✏️ Editor</button>
-        <button class="tab" onclick="switchTab('products')">📦 Productos</button>
-        <button class="tab" onclick="switchTab('settings')">⚙️ Ajustes</button>
+        <button class="tab active" onclick="switchTab('editor')"><i class="ti ti-layout-2"></i>Editor</button>
+        <button class="tab" onclick="switchTab('products')"><i class="ti ti-package"></i>Productos</button>
+        <button class="tab" onclick="switchTab('settings')"><i class="ti ti-settings"></i>Ajustes</button>
     </div>
+    <div class="spacer"></div>
     <div class="actions">
-        <button class="btn-preview" onclick="openPreview()">👁️ Ver tienda</button>
-        <button class="btn-save" onclick="saveLayout()">💾 Guardar cambios</button>
+        <button class="btn-ghost-top" onclick="openPreview()"><i class="ti ti-external-link"></i>Ver tienda</button>
+        <button class="btn-save" onclick="saveLayout()"><i class="ti ti-device-floppy"></i>Guardar cambios</button>
     </div>
 </div>
 
-<!-- Cuerpo del editor -->
+<!-- ── Cuerpo del editor ── -->
 <div class="editor-body" id="editor-tab">
 
     <!-- Sidebar izquierdo -->
     <div class="sidebar">
         <div class="sidebar-tabs">
-            <button class="sidebar-tab active" onclick="showSidebarTab('blocks')">Bloques</button>
-            <button class="sidebar-tab" onclick="showSidebarTab('layers')">Capas</button>
-            <button class="sidebar-tab" onclick="showSidebarTab('props')">Propiedades</button>
+            <button class="sidebar-tab active" onclick="showSidebarTab('blocks')"><i class="ti ti-square-plus"></i>Añadir</button>
+            <button class="sidebar-tab" onclick="showSidebarTab('layers')"><i class="ti ti-stack-2"></i>Secciones</button>
+            <button class="sidebar-tab" onclick="showSidebarTab('props')"><i class="ti ti-adjustments"></i>Ajustar</button>
         </div>
 
         <!-- Tab: Librería de bloques -->
         <div class="sidebar-content" id="tab-blocks">
-            <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.8rem">
-                Haz clic en un bloque para agregarlo a la tienda
-            </p>
+            <p class="side-hint">Haz clic en un bloque para añadirlo a tu tienda.</p>
             <div class="block-library">
-                <div class="block-btn" onclick="addBlock('announcement_bar')">
-                    <span class="block-icon">📢</span>Anuncio
-                </div>
-                <div class="block-btn" onclick="addBlock('hero_banner')">
-                    <span class="block-icon">🖼️</span>Banner
-                </div>
-                <div class="block-btn" onclick="addBlock('product_grid')">
-                    <span class="block-icon">🛍️</span>Productos
-                </div>
-                <div class="block-btn" onclick="addBlock('text_section')">
-                    <span class="block-icon">📝</span>Texto
-                </div>
-                <div class="block-btn" onclick="addBlock('testimonials')">
-                    <span class="block-icon">⭐</span>Testimonios
-                </div>
-                <div class="block-btn" onclick="addBlock('categories')">
-                    <span class="block-icon">🏷️</span>Categorías
-                </div>
-                <div class="block-btn" onclick="addBlock('image_banner')">
-                    <span class="block-icon">🌄</span>Imagen
-                </div>
-                <div class="block-btn" onclick="addBlock('footer')">
-                    <span class="block-icon">📋</span>Footer
-                </div>
-                <div class="block-btn" onclick="addBlock('custom_html')" style="grid-column:span 2; border-color:#7c3aed; color:#7c3aed">
-                    <span class="block-icon">💻</span>Sección personalizada (HTML/CSS)
-                </div>
+                <div class="block-btn" onclick="addBlock('announcement_bar')"><i class="ti ti-speakerphone"></i>Anuncio</div>
+                <div class="block-btn" onclick="addBlock('hero_banner')"><i class="ti ti-photo"></i>Banner</div>
+                <div class="block-btn" onclick="addBlock('product_grid')"><i class="ti ti-building-store"></i>Productos</div>
+                <div class="block-btn" onclick="addBlock('text_section')"><i class="ti ti-align-left"></i>Texto</div>
+                <div class="block-btn" onclick="addBlock('testimonials')"><i class="ti ti-star"></i>Testimonios</div>
+                <div class="block-btn" onclick="addBlock('categories')"><i class="ti ti-category"></i>Categorías</div>
+                <div class="block-btn" onclick="addBlock('image_banner')"><i class="ti ti-photo-scan"></i>Imagen</div>
+                <div class="block-btn" onclick="addBlock('footer')"><i class="ti ti-layout-bottombar"></i>Footer</div>
+                <div class="block-btn full" onclick="addBlock('custom_html')"><i class="ti ti-code"></i>Sección personalizada (HTML / CSS)</div>
             </div>
         </div>
 
-        <!-- Tab: Capas -->
+        <!-- Tab: Secciones (capas) -->
         <div class="sidebar-content" id="tab-layers" style="display:none">
-            <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.8rem">
-                Haz clic para seleccionar · 👁️ para mostrar/ocultar · 🗑️ para eliminar
-            </p>
+            <p class="side-hint">Arrastra para reordenar. Haz clic para editar.</p>
             <div class="block-list" id="layers-list"></div>
         </div>
 
@@ -443,8 +284,8 @@
         <div class="sidebar-content" id="tab-props" style="display:none">
             <div id="props-content">
                 <div class="no-selection">
-                    <div class="hint-icon">👆</div>
-                    Selecciona un bloque en <strong>Capas</strong> para editar sus propiedades
+                    <i class="ti ti-click"></i>
+                    Selecciona una sección en <strong>Secciones</strong> para ajustar sus propiedades.
                 </div>
             </div>
         </div>
@@ -453,82 +294,66 @@
     <!-- Preview central -->
     <div class="preview-area">
         <div class="preview-toolbar">
-    <button class="device-btn active" title="Desktop" onclick="setDevice('desktop', this)">🖥️</button>
-    <button class="device-btn" title="Tablet" onclick="setDevice('tablet', this)">📱</button>
-    <button class="device-btn" title="Mobile" onclick="setDevice('mobile', this)">📲</button>
-    <select id="page-selector" onchange="loadPage(this.value)"
-        style="background:#1A2820;color:#C8D8C0;border:1px solid #2A4A38;border-radius:4px;padding:0.3rem 0.6rem;font-size:0.8rem;cursor:pointer">
-        <option value="index.html">🏠 Página principal</option>
-        <option value="cart.html">🛒 Carrito</option>
-        <option value="login.html">🔐 Login</option>
-        <option value="product.html">📦 Producto</option>
-        <option value="checkout.html">💳 Checkout</option>
-    </select>
-    <span id="preview-url" style="flex:1;text-align:center;font-size:0.75rem;color:#4A6A5A">Vista previa en tiempo real</span>
-</div>
+            <div class="device-group">
+                <button class="device-btn active" title="Escritorio" onclick="setDevice('desktop', this)"><i class="ti ti-device-desktop"></i></button>
+                <button class="device-btn" title="Tablet" onclick="setDevice('tablet', this)"><i class="ti ti-device-tablet"></i></button>
+                <button class="device-btn" title="Móvil" onclick="setDevice('mobile', this)"><i class="ti ti-device-mobile"></i></button>
+            </div>
+            <select id="page-selector" class="page-selector" onchange="loadPage(this.value)">
+                <option value="__live__">Página principal (edición en vivo)</option>
+                <option value="cart.html">Carrito</option>
+                <option value="login.html">Login</option>
+                <option value="product.html">Producto</option>
+                <option value="checkout.html">Checkout</option>
+            </select>
+            <span id="preview-url" class="preview-url"><i class="ti ti-bolt"></i>Vista previa en tiempo real</span>
+        </div>
         <div class="preview-frame-wrapper">
-            <iframe id="preview-frame" width="100%" height="800"></iframe>
+            <iframe id="preview-frame" height="800"></iframe>
         </div>
     </div>
 
     <!-- Panel derecho: productos -->
     <div class="right-panel">
-        <h3>📦 Productos</h3>
-        <button class="btn-add-product" onclick="switchTab('products')">+ Nuevo producto</button>
+        <div class="rp-title"><i class="ti ti-package"></i>Productos</div>
+        <button class="btn-add-product" onclick="switchTab('products')"><i class="ti ti-plus"></i>Nuevo producto</button>
         <div id="mini-products"></div>
     </div>
 </div>
 
-<!-- Tab Productos -->
-<div id="products-tab" style="display:none; padding:2rem; overflow-y:auto; flex:1">
-    <div style="max-width:900px; margin:0 auto">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+<!-- ── Vista: Productos ── -->
+<div id="products-tab" class="page-view">
+    <div style="max-width:960px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
             <h2>Gestión de productos</h2>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem">
-            <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1)">
-                <h3 style="margin-bottom:1.2rem">➕ Nuevo producto</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+            <div class="panel-card">
+                <h3><i class="ti ti-plus"></i>Nuevo producto</h3>
                 <div id="product-form-alert"></div>
-                <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" id="p-name" placeholder="Nombre del producto">
+                <div class="form-group"><label>Nombre</label><input type="text" id="p-name" placeholder="Nombre del producto"></div>
+                <div class="form-group"><label>Descripción</label><textarea id="p-desc" rows="3" placeholder="Descripción opcional"></textarea></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                    <div class="form-group"><label>Precio (USD)</label><input type="number" id="p-price" placeholder="0.00" step="0.01"></div>
+                    <div class="form-group"><label>Stock</label><input type="number" id="p-stock" placeholder="0"></div>
                 </div>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea id="p-desc" rows="3" placeholder="Descripción opcional"></textarea>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                    <div class="form-group">
-                        <label>Precio (USD)</label>
-                        <input type="number" id="p-price" placeholder="0.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Stock</label>
-                        <input type="number" id="p-stock" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>URL de imagen</label>
-                    <input type="text" id="p-image" placeholder="https://...">
-                </div>
-                <button class="btn btn-primary" onclick="handleCreateProduct()" style="width:100%">
-                    Crear producto
-                </button>
+                <div class="form-group"><label>URL de imagen</label><input type="text" id="p-image" placeholder="https://..."></div>
+                <button class="btn-primary" onclick="handleCreateProduct()" style="width:100%">Crear producto</button>
             </div>
             <div>
-                <h3 style="margin-bottom:1.2rem">📦 Productos activos</h3>
+                <h3 style="display:flex;align-items:center;gap:.5rem;font-size:15px;margin:0 0 1.2rem"><i class="ti ti-list" style="color:var(--green)"></i>Productos activos</h3>
                 <div id="products-table"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Tab Ajustes -->
-<div id="settings-tab" style="display:none; padding:2rem; overflow-y:auto; flex:1">
-    <div style="max-width:700px; margin:0 auto">
+<!-- ── Vista: Ajustes ── -->
+<div id="settings-tab" class="page-view">
+    <div style="max-width:720px;margin:0 auto">
         <h2 style="margin-bottom:1.5rem">Ajustes generales</h2>
-        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:1rem">
-            <h3 style="margin-bottom:1.2rem">🏪 Identidad de la tienda</h3>
+        <div class="panel-card" style="margin-bottom:1rem">
+            <h3><i class="ti ti-building-store"></i>Identidad de la tienda</h3>
             <div class="form-group"><label>Nombre</label><input type="text" id="s-name"></div>
             <div class="form-group"><label>Slogan</label><input type="text" id="s-slogan"></div>
             <div class="form-group"><label>URL del logo</label><input type="text" id="s-logo"></div>
@@ -536,25 +361,80 @@
                 <label>Color primario</label>
                 <div class="color-row">
                     <input type="color" id="s-color-preview">
-                    <input type="text" id="s-primary" placeholder="#2563eb">
+                    <input type="text" id="s-primary" placeholder="#1D7A4F">
                 </div>
             </div>
             <div class="form-group">
                 <label>Tipografía</label>
                 <select id="s-font">
-                    <option value="Segoe UI">Segoe UI</option>
+                    <option value="DM Sans">DM Sans</option>
+                    <option value="Playfair Display">Playfair Display</option>
                     <option value="Georgia">Georgia</option>
                     <option value="Arial">Arial</option>
-                    <option value="Trebuchet MS">Trebuchet MS</option>
                 </select>
             </div>
         </div>
         <div id="settings-alert"></div>
-        <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar ajustes</button>
+        <button class="btn-primary" onclick="saveSettings()"><i class="ti ti-device-floppy" style="vertical-align:-2px"></i> Guardar ajustes</button>
     </div>
 </div>
 
-<!-- Toast de notificaciones -->
+<!-- ── Modal IA ── -->
+<div id="ai-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="ti ti-sparkles"></i>Generar sección con IA</h3>
+            <button class="modal-close" onclick="closeAIModal()"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="prop-group">
+            <label>Describe lo que quieres crear</label>
+            <textarea id="ai-prompt" rows="4" placeholder="Ej: Una sección de características con 3 columnas, íconos grandes y fondo verde oscuro. Cada columna con un título y una descripción corta..."></textarea>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem">
+            <span style="font-size:12px;color:var(--text-2);width:100%;margin-bottom:.2rem">Ejemplos rápidos:</span>
+            <button class="quick-prompt" onclick="setPrompt(this)">Sección de características con 3 columnas</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Banner de oferta con cuenta regresiva</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Sección de equipo con fotos y nombres</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Tabla comparativa de planes/precios</button>
+            <button class="quick-prompt" onclick="setPrompt(this)">Galería de imágenes en grid</button>
+        </div>
+        <button id="ai-generate-btn" onclick="generateWithAI()"
+            style="width:100%;padding:.75rem;background:var(--ink);color:var(--sage);border:1px solid var(--line-dark);border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.45rem">
+            <i class="ti ti-sparkles" style="color:var(--sand)"></i>Generar
+        </button>
+        <div id="ai-loading" style="display:none;text-align:center;padding:1rem;color:var(--green);font-weight:500">
+            <i class="ti ti-loader-2" style="font-size:20px"></i> Generando tu sección...
+        </div>
+        <div id="ai-result" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.8rem">
+                <div class="prop-group" style="margin:0">
+                    <label>HTML generado</label>
+                    <textarea id="ai-html-output" rows="8" style="font-family:monospace;font-size:12px"></textarea>
+                </div>
+                <div class="prop-group" style="margin:0">
+                    <label>CSS generado</label>
+                    <textarea id="ai-css-output" rows="8" style="font-family:monospace;font-size:12px"></textarea>
+                </div>
+            </div>
+            <div style="background:var(--paper);border-radius:8px;padding:1rem;margin-bottom:1rem;border:1px solid var(--line)">
+                <p style="font-size:11px;color:var(--text-2);margin:0 0 .5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Vista previa</p>
+                <iframe id="ai-preview-frame" style="width:100%;height:200px;border:none;border-radius:6px;background:white"></iframe>
+            </div>
+            <div style="display:flex;gap:.5rem">
+                <button onclick="applyAIResult()"
+                    style="flex:1;padding:.65rem;background:var(--green);color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem">
+                    <i class="ti ti-check"></i>Aplicar al bloque
+                </button>
+                <button onclick="generateWithAI()"
+                    style="flex:1;padding:.65rem;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem">
+                    <i class="ti ti-refresh"></i>Regenerar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Toast ── -->
 <div class="toast" id="toast"></div>
 
 <script src="js/api.js"></script>
@@ -565,140 +445,82 @@ const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.a
 let layout = [];
 let selectedBlockId = null;
 let currentDevice = 'desktop';
+let previewProducts = [];   // productos reales para el preview en vivo
+let currentPage = '__live__';
 
-// ── Asistente de IA ───────────────────────────────────────────────────────────
-let currentAIBlockId = null;
+// ── Nombres e iconos de bloques (Tabler, sin emojis) ──────────────────────────
+const BLOCK_META = {
+    announcement_bar: { name: "Barra de anuncio", icon: "ti-speakerphone" },
+    hero_banner:      { name: "Banner principal", icon: "ti-photo" },
+    product_grid:     { name: "Grid de productos", icon: "ti-building-store" },
+    text_section:     { name: "Sección de texto", icon: "ti-align-left" },
+    testimonials:     { name: "Testimonios", icon: "ti-star" },
+    categories:       { name: "Categorías", icon: "ti-category" },
+    image_banner:     { name: "Banner de imagen", icon: "ti-photo-scan" },
+    footer:           { name: "Footer", icon: "ti-layout-bottombar" },
+    custom_html:      { name: "Sección personalizada", icon: "ti-code" }
+};
+function blockName(type){ return (BLOCK_META[type] || {}).name || type; }
+function blockIcon(type){ return (BLOCK_META[type] || {}).icon || "ti-box"; }
 
-function openAIAssistant(blockId) {
-    currentAIBlockId = blockId;
-    document.getElementById("ai-modal").style.display = "flex";
-    document.getElementById("ai-result").style.display = "none";
-    document.getElementById("ai-loading").style.display = "none";
-    document.getElementById("ai-prompt").value = "";
-}
-
-function closeAIModal() {
-    document.getElementById("ai-modal").style.display = "none";
-}
-
-function setPrompt(btn) {
-    document.getElementById("ai-prompt").value = btn.textContent;
-}
-
-async function generateWithAI() {
-    const prompt = document.getElementById("ai-prompt").value.trim();
-    if (!prompt) { showToast("Describe lo que quieres crear", "error"); return; }
-
-    document.getElementById("ai-loading").style.display = "block";
-    document.getElementById("ai-result").style.display = "none";
-    document.getElementById("ai-generate-btn").disabled = true;
-
-    try {
-        const parsed = await apiFetch("/layout/generate-block", {
-            method: "POST",
-            body: JSON.stringify({ prompt })
-        });
-
-        document.getElementById("ai-html-output").value = parsed.html || "";
-        document.getElementById("ai-css-output").value = parsed.css || "";
-
-        const previewFrame = document.getElementById("ai-preview-frame");
-        previewFrame.srcdoc = `<style>${parsed.css || ''}</style>${parsed.html || ''}`;
-
-        document.getElementById("ai-result").style.display = "block";
-
-    } catch(e) {
-        showToast("Error generando: " + e.message, "error");
-    } finally {
-        document.getElementById("ai-loading").style.display = "none";
-        document.getElementById("ai-generate-btn").disabled = false;
-    }
-}
-
-function applyAIResult() {
-    const html = document.getElementById("ai-html-output").value;
-    const css = document.getElementById("ai-css-output").value;
-    const block = layout.find(b => b.id === currentAIBlockId);
-    if (block) {
-        block.config.html = html;
-        block.config.css = css;
-        renderPreview();
-        renderProps();
-        showToast("✅ Sección aplicada al bloque", "success");
-    }
-    closeAIModal();
-}
-
-// ── Configuraciones por defecto de cada tipo de bloque ───────────────────────
+// ── Configuraciones por defecto (alineadas al estilo de marca) ────────────────
 const BLOCK_DEFAULTS = {
     announcement_bar: {
-        text: "🚚 Envío gratis en compras mayores a $50",
-        background_color: "#2563eb",
+        text: "Envío gratis en compras superiores a $80 USD",
+        background_color: "#1D7A4F",
         text_color: "#ffffff"
     },
     hero_banner: {
-        title: "Bienvenido a nuestra tienda",
-        subtitle: "Descubre nuestra colección exclusiva",
-        button_text: "Ver productos",
+        title: "Cocina",
+        subtitle: "de por vida",
+        button_text: "Ver colección",
         image_url: "",
-        background_color: "#1e293b",
+        background_color: "#0F1A14",
         text_color: "#ffffff"
     },
     product_grid: {
-        title: "Nuestros productos",
+        title: "Los favoritos",
         columns: 3,
         show_all: true,
         limit: 6
     },
     text_section: {
-        title: "Sobre nosotros",
-        content: "Somos una tienda dedicada a ofrecerte los mejores productos.",
-        background_color: "#f8fafc",
+        title: "Acero que dura décadas",
+        content: "Diseñamos equipos de cocina en acero inoxidable grado 304, libres de teflón y tóxicos, pensados para acompañarte toda la vida.",
+        background_color: "#F5F5F3",
         text_align: "center"
     },
     testimonials: {
         title: "Lo que dicen nuestros clientes",
         items: [
-            { name: "María García", text: "Excelente servicio.", rating: 5 },
-            { name: "Carlos López", text: "Muy buena experiencia.", rating: 5 }
+            { name: "María García", text: "Excelente calidad, se nota el acero de verdad.", rating: 5 },
+            { name: "Carlos López", text: "Compré un set completo y no podría estar más feliz.", rating: 5 }
         ]
     },
     categories: {
-        title: "Categorías",
-        items: ["Ropa", "Accesorios", "Calzado", "Ofertas"]
+        title: "Explora por categoría",
+        items: ["Ollas", "Sartenes", "Cuchillos", "Sets de regalo"]
     },
     image_banner: {
         image_url: "",
         alt_text: "Banner de la tienda",
         link_url: "",
-        height: "300"
+        height: "320"
     },
     footer: {
         store_name: "Velonox",
-        tagline: "Tu tienda de confianza",
+        tagline: "Cocina de por vida",
         email: "contacto@velonox.com",
-        background_color: "#1e293b",
+        background_color: "#0F1A14",
         text_color: "#94a3b8"
     },
     custom_html: {
-        html: `<div style="padding: 3rem 2rem; text-align: center; background: #f8fafc;">
-  <h2 style="color: #1e293b; margin-bottom: 1rem">Tu sección personalizada</h2>
-  <p style="color: #64748b">Edita el HTML y CSS desde el panel de propiedades</p>
+        html: `<div style="padding:3.5rem 2rem;text-align:center;background:#F5F5F3">
+  <h2 style="font-family:'Playfair Display',serif;color:#0F1A14;margin-bottom:1rem">Tu sección personalizada</h2>
+  <p style="color:#6B8A7A">Edita el HTML y el CSS desde el panel de propiedades.</p>
 </div>`,
         css: `/* Escribe tu CSS aquí */`
     }
-};
-
-const BLOCK_NAMES = {
-    announcement_bar: "📢 Barra de anuncio",
-    hero_banner: "🖼️ Banner principal",
-    product_grid: "🛍️ Grid de productos",
-    text_section: "📝 Sección de texto",
-    testimonials: "⭐ Testimonios",
-    categories: "🏷️ Categorías",
-    image_banner: "🌄 Banner imagen",
-    footer: "📋 Footer",
-     custom_html: "💻 Sección personalizada"
 };
 
 // ── Inicialización ────────────────────────────────────────────────────────────
@@ -709,12 +531,13 @@ async function init() {
         if (!me.is_admin) { window.location.href = "index.html"; return; }
     } catch(e) { window.location.href = "login.html"; return; }
 
+    try { previewProducts = await getProducts(); } catch(e) { previewProducts = []; }
+
     await loadLayout();
     await loadMiniProducts();
     await loadSettings();
     loadProducts();
-    renderPreview();
-    document.getElementById("preview-frame").src = "index.html";
+    renderPreview();   // preview en vivo al cargar (no sobreescribimos con src)
 }
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -728,23 +551,51 @@ async function loadLayout() {
 
 function renderLayers() {
     const list = document.getElementById("layers-list");
+    if (!layout.length) {
+        list.innerHTML = `<div class="no-selection"><i class="ti ti-stack-2"></i>Aún no hay secciones.<br>Añade una desde la pestaña <strong>Añadir</strong>.</div>`;
+        return;
+    }
     list.innerHTML = layout.map(block => `
         <div class="block-item ${block.is_visible ? '' : 'hidden-block'} ${selectedBlockId === block.id ? 'selected' : ''}"
+             draggable="true" data-id="${block.id}"
+             ondragstart="dragStart(event,'${block.id}')" ondragover="dragOver(event,'${block.id}')"
+             ondragleave="dragLeave(event)" ondrop="dropBlock(event,'${block.id}')" ondragend="dragEnd(event)"
              onclick="selectBlock('${block.id}')">
-            <span class="drag-handle">⠿</span>
-            <span class="block-name">${BLOCK_NAMES[block.block_type] || block.block_type}</span>
+            <span class="drag-handle"><i class="ti ti-grip-vertical"></i></span>
+            <span class="layer-icon"><i class="ti ${blockIcon(block.block_type)}"></i></span>
+            <span class="block-name">${blockName(block.block_type)}</span>
             <div class="block-actions">
                 <button class="action-btn" title="${block.is_visible ? 'Ocultar' : 'Mostrar'}"
                     onclick="event.stopPropagation(); toggleVisibility('${block.id}')">
-                    ${block.is_visible ? '👁️' : '🙈'}
+                    <i class="ti ${block.is_visible ? 'ti-eye' : 'ti-eye-off'}"></i>
                 </button>
-                <button class="action-btn" title="Eliminar"
+                <button class="action-btn danger" title="Eliminar"
                     onclick="event.stopPropagation(); removeBlock('${block.id}')">
-                    🗑️
+                    <i class="ti ti-trash"></i>
                 </button>
             </div>
         </div>
     `).join("");
+}
+
+// ── Drag & drop de secciones ──────────────────────────────────────────────────
+let dragId = null;
+function dragStart(e, id){ dragId = id; e.currentTarget.classList.add('dragging'); }
+function dragOver(e, id){ e.preventDefault(); if (id !== dragId) e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function dragEnd(e){ document.querySelectorAll('.block-item').forEach(el=>el.classList.remove('dragging','drag-over')); }
+function dropBlock(e, targetId){
+    e.preventDefault();
+    if (!dragId || dragId === targetId) return;
+    const from = layout.findIndex(b => b.id === dragId);
+    const to = layout.findIndex(b => b.id === targetId);
+    if (from < 0 || to < 0) return;
+    const [moved] = layout.splice(from, 1);
+    layout.splice(to, 0, moved);
+    layout.forEach((b, i) => b.order_index = i);
+    dragId = null;
+    renderLayers();
+    renderPreview();
 }
 
 function selectBlock(id) {
@@ -764,7 +615,7 @@ function toggleVisibility(id) {
 }
 
 function removeBlock(id) {
-    if (!confirm("¿Eliminar este bloque?")) return;
+    if (!confirm("¿Eliminar esta sección?")) return;
     layout = layout.filter(b => b.id !== id);
     if (selectedBlockId === id) selectedBlockId = null;
     renderLayers();
@@ -777,14 +628,13 @@ function addBlock(type) {
         block_type: type,
         order_index: layout.length,
         is_visible: true,
-        config: { ...BLOCK_DEFAULTS[type] }
+        config: JSON.parse(JSON.stringify(BLOCK_DEFAULTS[type]))
     };
     layout.push(newBlock);
     renderLayers();
     renderPreview();
     selectBlock(newBlock.id);
-    showSidebarTab('layers');
-    showToast(`${BLOCK_NAMES[type]} agregado ✅`);
+    showToast(`"${blockName(type)}" añadido`, "success");
 }
 
 // ── Propiedades ───────────────────────────────────────────────────────────────
@@ -792,7 +642,7 @@ function renderProps() {
     const block = layout.find(b => b.id === selectedBlockId);
     const container = document.getElementById("props-content");
     if (!block) {
-        container.innerHTML = `<div class="no-selection"><div class="hint-icon">👆</div>Selecciona un bloque para editar</div>`;
+        container.innerHTML = `<div class="no-selection"><i class="ti ti-click"></i>Selecciona una sección para editarla.</div>`;
         return;
     }
 
@@ -807,18 +657,18 @@ function renderProps() {
         `;
     } else if (block.block_type === "hero_banner") {
         fields = `
-            ${propText("title", "Título", c.title)}
-            ${propText("subtitle", "Subtítulo", c.subtitle)}
+            ${propText("title", "Título (línea 1)", c.title)}
+            ${propText("subtitle", "Título (línea 2)", c.subtitle)}
             ${propText("button_text", "Texto del botón", c.button_text)}
             ${propText("image_url", "URL de imagen de fondo", c.image_url)}
             ${propColor("background_color", "Color de fondo", c.background_color)}
-            ${propColor("text_color", "Color del texto", c.text_color)}
         `;
     } else if (block.block_type === "product_grid") {
         fields = `
             ${propText("title", "Título de la sección", c.title)}
             ${propSelect("columns", "Columnas", c.columns, [2, 3, 4])}
             ${propText("limit", "Máximo de productos", c.limit)}
+            <div class="prop-note"><i class="ti ti-info-circle"></i>Se muestran los productos reales de tu tienda.</div>
         `;
     } else if (block.block_type === "text_section") {
         fields = `
@@ -832,8 +682,8 @@ function renderProps() {
             ${propText("title", "Título de la sección", c.title)}
             <div class="prop-group">
                 <label>Testimonios (JSON)</label>
-                <textarea onchange="updateConfig('${block.id}', 'items', JSON.parse(this.value))"
-                    rows="6">${JSON.stringify(c.items, null, 2)}</textarea>
+                <textarea rows="7" style="font-family:monospace;font-size:12px"
+                    onchange="updateConfigJSON('${block.id}', 'items', this)">${JSON.stringify(c.items, null, 2)}</textarea>
             </div>
         `;
     } else if (block.block_type === "categories") {
@@ -841,8 +691,7 @@ function renderProps() {
             ${propText("title", "Título", c.title)}
             <div class="prop-group">
                 <label>Categorías (una por línea)</label>
-                <textarea onchange="updateConfig('${block.id}', 'items', this.value.split('\\n').filter(Boolean))"
-                    rows="5">${(c.items || []).join('\n')}</textarea>
+                <textarea rows="5" onchange="updateConfig('${block.id}', 'items', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${(c.items || []).join('\n')}</textarea>
             </div>
         `;
     } else if (block.block_type === "image_banner") {
@@ -857,57 +706,46 @@ function renderProps() {
             ${propText("store_name", "Nombre de la tienda", c.store_name)}
             ${propText("tagline", "Tagline", c.tagline)}
             ${propText("email", "Email de contacto", c.email)}
-            ${propColor("background_color", "Color de fondo", c.background_color)}
-            ${propColor("text_color", "Color del texto", c.text_color)}
         `;
     } else if (block.block_type === "custom_html") {
         fields = `
             <div class="prop-group">
                 <label>HTML</label>
-                <textarea id="custom-html-input"
-                    style="font-family: monospace; font-size: 0.8rem; min-height: 200px"
-                    oninput="updateConfig('${block.id}', 'html', this.value)">${c.html || ''}</textarea>
+                <textarea id="custom-html-input" style="font-family:monospace;font-size:12px;min-height:200px"
+                    oninput="updateConfig('${block.id}', 'html', this.value)">${escapeHtml(c.html || '')}</textarea>
             </div>
             <div class="prop-group">
                 <label>CSS</label>
-                <textarea id="custom-css-input"
-                    style="font-family: monospace; font-size: 0.8rem; min-height: 120px"
-                    oninput="updateConfig('${block.id}', 'css', this.value)">${c.css || ''}</textarea>
+                <textarea id="custom-css-input" style="font-family:monospace;font-size:12px;min-height:120px"
+                    oninput="updateConfig('${block.id}', 'css', this.value)">${escapeHtml(c.css || '')}</textarea>
             </div>
-            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:6px; padding:0.7rem; font-size:0.78rem; color:#92400e; margin-top:0.5rem">
-                 Escribe HTML y CSS directamente. Los cambios se ven en tiempo real en el preview.
-            </div>
-            <button onclick="openAIAssistant('${block.id}')"
-                style="width:100%; margin-top:0.8rem; padding:0.6rem; background:#7c3aed; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.85rem">
-                 Generar con IA
-            </button>
+            <div class="prop-note"><i class="ti ti-bolt"></i>Los cambios se ven en tiempo real en el preview.</div>
+            <button class="btn-ai" onclick="openAIAssistant('${block.id}')"><i class="ti ti-sparkles"></i>Generar con IA</button>
         `;
     }
 
     container.innerHTML = `
-        <div class="props-header">${BLOCK_NAMES[block.block_type]}</div>
-        <div class="props-panel">${fields}</div>
+        <div class="props-header"><i class="ti ${blockIcon(block.block_type)}"></i>${blockName(block.block_type)}</div>
+        ${fields}
     `;
 }
 
-// Helpers para generar campos de propiedades
+// Helpers de campos
 function propText(key, label, value) {
     return `
         <div class="prop-group">
             <label>${label}</label>
-            <input type="text" value="${value || ''}"
+            <input type="text" value="${escapeAttr(value)}"
                 oninput="updateConfig('${selectedBlockId}', '${key}', this.value)">
         </div>`;
 }
-
 function propTextarea(key, label, value) {
     return `
         <div class="prop-group">
             <label>${label}</label>
-            <textarea oninput="updateConfig('${selectedBlockId}', '${key}', this.value)">${value || ''}</textarea>
+            <textarea oninput="updateConfig('${selectedBlockId}', '${key}', this.value)">${escapeHtml(value || '')}</textarea>
         </div>`;
 }
-
 function propColor(key, label, value) {
     return `
         <div class="prop-group">
@@ -915,24 +753,21 @@ function propColor(key, label, value) {
             <div class="color-row">
                 <input type="color" value="${value || '#000000'}"
                     oninput="this.nextElementSibling.value=this.value; updateConfig('${selectedBlockId}', '${key}', this.value)">
-                <input type="text" value="${value || ''}"
+                <input type="text" value="${escapeAttr(value)}"
                     oninput="this.previousElementSibling.value=this.value; updateConfig('${selectedBlockId}', '${key}', this.value)">
             </div>
         </div>`;
 }
-
 function propSelect(key, label, value, options) {
-    const opts = options.map(o =>
-        `<option value="${o}" ${o == value ? 'selected' : ''}>${o}</option>`
-    ).join('');
+    const opts = options.map(o => `<option value="${o}" ${o == value ? 'selected' : ''}>${o}</option>`).join('');
     return `
         <div class="prop-group">
             <label>${label}</label>
-            <select onchange="updateConfig('${selectedBlockId}', '${key}', this.value)">
-                ${opts}
-            </select>
+            <select onchange="updateConfig('${selectedBlockId}', '${key}', this.value)">${opts}</select>
         </div>`;
 }
+function escapeAttr(v){ return (v == null ? '' : String(v)).replace(/"/g, '&quot;'); }
+function escapeHtml(v){ return (v == null ? '' : String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function updateConfig(blockId, key, value) {
     const block = layout.find(b => b.id === blockId);
@@ -941,164 +776,270 @@ function updateConfig(blockId, key, value) {
         renderPreview();
     }
 }
-
-// ── Preview ───────────────────────────────────────────────────────────────────
-function renderPreview() {
-    const frame = document.getElementById("preview-frame");
-    if (!frame.src || frame.src === 'about:blank' || frame.src === '' || frame.src === window.location.href) {
-        frame.src = "index.html";
+function updateConfigJSON(blockId, key, el) {
+    try {
+        const parsed = JSON.parse(el.value);
+        updateConfig(blockId, key, parsed);
+        el.style.borderColor = "";
+    } catch(e) {
+        el.style.borderColor = "var(--danger)";
+        showToast("JSON inválido", "error");
     }
-    // El preview solo se recarga al guardar, no en cada cambio
 }
 
-function loadPage(url) {
+// ── Preview en vivo (mismo estilo que la tienda real) ─────────────────────────
+function renderPreview() {
+    if (currentPage !== '__live__') return;
     const frame = document.getElementById("preview-frame");
-    frame.src = url;
-    document.getElementById("preview-url").textContent = "Viendo: " + url;
+    frame.removeAttribute("src");
+    frame.srcdoc = generatePreviewHTML();
 }
+
+function loadPage(value) {
+    currentPage = value;
+    const frame = document.getElementById("preview-frame");
+    const urlEl = document.getElementById("preview-url");
+    if (value === '__live__') {
+        urlEl.innerHTML = `<i class="ti ti-bolt"></i>Vista previa en tiempo real`;
+        renderPreview();
+    } else {
+        frame.removeAttribute("srcdoc");
+        frame.src = value;
+        urlEl.innerHTML = `<i class="ti ti-eye"></i>Viendo: ${value}`;
+    }
+}
+
+// CSS de marca (compartido con index.html) para que el preview sea idéntico a la tienda
+const BRAND_CSS = `
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+.nav{background:#0F1A14;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+.nav-logo{display:flex;align-items:baseline;text-decoration:none}
+.nav-logo span.a{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#C8D8C0;letter-spacing:-.5px}
+.nav-logo span.b{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1D7A4F;letter-spacing:-.5px}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7}
+.nav-right{display:flex;gap:12px;align-items:center}
+.nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;text-decoration:none}
+.trust{background:#1A2820;padding:.875rem 2rem;display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;border-top:1px solid #243B2C;border-bottom:1px solid #243B2C}
+.trust-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#6B8A7A;white-space:nowrap}
+.trust-item i{color:#1D7A4F;font-size:15px}
+.trust-item strong{color:#C8D8C0;font-weight:500}
+.hero{background:#0F1A14;padding:5rem 2rem 4rem;position:relative;overflow:hidden;min-height:520px;display:flex;flex-direction:column;justify-content:center}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.5rem}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(52px,8vw,88px);font-weight:900;line-height:.95;letter-spacing:-2px}
+.hero-title .w1{color:#C8D8C0;display:block}
+.hero-title .w2{color:#1D7A4F;display:block}
+.hero-cut{width:100%;height:1px;background:linear-gradient(90deg,transparent,#1D7A4F 20%,#4CAF7D 50%,#1D7A4F 80%,transparent);margin:1.75rem 0}
+.hero-sub{font-size:16px;color:#B0BEB8;line-height:1.6;max-width:480px;margin-bottom:2rem;font-weight:300}
+.hero-sub em{color:#D6C5A0;font-style:normal;font-weight:500}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{background:#1D7A4F;color:#F5F5F3;font-size:14px;font-weight:500;padding:12px 28px;border-radius:2px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-ghost{background:transparent;color:#C8D8C0;font-size:14px;padding:12px 28px;border-radius:2px;border:1px solid #2A4A38;cursor:pointer;font-family:'DM Sans',sans-serif}
+.hero-badge{position:absolute;right:2rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px}
+.hero-badge-ring{width:88px;height:88px;border-radius:50%;border:1px solid #2A4A38;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.hero-badge-ring span.num{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#1D7A4F;line-height:1}
+.hero-badge-ring span.txt{font-size:9px;color:#6B8A7A;letter-spacing:.1em;text-transform:uppercase;text-align:center;line-height:1.3}
+.sec{padding:3.5rem 2rem}
+.sec-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14}
+.sec-link{font-size:13px;color:#1D7A4F;text-decoration:none;display:flex;align-items:center;gap:4px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.cat-card{background:#0F1A14;border-radius:2px;padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;cursor:pointer;border:1px solid #1A2820}
+.cat-icon{width:48px;height:48px;border-radius:50%;background:#1A2820;display:flex;align-items:center;justify-content:center;border:1px solid #2A4A38}
+.cat-icon i{font-size:22px;color:#1D7A4F}
+.cat-name{font-size:13px;font-weight:500;color:#C8D8C0;text-align:center;line-height:1.3}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.prod-card{background:#fff;border:1px solid #E8E8E4;border-radius:2px;overflow:hidden;cursor:pointer}
+.prod-img{height:200px;background:#E8ECE6;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-img .no-img{font-size:48px;color:#B0BEB8}
+.prod-badge{position:absolute;top:10px;left:10px;background:#1D7A4F;color:#F5F5F3;font-size:10px;font-weight:500;padding:3px 8px;letter-spacing:.04em}
+.prod-badge.sand{background:#D6C5A0;color:#3A2E14}
+.prod-info{padding:.875rem}
+.stars{color:#D6C5A0;font-size:11px;margin-bottom:4px}
+.prod-name{font-size:14px;font-weight:500;color:#0F1A14;margin-bottom:4px;line-height:1.3}
+.prod-sub{font-size:12px;color:#7A7A72;margin-bottom:8px}
+.prod-row{display:flex;justify-content:space-between;align-items:center}
+.prod-price{font-size:16px;font-weight:600;color:#0F1A14}
+.prod-btn{background:#0F1A14;color:#C8D8C0;font-size:11px;font-weight:500;padding:6px 12px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.04em;border-radius:2px}
+.prod-empty{text-align:center;padding:3rem;color:#6B8A7A;font-size:14px;grid-column:1/-1}
+.footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+.footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem}
+.footer-brand span.a{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#C8D8C0}
+.footer-brand span.b{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#1D7A4F}
+.footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+.footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+.footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px}
+.footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.footer-copy{font-size:11px;color:#2A4A38}
+.footer-social{display:flex;gap:12px}
+.footer-social i{font-size:18px;color:#2A4A38}
+`;
 
 function generatePreviewHTML() {
     const visibleBlocks = layout.filter(b => b.is_visible);
-    let blocksHTML = visibleBlocks.map(block => renderBlock(block)).join("\n");
+    const blocksHTML = visibleBlocks.map(block => renderBlock(block)).join("\n");
+    const empty = visibleBlocks.length === 0
+        ? `<div style="padding:5rem 2rem;text-align:center;color:#6B8A7A;font-family:'DM Sans',sans-serif">Añade secciones desde el panel para verlas aquí.</div>`
+        : "";
 
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; }
-nav { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-nav .logo { font-size: 1.3rem; font-weight: 700; color: #2563eb; text-decoration: none; }
-nav .nav-links { display: flex; gap: 1rem; }
-nav .nav-links a { text-decoration: none; color: #374151; font-size: 0.9rem; }
-.products-grid { display: grid; gap: 1.2rem; padding: 0 2rem 2rem; }
-.product-card { background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
-.product-card img { width: 100%; height: 180px; object-fit: cover; background: #f1f5f9; }
-.product-card .card-body { padding: 1rem; }
-.product-card h3 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #1e293b; }
-.product-card .price { font-size: 1.1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.6rem; }
-.btn-cart { width: 100%; padding: 0.5rem; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>${BRAND_CSS}</style>
 </head>
 <body>
-<nav>
-    <a class="logo text-brand" href="#">Velo<span class="accent">nox</span></a>
-    <div class="nav-links">
-        <a href="#">Carrito</a>
-        <a href="#">Mi cuenta</a>
-    </div>
+<nav class="nav">
+    <a href="#" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links"><a href="#">Cocina</a><a href="#">Sets</a><a href="#">Regalos</a><a href="#">Nosotros</a></div>
+    <div class="nav-right"><a href="#" class="nav-icon ti ti-shopping-bag"></a><a href="#" class="nav-icon ti ti-user"></a></div>
 </nav>
+<div class="trust">
+    <div class="trust-item"><i class="ti ti-truck"></i><span><strong>Envío gratis</strong> +$80 USD</span></div>
+    <div class="trust-item"><i class="ti ti-shield-check"></i><span><strong>Garantía</strong> 2 años</span></div>
+    <div class="trust-item"><i class="ti ti-refresh"></i><span><strong>Devolución</strong> 30 días</span></div>
+    <div class="trust-item"><i class="ti ti-lock"></i><span><strong>Pago seguro</strong> SSL</span></div>
+</div>
 ${blocksHTML}
+${empty}
 </body>
 </html>`;
 }
 
+// Render de cada bloque con el markup real de la tienda (index.html)
 function renderBlock(block) {
     const c = block.config;
     switch(block.block_type) {
         case "announcement_bar":
-            return `<div style="background:${c.background_color};color:${c.text_color};text-align:center;padding:0.6rem;font-size:0.85rem;font-weight:500">${c.text}</div>`;
+            return `<div style="background:${c.background_color||'#1D7A4F'};color:${c.text_color||'#fff'};text-align:center;padding:0.5rem 1rem;font-size:12px;font-weight:500;letter-spacing:.3px">${c.text||''}</div>`;
 
         case "hero_banner":
-            return `<div style="background:${c.image_url ? `url('${c.image_url}') center/cover no-repeat` : c.background_color};min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem;color:${c.text_color}">
-                <h1 style="font-size:2.2rem;margin-bottom:0.8rem;text-shadow:0 2px 8px rgba(0,0,0,0.3)">${c.title}</h1>
-                <p style="font-size:1.1rem;margin-bottom:1.5rem;opacity:0.9">${c.subtitle}</p>
-                <button style="background:${c.text_color};color:${c.background_color};border:none;padding:0.8rem 2rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">${c.button_text}</button>
-            </div>`;
-
-        case "product_grid":
-            return `<div style="padding:2.5rem 2rem">
-                <h2 style="text-align:center;margin-bottom:1.5rem;font-size:1.5rem;color:#1e293b">${c.title}</h2>
-                <div class="products-grid" style="grid-template-columns:repeat(${c.columns},1fr)">
-                    ${[1,2,3,4,5,6].slice(0, parseInt(c.limit) || 6).map(i => `
-                    <div class="product-card">
-                        <div style="width:100%;height:180px;background:linear-gradient(135deg,#e2e8f0,#cbd5e1);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:2rem">🛍️</div>
-                        <div class="card-body">
-                            <h3>Producto ejemplo ${i}</h3>
-                            <div class="price">$29.99</div>
-                            <button class="btn-cart">Agregar al carrito</button>
-                        </div>
-                    </div>`).join('')}
+            return `<section class="hero" style="${c.image_url?`background:url('${c.image_url}') center/cover no-repeat;`:`background:${c.background_color||'#0F1A14'};`}">
+                <p class="hero-eyebrow">Acero inoxidable · Grado 304</p>
+                <h1 class="hero-title"><span class="w1">${c.title||''}</span><span class="w2">${c.subtitle||''}</span></h1>
+                <div class="hero-cut"></div>
+                <p class="hero-sub">Sin teflón. Sin tóxicos. Sin excusas.<br>Equipos de cocina en acero inoxidable que duran <em>décadas,</em> no temporadas.</p>
+                <div class="hero-actions">
+                    <button class="btn-primary">${c.button_text||'Ver productos'}</button>
+                    <button class="btn-ghost">¿Por qué acero?</button>
                 </div>
-            </div>`;
+                <div class="hero-badge"><div class="hero-badge-ring"><span class="num">304</span><span class="txt">Grado<br>acero</span></div></div>
+            </section>`;
+
+        case "product_grid": {
+            const cols = c.columns || 3;
+            const limit = parseInt(c.limit) || 6;
+            const prods = previewProducts.slice(0, limit);
+            const badges = ["MÁS VENDIDO","NUEVO","REGALO","OFERTA"];
+            const cards = prods.length === 0
+                ? `<div class="prod-empty">No hay productos disponibles aún.</div>`
+                : prods.map((p,i) => {
+                    const badge = i<2?`<span class="prod-badge ${i===1?'sand':''}">${badges[i]}</span>`:"";
+                    const img = p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<i class="ti ti-tools-kitchen-2 no-img"></i>`;
+                    return `<div class="prod-card">
+                        <div class="prod-img">${img}${badge}</div>
+                        <div class="prod-info">
+                            <p class="stars">★★★★★</p>
+                            <p class="prod-name">${p.name}</p>
+                            <p class="prod-sub">Acero 304 · ${p.stock>0?'En stock':'Sin stock'}</p>
+                            <div class="prod-row">
+                                <span class="prod-price">$${Number(p.price).toFixed(2)}</span>
+                                <button class="prod-btn">Agregar</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join("");
+            return `<section class="sec" style="background:#F5F5F3">
+                <div class="sec-header">
+                    <h2 class="sec-title">${c.title||''}</h2>
+                    <a href="#" class="sec-link">Ver catálogo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
+                </div>
+                <div class="prod-grid" style="grid-template-columns:repeat(${cols},1fr)">${cards}</div>
+            </section>`;
+        }
 
         case "text_section":
-            return `<div style="background:${c.background_color};padding:3rem 2rem;text-align:${c.text_align}">
-                <h2 style="font-size:1.6rem;color:#1e293b;margin-bottom:1rem">${c.title}</h2>
-                <p style="font-size:1rem;color:#64748b;max-width:700px;margin:0 auto;line-height:1.7">${c.content}</p>
-            </div>`;
+            return `<section style="background:${c.background_color||'#F5F5F3'};padding:3.5rem 2rem;text-align:${c.text_align||'center'}">
+                <p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.8rem">Velonox</p>
+                <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:1rem">${c.title||''}</h2>
+                <p style="font-size:15px;color:#6B8A7A;max-width:600px;margin:0 auto;line-height:1.7">${c.content||''}</p>
+            </section>`;
 
-        case "testimonials":
+        case "testimonials": {
             const items = c.items || [];
-            return `<div style="background:#f8fafc;padding:3rem 2rem">
-                <h2 style="text-align:center;font-size:1.5rem;color:#1e293b;margin-bottom:1.5rem">${c.title}</h2>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;max-width:900px;margin:0 auto">
-                    ${items.map(item => `
-                    <div style="background:white;border-radius:10px;padding:1.2rem;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
-                        <div style="color:#f59e0b;margin-bottom:0.5rem">${'⭐'.repeat(item.rating || 5)}</div>
-                        <p style="color:#475569;font-size:0.9rem;margin-bottom:0.7rem;line-height:1.5">"${item.text}"</p>
-                        <strong style="font-size:0.85rem;color:#1e293b">— ${item.name}</strong>
+            return `<section style="background:#F5F5F3;padding:3.5rem 2rem">
+                <div class="sec-header"><h2 class="sec-title">${c.title||''}</h2></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+                    ${items.map(item=>`
+                    <div style="background:white;border:1px solid #E8E8E4;border-radius:2px;padding:1.2rem">
+                        <div style="color:#D6C5A0;margin-bottom:.5rem;font-size:13px">${'★'.repeat(item.rating||5)}</div>
+                        <p style="color:#4A6A5A;font-size:13px;margin-bottom:.7rem;line-height:1.6">"${item.text||''}"</p>
+                        <strong style="font-size:12px;color:#0F1A14">— ${item.name||''}</strong>
                     </div>`).join('')}
                 </div>
-            </div>`;
+            </section>`;
+        }
 
-        case "categories":
+        case "categories": {
             const cats = c.items || [];
-            return `<div style="padding:2rem;text-align:center">
-                <h2 style="font-size:1.4rem;color:#1e293b;margin-bottom:1.2rem">${c.title}</h2>
-                <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
-                    ${cats.map(cat => `
-                    <div style="background:#eff6ff;color:#2563eb;border:2px solid #bfdbfe;padding:0.6rem 1.4rem;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer">
-                        ${cat}
+            return `<section class="sec">
+                <div class="sec-header"><h2 class="sec-title">${c.title||''}</h2></div>
+                <div class="cat-grid">
+                    ${cats.map(cat=>`
+                    <div class="cat-card">
+                        <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
+                        <p class="cat-name">${cat}</p>
                     </div>`).join('')}
                 </div>
-            </div>`;
+            </section>`;
+        }
 
         case "image_banner":
-            return `<div style="width:100%;height:${c.height || 300}px;background:#e2e8f0;overflow:hidden">
-                ${c.image_url
-                    ? `<img src="${c.image_url}" alt="${c.alt_text}" style="width:100%;height:100%;object-fit:cover">`
-                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:1.2rem">🌄 Agrega una URL de imagen</div>`
-                }
-            </div>`;
+            if (!c.image_url) {
+                return `<div style="width:100%;height:${c.height||300}px;background:#E8ECE6;display:flex;align-items:center;justify-content:center;color:#6B8A7A;font-family:'DM Sans',sans-serif;gap:.5rem"><i class="ti ti-photo-scan" style="font-size:22px"></i>Agrega una URL de imagen</div>`;
+            }
+            return `<div style="width:100%;height:${c.height||300}px;overflow:hidden"><img src="${c.image_url}" alt="${c.alt_text||''}" style="width:100%;height:100%;object-fit:cover"></div>`;
 
         case "footer":
-            return `<footer style="background:${c.background_color};color:${c.text_color};padding:2.5rem 2rem;text-align:center;margin-top:2rem">
-                <h3 style="font-size:1.2rem;color:white;margin-bottom:0.4rem">${c.store_name}</h3>
-                <p style="font-size:0.85rem;margin-bottom:0.8rem">${c.tagline}</p>
-                <p style="font-size:0.8rem">✉️ ${c.email}</p>
-                <p style="font-size:0.75rem;margin-top:1rem;opacity:0.6">© ${new Date().getFullYear()} ${c.store_name}. Todos los derechos reservados.</p>
+            return `<footer class="footer">
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <div><span class="a">Velo</span><span class="b">nox</span></div>
+                        <p class="footer-tagline">${c.tagline||''}</p>
+                    </div>
+                    <div class="footer-col"><p>Tienda</p><a href="#">Catálogo</a><a href="#">Sets regalo</a><a href="#">Ofertas</a></div>
+                    <div class="footer-col"><p>Ayuda</p><a href="#">Envíos</a><a href="#">Devoluciones</a><a href="#">Contacto</a></div>
+                    <div class="footer-col"><p>Nosotros</p><a href="#">Nuestra historia</a><a href="#">Por qué acero</a></div>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-copy">© 2025 ${c.store_name||'Velonox'}. Todos los derechos reservados.</p>
+                    <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                </div>
             </footer>`;
+
         case "custom_html":
-            return `
-                <style>${c.css || ''}</style>
-                ${c.html || ''}
-            `;
+            return `<style>${c.css || ''}</style>${c.html || ''}`;
 
         default:
-            return `<div style="padding:2rem;text-align:center;color:#94a3b8;border:2px dashed #e2e8f0;margin:1rem">
-                Bloque: ${block.block_type}
-            </div>`;
+            return `<div style="padding:2rem;text-align:center;color:#94a3b8;border:1px dashed #cbd5c4;margin:1rem;font-family:'DM Sans',sans-serif">Bloque: ${block.block_type}</div>`;
     }
 }
 
 // ── Guardar layout ────────────────────────────────────────────────────────────
 async function saveLayout() {
     try {
+        layout.forEach((b, i) => b.order_index = i);
         await apiFetch("/layout/", {
             method: "PUT",
             body: JSON.stringify({ blocks: layout })
         });
-        showToast("Layout guardado ✅", "success");
-        // Recarga el iframe para mostrar los cambios
-        setTimeout(() => {
-            const frame = document.getElementById("preview-frame");
-            const currentSrc = frame.src;
-            frame.src = "";
-            setTimeout(() => { frame.src = currentSrc; }, 100);
-        }, 500);
+        showToast("Cambios guardados", "success");
+        if (currentPage === '__live__') renderPreview();
     } catch(e) {
         showToast("Error guardando: " + e.message, "error");
     }
@@ -1114,7 +1055,7 @@ function setDevice(device, btn) {
     frame.style.width = widths[device];
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────────
+// ── Tabs superiores ───────────────────────────────────────────────────────────
 function switchTab(tab) {
     document.getElementById("editor-tab").style.display = tab === "editor" ? "flex" : "none";
     document.getElementById("products-tab").style.display = tab === "products" ? "block" : "none";
@@ -1136,10 +1077,10 @@ function showSidebarTab(tab) {
 // ── Mini productos (panel derecho) ────────────────────────────────────────────
 async function loadMiniProducts() {
     try {
-        const products = await getProducts();
+        const products = previewProducts.length ? previewProducts : await getProducts();
         const container = document.getElementById("mini-products");
         if (products.length === 0) {
-            container.innerHTML = `<p style="font-size:0.8rem;color:#94a3b8">No hay productos aún.</p>`;
+            container.innerHTML = `<p style="font-size:12.5px;color:var(--text-2)">No hay productos aún.</p>`;
             return;
         }
         container.innerHTML = products.slice(0, 8).map(p => `
@@ -1147,7 +1088,7 @@ async function loadMiniProducts() {
                 <img src="${p.image_url || 'https://via.placeholder.com/40'}" alt="${p.name}">
                 <div class="mini-info">
                     <div class="mini-name">${p.name}</div>
-                    <div class="mini-price">$${p.price.toFixed(2)}</div>
+                    <div class="mini-price">$${Number(p.price).toFixed(2)}</div>
                 </div>
             </div>
         `).join("");
@@ -1160,31 +1101,19 @@ async function loadProducts() {
         const products = await getProducts();
         const container = document.getElementById("products-table");
         if (products.length === 0) {
-            container.innerHTML = `<p>No hay productos aún.</p>`;
+            container.innerHTML = `<p style="color:var(--text-2)">No hay productos aún.</p>`;
             return;
         }
         container.innerHTML = `
-            <table style="width:100%;border-collapse:collapse;background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
-                <thead>
-                    <tr style="background:#2563eb;color:white">
-                        <th style="padding:0.8rem 1rem;text-align:left">Nombre</th>
-                        <th style="padding:0.8rem 1rem;text-align:left">Precio</th>
-                        <th style="padding:0.8rem 1rem;text-align:left">Stock</th>
-                        <th style="padding:0.8rem 1rem"></th>
-                    </tr>
-                </thead>
+            <table class="data-table">
+                <thead><tr><th>Nombre</th><th>Precio</th><th>Stock</th><th></th></tr></thead>
                 <tbody>
                     ${products.map(p => `
-                    <tr style="border-bottom:1px solid #f1f5f9">
-                        <td style="padding:0.8rem 1rem">${p.name}</td>
-                        <td style="padding:0.8rem 1rem">$${p.price.toFixed(2)}</td>
-                        <td style="padding:0.8rem 1rem">${p.stock}</td>
-                        <td style="padding:0.8rem 1rem">
-                            <button onclick="handleDeleteProduct('${p.id}','${p.name}')"
-                                style="background:#dc2626;color:white;border:none;padding:0.3rem 0.7rem;border-radius:5px;cursor:pointer;font-size:0.8rem">
-                                Eliminar
-                            </button>
-                        </td>
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>$${Number(p.price).toFixed(2)}</td>
+                        <td>${p.stock}</td>
+                        <td><button class="btn-del" onclick="handleDeleteProduct('${p.id}','${p.name}')"><i class="ti ti-trash"></i>Eliminar</button></td>
                     </tr>`).join("")}
                 </tbody>
             </table>`;
@@ -1207,7 +1136,9 @@ async function handleCreateProduct() {
     try {
         await createProduct(data);
         document.getElementById("product-form-alert").innerHTML =
-            `<div class="alert alert-success">✅ Producto creado</div>`;
+            `<div class="alert alert-success">Producto creado correctamente</div>`;
+        ["p-name","p-desc","p-price","p-stock","p-image"].forEach(id => document.getElementById(id).value = "");
+        previewProducts = await getProducts();
         loadProducts();
         loadMiniProducts();
         renderPreview();
@@ -1221,21 +1152,27 @@ async function handleDeleteProduct(id, name) {
     if (!confirm(`¿Eliminar "${name}"?`)) return;
     try {
         await deleteProduct(id);
+        previewProducts = await getProducts();
         loadProducts();
         loadMiniProducts();
+        renderPreview();
     } catch(e) { showToast(e.message, "error"); }
 }
 
 // ── Ajustes generales ─────────────────────────────────────────────────────────
+async function getSettings() {
+    return apiFetch("/settings/");
+}
+
 async function loadSettings() {
     try {
         const s = await getSettings();
         document.getElementById("s-name").value = s.store_name || "";
         document.getElementById("s-slogan").value = s.store_slogan || "";
         document.getElementById("s-logo").value = s.logo_url || "";
-        document.getElementById("s-primary").value = s.primary_color || "#2563eb";
-        document.getElementById("s-color-preview").value = s.primary_color || "#2563eb";
-        document.getElementById("s-font").value = s.font_family || "Segoe UI";
+        document.getElementById("s-primary").value = s.primary_color || "#1D7A4F";
+        document.getElementById("s-color-preview").value = s.primary_color || "#1D7A4F";
+        document.getElementById("s-font").value = s.font_family || "DM Sans";
     } catch(e) {}
 }
 
@@ -1249,27 +1186,8 @@ async function saveSettings() {
     };
     try {
         await apiFetch("/settings/", { method: "PUT", body: JSON.stringify(data) });
-        showToast("Ajustes guardados ✅", "success");
+        showToast("Ajustes guardados", "success");
     } catch(e) { showToast(e.message, "error"); }
-}
-
-// ── Guardar layout ────────────────────────────────────────────────────────────
-async function saveLayout() {
-    try {
-        await apiFetch("/layout/", {
-            method: "PUT",
-            body: JSON.stringify({ blocks: layout })
-        });
-        showToast("Layout guardado ✅", "success");
-        setTimeout(() => {
-            const frame = document.getElementById("preview-frame");
-            const currentSrc = frame.src;
-            frame.src = "";
-            setTimeout(() => { frame.src = currentSrc; }, 100);
-        }, 500);
-    } catch(e) {
-        showToast("Error guardando: " + e.message, "error");
-    }
 }
 
 // ── Preview externo ───────────────────────────────────────────────────────────
@@ -1277,29 +1195,62 @@ function openPreview() {
     window.open("index.html", "_blank");
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type = "") {
-    const toast = document.getElementById("toast");
-    toast.textContent = msg;
-    toast.className = "toast show " + type;
-    setTimeout(() => { toast.className = "toast"; }, 3000);
+// ── Asistente de IA ───────────────────────────────────────────────────────────
+let currentAIBlockId = null;
+function openAIAssistant(blockId) {
+    currentAIBlockId = blockId;
+    document.getElementById("ai-modal").style.display = "flex";
+    document.getElementById("ai-result").style.display = "none";
+    document.getElementById("ai-loading").style.display = "none";
+    document.getElementById("ai-prompt").value = "";
+}
+function closeAIModal() { document.getElementById("ai-modal").style.display = "none"; }
+function setPrompt(btn) { document.getElementById("ai-prompt").value = btn.textContent; }
+
+async function generateWithAI() {
+    const prompt = document.getElementById("ai-prompt").value.trim();
+    if (!prompt) { showToast("Describe lo que quieres crear", "error"); return; }
+    document.getElementById("ai-loading").style.display = "block";
+    document.getElementById("ai-result").style.display = "none";
+    document.getElementById("ai-generate-btn").disabled = true;
+    try {
+        const parsed = await apiFetch("/layout/generate-block", {
+            method: "POST",
+            body: JSON.stringify({ prompt })
+        });
+        document.getElementById("ai-html-output").value = parsed.html || "";
+        document.getElementById("ai-css-output").value = parsed.css || "";
+        document.getElementById("ai-preview-frame").srcdoc = `<style>${parsed.css || ''}</style>${parsed.html || ''}`;
+        document.getElementById("ai-result").style.display = "block";
+    } catch(e) {
+        showToast("Error generando: " + e.message, "error");
+    } finally {
+        document.getElementById("ai-loading").style.display = "none";
+        document.getElementById("ai-generate-btn").disabled = false;
+    }
 }
 
-// ── Función apiFetch local ────────────────────────────────────────────────────
-async function apiFetch(endpoint, options = {}) {
-    const token = getToken();
-    const headers = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    const response = await fetch(`${API}${endpoint}`, {
-        ...options,
-        headers: { ...headers, ...options.headers }
-    });
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: "Error desconocido" }));
-        throw new Error(error.detail || "Error en la solicitud");
+function applyAIResult() {
+    const html = document.getElementById("ai-html-output").value;
+    const css = document.getElementById("ai-css-output").value;
+    const block = layout.find(b => b.id === currentAIBlockId);
+    if (block) {
+        block.config.html = html;
+        block.config.css = css;
+        renderPreview();
+        renderProps();
+        showToast("Sección aplicada al bloque", "success");
     }
-    if (response.status === 204) return null;
-    return response.json();
+    closeAIModal();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = "success") {
+    const toast = document.getElementById("toast");
+    const icon = type === "error" ? "ti-alert-triangle" : "ti-check";
+    toast.innerHTML = `<i class="ti ${icon}"></i>${msg}`;
+    toast.className = "toast show " + type;
+    setTimeout(() => { toast.className = "toast " + type; }, 3000);
 }
 
 // ── Iniciar ───────────────────────────────────────────────────────────────────
