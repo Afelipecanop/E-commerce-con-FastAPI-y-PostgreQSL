@@ -94,6 +94,24 @@ async function deleteProduct(id) {
     return apiFetch(`/products/${id}`, { method: "DELETE" });
 }
 
+
+// ─── PÁGINAS DE PRODUCTO ──────────────────────────────────────────────────────
+
+async function getProductPage(productId) {
+    return apiFetch(`/product-pages/${productId}`);
+}
+
+async function updateProductPage(productId, data) {
+    return apiFetch(`/product-pages/${productId}`, {
+        method: "PUT",
+        body: JSON.stringify(data)
+    });
+}
+
+async function resetProductPage(productId) {
+    return apiFetch(`/product-pages/${productId}`, { method: "DELETE" });
+}
+
 // ─── CARRITO ──────────────────────────────────────────────────────────────────
 
 async function getCart() {
