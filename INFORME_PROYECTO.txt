@@ -1,27 +1,25 @@
 ﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 7, 2026
+Fecha de Actualización: Julio 8, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
 ================================================================================
 
-E-commerce funcional desarrollado con FastAPI en el backend, PostgreSQL como motor
-de base de datos y un frontend en HTML/CSS/JavaScript vanilla. El proyecto permite
-registrar usuarios, administrar productos, usar un carrito de compras, procesar pagos
-con Stripe y gestionar el contenido visual de la tienda mediante un panel de
-administración.
+Proyecto e-commerce en desarrollo activo, con backend desarrollado en FastAPI,
+PostgreSQL como motor de base de datos y un frontend en HTML, CSS y JavaScript
+vanilla. La plataforma permite gestionar usuarios, catálogo de productos, carrito,
+pagos y el contenido visual de la tienda desde un panel administrativo.
 
-Estado actual: aproximadamente 92% completado.
+Estado actual: aproximadamente 95% del MVP funcional.
 - Backend: ~95% funcional
-- Frontend público: ~90% funcional
-- Panel de administración: ~85% funcional
-- Integraciones externas: Stripe, IA y despliegue configurados
-- Testing automatizado: 0% (sin suite de pruebas implementada)
+- Frontend público: ~92% funcional
+- Panel de administración: ~88% funcional
+- Integraciones externas: activas y en uso
+- Testing automatizado: 0% (sin suite implementada aún)
 
-El proyecto se encuentra en una fase madura de MVP, con los módulos principales
-operativos y listos para uso o para continuar con mejoras de UX, seguridad y
-validaciones adicionales.
+El proyecto se encuentra en una etapa madura de desarrollo, con módulos principales
+operativos y con una base sólida para seguir escalando con nuevas mejoras.
 
 
 2. PROPÓSITO Y ALCANCE
@@ -30,17 +28,16 @@ validaciones adicionales.
 OBJETIVOS PRINCIPALES:
 [OK] Plataforma e-commerce con catálogo, carrito y pagos
 [OK] Registro e inicio de sesión con autenticación JWT
-[OK] Panel de administración para productos y diseño de la tienda
-[OK] Editor visual de layout con bloques dinámicos
-[OK] Generación de contenido visual con IA para bloques personalizados
-[OK] Gestión de órdenes y flujo de compra completo
+[OK] Gestión de productos y contenido visual desde un panel admin
+[OK] Editor de layout con bloques dinámicos
+[OK] Integración con IA para generar contenido visual
+[OK] Flujo completo de compra y confirmación de órdenes
 
 CASO DE USO:
 Tienda online B2C donde:
-- CLIENTES: exploran productos, agregan artículos al carrito, pagan y reciben
-  confirmación del pedido.
-- ADMINS: gestionan catálogo, editan bloques del layout, ajustan branding y
-  generan secciones visuales con IA.
+- CLIENTES: exploran productos, agregan artículos al carrito y completan compras.
+- ADMINS: gestionan productos, editan la experiencia visual de la tienda y
+  generan nuevas secciones de contenido.
 
 
 3. ARQUITECTURA TÉCNICA
@@ -49,299 +46,110 @@ Tienda online B2C donde:
 3.1 BACKEND - FastAPI + PostgreSQL
 ------------------------------------
 
+El backend está organizado con un enfoque modular, separando rutas, modelos,
+esquemas, middleware y servicios.
+
 BASE DE DATOS:
+- users: usuarios, autenticación y roles
+- products: catálogo de productos
+- carts y cart_items: carrito de compras por usuario
+- orders y order_items: órdenes y detalle de compra
+- store_layout: bloques dinámicos del layout de la tienda
 
-TABLE: users
-- id (UUID, PK)
-- email (unique, indexed)
-- hashed_password
-- full_name
-- is_admin (default: false)
-- is_active (default: true)
-- created_at
-Relaciones: 1-1 con carts, 1-N con orders
+PRINCIPALES FUNCIONALIDADES BACKEND:
+- Rutas de autenticación y perfil de usuario
+- CRUD de productos con control de acceso para administradores
+- Gestión de carrito con validación de stock
+- Creación de órdenes y flujo de checkout
+- Confirmación de pagos y actualización del estado de órdenes
+- Gestión de bloques del layout con persistencia en base de datos
+- Endpoints para generación de contenido con IA
 
-TABLE: products
-- id (UUID, PK)
-- name
-- description
-- price
-- stock
-- image_url
-- is_active (default: true)
-- created_at
-Relaciones: 1-N con cart_items y order_items
-
-TABLE: carts
-- id (UUID, PK)
-- user_id (FK, unique)
-- updated_at
-Relaciones: 1-N con cart_items
-
-TABLE: cart_items
-- id (UUID, PK)
-- cart_id (FK)
-- product_id (FK)
-- quantity
-- added_at
-
-TABLE: orders
-- id (UUID, PK)
-- user_id (FK)
-- status
-- total_amount
-- stripe_payment_id
-- created_at
-Relaciones: 1-N con order_items
-
-TABLE: order_items
-- id (UUID, PK)
-- order_id (FK)
-- product_id (FK)
-- quantity
-- unit_price
-
-TABLE: store_layout
-- id (String, PK)
-- block_type
-- order_index
-- config (JSON guardado como texto)
-- is_visible
-- created_at
-- updated_at
-
-Nota importante: en la implementación actual, la configuración visual se gestiona
-mediante la tabla store_layout, guardando los datos de cada bloque como JSON dentro
-de la columna config.
-
-MODELOS Y LÓGICA DE NEGOCIO:
-
-User:
-- Manejo de credenciales con password hasheado
-- Atributos de administración y activación de cuenta
-
-Product:
-- Catálogo de productos con precio, stock y estado activo/inactivo
-
-Cart y CartItem:
-- Carrito único por usuario
-- Validación de stock antes de agregar o modificar items
-- Cálculo del total del carrito
-
-Order y OrderItem:
-- Registro de órdenes con snapshot del precio unitario al momento de la compra
-- Estados pending, paid y cancelled
-- Integración con Stripe para confirmación final
-
-StoreLayout:
-- Bloques dinámicos para la tienda
-- Soporte para reordenar, ocultar y editar secciones
-
-RUTAS API:
-
-ROUTER: /auth
-- POST /register → crear usuario y carrito automático
-- POST /login → devolver token JWT
-- GET /me → datos del usuario autenticado
-
-ROUTER: /products
-- GET / → listar productos activos
-- GET /{id} → detalle de producto
-- POST / → crear producto (solo admin)
-- PUT /{id} → actualizar producto (solo admin)
-- DELETE /{id} → desactivar producto (solo admin)
-
-ROUTER: /cart
-- GET / → obtener carrito actual del usuario
-- POST /items → agregar producto al carrito
-- PUT /items/{id} → editar cantidad de un item
-- DELETE /items/{id} → eliminar un item
-
-ROUTER: /payments
-- POST /checkout → crear sesión de pago en Stripe
-- POST /webhook → confirmar pago y actualizar stock/orden
-- GET /orders → historial de órdenes del usuario
-- GET /orders/{id} → detalle de una orden
-
-ROUTER: /layout
-- GET / → devolver bloques actuales del layout
-- PUT / → reemplazar el layout completo
-- POST /blocks → agregar un bloque nuevo
-- DELETE /blocks/{id} → eliminar un bloque
-- POST /ai-generate → generar HTML/CSS con IA para contenido visual
-
-SERVICIOS Y COMPONENTES PRINCIPALES:
-
-- Auth service:
-  - Hashing de contraseñas
-  - Creación y validación de JWT
-  - Autenticación por email/contraseña
-
-- Middleware de seguridad:
-  - get_current_user() protege endpoints de usuario autenticado
-  - get_current_admin() protege operaciones administrativas
-
-- Integración con Stripe:
-  - Creación de checkout sessions
-  - Manejo de webhooks
-  - Actualización del estado de órdenes y stock
-
-- Integración con IA:
-  - Generación de bloques personalizados en HTML/CSS
-  - Uso de Anthropic Claude vía API
-  - Disponible solo para usuarios administradores
-
-AUTENTICACIÓN Y AUTORIZACIÓN:
-
-- JWT en header Authorization usando Bearer Token
-- Protección de endpoints por roles y estado de sesión
-- Control de acceso basado en el campo is_admin del usuario
-- El registro genera un carrito vacío automáticamente
-
-MIGRACIONES ALEMBIC:
-
-- v1: tablas base del e-commerce (users, products, carts, cart_items, orders, order_items)
-- v2: tabla store_layout para bloques visuales y configuración dinámica
-
+SERVICIOS Y CAPAS:
+- Auth service: registro, login y generación de tokens
+- Middleware: protección de rutas por usuario y por administrador
+- Schemas: validación y serialización de datos
+- Models: estructura relacional del negocio
 
 3.2 FRONTEND - HTML/CSS/JavaScript
 ------------------------------------
 
+El frontend está implementado con HTML semántico, estilos propios y JavaScript
+vanilla para interactuar con la API.
+
 PÁGINAS IMPLEMENTADAS:
+- index.html: catálogo principal
+- login.html: registro e inicio de sesión
+- cart.html: visualización y gestión del carrito
+- checkout.html: resultado del flujo de pago
+- admin.html: panel administrativo y editor visual
+- product.html: página de detalle de producto con descripción, características,
+  especificaciones y productos relacionados
 
-index.html:
-- Catálogo público de productos
-- Integración con el carrito
-- Navegación a login, carrito y checkout
+COMPONENTES DESTACADOS:
 - Diseño responsive
-
-login.html:
-- Formulario de acceso y registro
-- Persistencia del token JWT en localStorage
-- Redirección automática según estado de sesión
-
-cart.html:
-- Visualización del carrito del usuario
-- Ajuste de cantidades y eliminación de items
-- Cálculo total del pedido
-
-checkout.html:
-- Página de resultado de pago
-- Gestión de estado success/cancelled
-- Integración con parámetros de orden y resultado de Stripe
-
-admin.html:
-- Panel avanzado de administración
-- Editor visual de layout con preview en tiempo real
-- Panel de bloques, capas, propiedades y productos
-- Vista de gestión de productos
-- Vista de ajustes generales de la tienda
-- Modal para generación de secciones con IA
-
-product.html:
-- Página preparada para mostrar detalle de producto individual
-- Su lógica puede mejorarse en futuras iteraciones
-
-JAVASCRIPT:
-
-js/api.js:
-- Cliente centralizado para consumir la API REST
-- Manejo de token JWT, cabeceras y errores HTTP
-- Endpoints para auth, productos, carrito, pagos y layout
-
-js/auth.js:
-- Lógica de autenticación y sesión del frontend
-
-js/cart.js:
-- Lógica de interacción del carrito desde la interfaz de usuario
-
-GESTIÓN DE ESTADO:
-
-- Token JWT guardado en localStorage con clave token
-- El frontend redirige al login cuando el token expira o no es válido
-- El carrito se maneja por sesión y se actualiza desde la API
-
-ESTILOS CSS:
-
-- Diseño responsive basado en CSS moderno
-- Uso de variables para el sistema de color y la identidad visual
-- Componentes reutilizables para botones, cards, formularios y alertas
-- Estilos orientados a una tienda con branding refinado en el panel admin
+- Integración con la API para carga dinámica de datos
+- Persistencia de sesión con token de acceso
+- Menú administrativo con vistas de productos y layout
+- Experiencia visual más refinada en la página de producto
 
 
-4. FLUJOS PRINCIPALES
+4. FUNCIONALIDADES IMPLEMENTADAS HASTA EL MOMENTO
 ================================================================================
 
-4.1 FLUJO DE COMPRA (CUSTOMER):
+4.1 FUNCIONALIDADES CORE
+- Registro e inicio de sesión de usuarios
+- Autenticación basada en JWT
+- Catálogo de productos público
+- Carrito de compras persistente en base de datos
+- Flujos de compra y checkout
+- Órdenes con detalle de productos
+- Panel administrativo para gestionar el catálogo y el diseño visual
 
-1. REGISTRO O LOGIN
-   → El usuario crea una cuenta o inicia sesión
-   → El backend valida las credenciales y devuelve un token JWT
-   → El frontend almacena el token para las siguientes peticiones
+4.2 FUNCIONALIDADES AVANZADAS
+- Editor visual del layout de la tienda
+- Bloques editables para secciones de contenido
+- Generación de bloques con IA
+- Página de producto con:
+  - galería visual
+  - descripción principal
+  - sección de especificaciones
+  - características destacadas
+  - reseñas de referencia
+  - productos relacionados
 
-2. EXPLORACIÓN DE PRODUCTOS
-   → El cliente accede al catálogo público
-   → El frontend obtiene los productos desde /products/
-   → Se renderiza la vista con precio, stock y descripción
-
-3. AGREGAR AL CARRITO
-   → El usuario pulsa “Agregar al carrito”
-   → El backend valida la existencia del producto y el stock disponible
-   → Se crea o actualiza el item dentro del carrito del usuario
-
-4. REVISAR CARRITO
-   → El cliente accede a cart.html
-   → Se consulta /cart/ y se muestran los items y el total
-   → El usuario puede modificar cantidades o eliminar artículos
-
-5. CHECKOUT
-   → Al confirmar la compra, el frontend manda a /payments/checkout
-   → El backend crea una orden en estado pending
-   → Se genera una sesión de pago en Stripe y se devuelve la URL
-
-6. PAGO Y CONFIRMACIÓN
-   → El usuario completa el pago en Stripe
-   → El webhook de Stripe confirma la transacción
-   → El backend actualiza la orden a paid, disminuye stock y vacía el carrito
-
-
-4.2 FLUJO ADMIN (MANAGEMENT):
-
-1. LOGIN COMO ADMIN
-   → Se autentica un usuario con permisos de administrador
-   → El token JWT permite acceder a rutas protegidas
-
-2. ACCESO AL PANEL
-   → El usuario entra a admin.html
-   → Se cargan las vistas de Editor, Productos y Ajustes
-   → El panel permite crear, modificar y eliminar bloques visuales
-
-3. GESTIÓN DE PRODUCTOS
-   → Se pueden crear, editar y desactivar productos desde la vista administrativa
-   → Los cambios se reflejan en el catálogo público
-
-4. EDITOR DE LAYOUT
-   → El administrador puede añadir bloques de tipo anuncio, hero, productos,
-     texto, testimonios, categorías, imagen y footer
-   → Puede reordenar secciones, editar propiedades y previsualizar el resultado
-   → También puede generar secciones con IA a partir de un prompt
-
-5. GUARDADO DE CAMBIOS
-   → El layout se guarda mediante la API /layout/
-   → Los bloques se almacenan en la base de datos y se vuelven visibles en la tienda
-
-
-ESTADO ACTUAL Y PRÓXIMOS PASOS:
-
-Puntos fuertes del proyecto:
-- Backend completo y coherente con la lógica de negocio esperada
-- Carrito, órdenes y pagos integrados de manera funcional
-- Panel admin con editor visual y gestión de contenido
+4.3 INTEGRACIONES
+- Pagos con Stripe
+- Confirmación de pagos vía webhook
+- Manejo de stock al procesar órdenes
 - Integración con IA para generación de contenido visual
 
-Mejoras pendientes recomendadas:
-- Implementar tests automatizados para backend y frontend
-- Añadir validaciones más robustas en formularios y flujos de error
-- Mejorar la experiencia de la página de producto individual
-- Añadir más métricas, logs y monitorización para producción
-- Refinar la experiencia visual del panel admin y del catálogo
+
+5. ESTADO ACTUAL Y PRÓXIMOS PASOS
+================================================================================
+
+PUNTOS FUERTES:
+- La arquitectura base está bien definida y es escalable
+- El backend expone rutas funcionales para el flujo comercial principal
+- El frontend ya cubre las experiencias clave para clientes y administradores
+- El proyecto demuestra un avance sólido en la implementación del MVP
+
+MEJORAS PENDIENTES:
+- Añadir más pruebas automatizadas
+- Mejorar validaciones y manejo de errores
+- Refinar aún más la experiencia de administración
+- Expandir documentación técnica y de uso
+- Continuar optimizando rendimiento y experiencia visual
+
+ESTADO GENERAL:
+- Desarrollo activo
+- MVP en marcha
+- Preparado para seguir evolucionando con nuevas funcionalidades
+
+
+6. NOTA DE SEGURIDAD Y DOCUMENTACIÓN
+================================================================================
+
+Este documento no incluye credenciales, tokens ni secretos del proyecto.
+La información registrada aquí está orientada a describir el alcance, la estructura
+y el estado de desarrollo del sistema de forma general y segura.
