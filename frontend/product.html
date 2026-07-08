@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+
+        /* NAV */
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover{opacity:1}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;cursor:pointer;text-decoration:none;transition:opacity .2s}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+
+        /* BREADCRUMB */
+        .breadcrumb{padding:.75rem 2rem;background:#F5F5F3;border-bottom:1px solid #E8E8E4;font-size:12px;color:#B0BEB8;display:flex;gap:.5rem;align-items:center}
+        .breadcrumb a{color:#B0BEB8;text-decoration:none;transition:color .2s}
+        .breadcrumb a:hover{color:#1D7A4F}
+        .breadcrumb .sep{color:#E8E8E4}
+        .breadcrumb .current{color:#0F1A14;font-weight:500}
+
+        /* MAIN */
+        .product-main{display:grid;grid-template-columns:1fr 1fr;gap:3rem;padding:3rem 2rem;max-width:1200px;margin:0 auto}
+
+        /* GALERÍA */
+        .gallery{display:flex;flex-direction:column;gap:1rem}
+        .gallery-main{background:#E8ECE6;border-radius:4px;height:460px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+        .gallery-main img{width:100%;height:100%;object-fit:cover}
+        .gallery-main .no-img{font-size:80px;color:#B0BEB8}
+        .gallery-badge{position:absolute;top:1rem;left:1rem;background:#1D7A4F;color:#F5F5F3;font-size:10px;font-weight:500;padding:4px 10px;letter-spacing:.04em}
+        .gallery-thumbs{display:flex;gap:.5rem}
+        .gallery-thumb{width:72px;height:72px;background:#E8ECE6;border-radius:2px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .2s}
+        .gallery-thumb.active{border-color:#1D7A4F}
+        .gallery-thumb img{width:100%;height:100%;object-fit:cover}
+        .gallery-thumb i{font-size:24px;color:#B0BEB8}
+
+        /* INFO */
+        .product-info{display:flex;flex-direction:column;gap:1.5rem}
+        .product-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase}
+        .product-name{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#0F1A14;line-height:1.2}
+        .product-stars{display:flex;align-items:center;gap:.5rem}
+        .stars{color:#D6C5A0;font-size:14px}
+        .reviews-count{font-size:12px;color:#B0BEB8}
+        .price-row{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap}
+        .price-main{font-size:32px;font-weight:700;color:#0F1A14}
+        .price-save{font-size:12px;font-weight:500;color:#1D7A4F;background:#F0FAF5;padding:3px 8px;border-radius:2px}
+        .stock-indicator{display:flex;align-items:center;gap:.4rem;font-size:12px;font-weight:500}
+        .stock-dot{width:6px;height:6px;border-radius:50%}
+        .in-stock{color:#1D7A4F}.in-stock .stock-dot{background:#1D7A4F}
+        .out-stock{color:#DC2626}.out-stock .stock-dot{background:#DC2626}
+        .short-desc{font-size:14px;color:#4A6A5A;line-height:1.7}
+
+        /* VARIANTES */
+        .variants-label,.qty-label{font-size:12px;font-weight:500;color:#4A6A5A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+        .variants{display:flex;gap:.5rem;flex-wrap:wrap}
+        .variant-btn{padding:.4rem .9rem;border:1px solid #E8E8E4;border-radius:2px;font-size:13px;font-weight:500;color:#0F1A14;cursor:pointer;background:white;transition:all .2s;font-family:'DM Sans',sans-serif}
+        .variant-btn.active{border-color:#1D7A4F;color:#1D7A4F;background:#F0FAF5}
+        .variant-btn:hover{border-color:#1D7A4F}
+
+        /* CANTIDAD */
+        .qty-row{display:flex;align-items:center;gap:.75rem}
+        .qty-btn{width:36px;height:36px;border:1px solid #E8E8E4;background:white;border-radius:2px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0F1A14;transition:all .2s;font-family:'DM Sans',sans-serif}
+        .qty-btn:hover{border-color:#1D7A4F;color:#1D7A4F}
+        .qty-num{font-size:16px;font-weight:600;min-width:2rem;text-align:center}
+
+        /* BOTONES */
+        .btn-add{width:100%;padding:1rem;background:#1D7A4F;color:#F5F5F3;border:none;border-radius:2px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.02em;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+        .btn-add:hover{background:#22904F}
+        .btn-add:disabled{background:#B0BEB8;cursor:not-allowed}
+        .btn-back{background:transparent;color:#0F1A14;border:1px solid #E8E8E4;border-radius:2px;font-size:14px;padding:.75rem 1rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.5rem;transition:all .2s}
+        .btn-back:hover{border-color:#1D7A4F;color:#1D7A4F}
+
+        /* TRUST BADGES */
+        .trust-badges{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;padding:1rem 0;border-top:1px solid #E8E8E4;border-bottom:1px solid #E8E8E4}
+        .trust-badge{display:flex;flex-direction:column;align-items:center;gap:.3rem;text-align:center}
+        .trust-badge i{font-size:20px;color:#1D7A4F}
+        .trust-badge span{font-size:11px;color:#6B8A7A;line-height:1.3}
+        .trust-badge strong{font-size:11px;color:#0F1A14;font-weight:500;display:block}
+
+        /* TABS */
+        .content-tabs{max-width:1200px;margin:0 auto;padding:2rem 2rem 4rem}
+        .tab-nav{display:flex;border-bottom:2px solid #E8E8E4;margin-bottom:2rem;overflow-x:auto}
+        .tab-btn{padding:.75rem 1.5rem;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#B0BEB8;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+        .tab-btn.active{color:#0F1A14;border-bottom-color:#1D7A4F}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+
+        /* DESCRIPCIÓN */
+        .desc-content{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+        .desc-text h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0F1A14;margin-bottom:1rem}
+        .desc-text p{font-size:14px;color:#4A6A5A;line-height:1.8;margin-bottom:1rem}
+        .desc-img{background:#E8ECE6;border-radius:4px;height:300px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .desc-img img{width:100%;height:100%;object-fit:cover}
+        .desc-img i{font-size:60px;color:#B0BEB8}
+
+        /* SPECS */
+        .specs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E8E8E4}
+        .spec-item{background:white;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center}
+        .spec-key{font-size:13px;color:#6B8A7A}
+        .spec-val{font-size:13px;color:#0F1A14;font-weight:500;text-align:right}
+
+        /* FEATURES */
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}
+        .feature-card{background:#0F1A14;padding:1.5rem;border-radius:2px}
+        .feature-icon{font-size:24px;margin-bottom:.75rem}
+        .feature-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0;margin-bottom:.5rem}
+        .feature-text{font-size:12px;color:#4A6A5A;line-height:1.6}
+
+        /* RESEÑAS */
+        .reviews-list{display:flex;flex-direction:column;gap:1rem}
+        .review-card{background:white;border:1px solid #E8E8E4;border-radius:2px;padding:1.25rem}
+        .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+        .review-name{font-size:14px;font-weight:500;color:#0F1A14}
+        .review-stars{color:#D6C5A0;font-size:12px}
+        .review-text{font-size:13px;color:#4A6A5A;line-height:1.6}
+        .review-date{font-size:11px;color:#B0BEB8;margin-top:.4rem}
+
+        /* RELACIONADOS */
+        .related{background:#F5F5F3;padding:3rem 2rem;border-top:1px solid #E8E8E4}
+        .related-inner{max-width:1200px;margin:0 auto}
+        .related-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.5rem}
+        .related-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0F1A14;margin-bottom:2rem}
+        .related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+        .related-card{background:white;border:1px solid #E8E8E4;border-radius:2px;overflow:hidden;cursor:pointer;transition:transform .2s}
+        .related-card:hover{transform:translateY(-3px)}
+        .related-img{height:140px;background:#E8ECE6;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .related-img img{width:100%;height:100%;object-fit:cover}
+        .related-img i{font-size:36px;color:#B0BEB8}
+        .related-info{padding:.75rem}
+        .related-name{font-size:13px;font-weight:500;color:#0F1A14;margin-bottom:.3rem;line-height:1.3}
+        .related-price{font-size:14px;font-weight:600;color:#1D7A4F}
+
+        /* FOOTER */
+        footer{background:#0F1A14;padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid #1A2820}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        footer p{font-size:11px;color:#2A4A38}
+
+        /* LOADING / ERROR */
+        .loading{text-align:center;padding:4rem 2rem;color:#6B8A7A}
+        .loading i{font-size:48px;margin-bottom:1rem;display:block;color:#B0BEB8}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:2rem;right:2rem;background:#0F1A14;color:#C8D8C0;padding:.75rem 1.2rem;border-radius:2px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.ok{border-left:3px solid #1D7A4F}
+        .toast.err{border-left:3px solid #DC2626}
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+            .product-main{grid-template-columns:1fr;gap:2rem;padding:1.5rem 1rem}
+            .desc-content{grid-template-columns:1fr}
+            .desc-img{display:none}
+            .specs-grid{grid-template-columns:1fr}
+            .nav-links{display:none}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Cocina</a>
+        <a href="index.html">Sets</a>
+        <a href="index.html">Regalos</a>
+        <a href="index.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon" aria-label="Carrito"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+    <a href="index.html">Inicio</a>
+    <span class="sep">›</span>
+    <a href="index.html">Productos</a>
+    <span class="sep">›</span>
+    <span class="current" id="breadcrumb-name">Cargando...</span>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div id="page-content">
+    <div class="loading">
+        <i class="ti ti-loader"></i>
+        Cargando producto...
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+let currentProduct = null;
+let currentPage = null;
+let quantity = 1;
+
+// ── Utilidades ────────────────────────────────────────────────────────────────
+function showToast(msg, type = "ok") {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    setTimeout(() => t.className = "toast", 3000);
+}
+
+function getProductId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+}
+
+// ── Inicialización ────────────────────────────────────────────────────────────
+async function init() {
+    // Navbar
+    if (isLoggedIn()) {
+        document.getElementById("nav-login").style.display = "none";
+        document.getElementById("nav-logout").style.display = "block";
+        try {
+            const me = await getMe();
+            document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+            if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+        } catch(e) {}
+    }
+
+    const productId = getProductId();
+    if (!productId) {
+        showError("No se especificó un producto.");
+        return;
+    }
+
+    try {
+        // Cargar producto y configuración de página en paralelo
+        const [product, page] = await Promise.all([
+            getProduct(productId),
+            getProductPage(productId)
+        ]);
+
+        currentProduct = product;
+        currentPage = page;
+
+        document.title = `${product.name} — Velonox`;
+        document.getElementById("breadcrumb-name").textContent = product.name;
+
+        renderProduct(product, page);
+        loadRelatedProducts(productId);
+
+    } catch(e) {
+        showError("No pudimos cargar este producto. " + e.message);
+    }
+}
+
+// ── Renderizar producto ───────────────────────────────────────────────────────
+function renderProduct(product, page) {
+    const inStock = product.stock > 0;
+    const specs = page.specs || [];
+    const features = page.features || [];
+    const variants = page.variants || [];
+    const description = page.description || product.description || "";
+
+    document.getElementById("page-content").innerHTML = `
+        <!-- PRODUCTO PRINCIPAL -->
+        <div class="product-main">
+
+            <!-- GALERÍA -->
+            <div class="gallery">
+                <div class="gallery-main" id="gallery-main">
+                    ${product.image_url
+                        ? `<img src="${product.image_url}" alt="${product.name}">`
+                        : `<i class="ti ti-tools-kitchen-2 no-img"></i>`
+                    }
+                    <span class="gallery-badge">VELONOX</span>
+                </div>
+                <div class="gallery-thumbs">
+                    <div class="gallery-thumb active" onclick="selectThumb(this, '${product.image_url || ''}')">
+                        ${product.image_url
+                            ? `<img src="${product.image_url}" alt="${product.name}">`
+                            : `<i class="ti ti-tools-kitchen-2"></i>`
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="product-info">
+                <p class="product-eyebrow">Acero inoxidable · Grado 304</p>
+                <h1 class="product-name">${product.name}</h1>
+
+                <div class="product-stars">
+                    <span class="stars">★★★★★</span>
+                    <span class="reviews-count">4.9 · Velonox</span>
+                </div>
+
+                <div class="price-row">
+                    <span class="price-main">$${product.price.toFixed(2)} USD</span>
+                    <span class="price-save">Envío gratis +$80</span>
+                </div>
+
+                <div class="stock-indicator ${inStock ? 'in-stock' : 'out-stock'}">
+                    <div class="stock-dot"></div>
+                    ${inStock ? `En stock · ${product.stock} unidades disponibles` : 'Sin stock'}
+                </div>
+
+                ${description ? `<p class="short-desc">${description.substring(0, 200)}${description.length > 200 ? '...' : ''}</p>` : ''}
+
+                ${variants.map(variant => `
+                <div>
+                    <p class="variants-label">${variant.name}</p>
+                    <div class="variants">
+                        ${variant.options.map((opt, i) => `
+                        <button class="variant-btn ${i===0?'active':''}"
+                            onclick="selectVariant(this)">${opt.label}</button>
+                        `).join('')}
+                    </div>
+                </div>`).join('')}
+
+                <div>
+                    <p class="qty-label">Cantidad</p>
+                    <div class="qty-row">
+                        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                        <span class="qty-num" id="qty-display">1</span>
+                        <button class="qty-btn" onclick="changeQty(1)">+</button>
+                    </div>
+                </div>
+
+                <button class="btn-add" id="btn-add"
+                    ${!inStock ? 'disabled' : ''}
+                    onclick="handleAddToCart()">
+                    <i class="ti ti-shopping-bag"></i>
+                    ${inStock ? 'Agregar al carrito' : 'Sin stock'}
+                </button>
+
+                <button class="btn-back" onclick="window.location.href='index.html'">
+                    <i class="ti ti-arrow-left"></i>
+                    Seguir explorando
+                </button>
+
+                <!-- TRUST BADGES -->
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <i class="ti ti-truck"></i>
+                        <strong>Envío gratis</strong>
+                        <span>Pedidos +$80 USD</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="ti ti-shield-check"></i>
+                        <strong>Garantía 2 años</strong>
+                        <span>Contra defectos</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="ti ti-refresh"></i>
+                        <strong>30 días</strong>
+                        <span>Devolución gratis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="content-tabs">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="showTab('desc', this)">Descripción</button>
+                <button class="tab-btn" onclick="showTab('specs', this)">Especificaciones</button>
+                <button class="tab-btn" onclick="showTab('features', this)">Características</button>
+                <button class="tab-btn" onclick="showTab('reviews', this)">Reseñas</button>
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="tab-content active" id="tab-desc">
+                <div class="desc-content">
+                    <div class="desc-text">
+                        <h3>Diseñada para durar décadas, no temporadas.</h3>
+                        <p>${description || 'Producto de acero inoxidable grado 304. Calidad premium para el hogar latinoamericano.'}</p>
+                        <p>A diferencia del teflón, que libera PFAS a partir de 260°C, el acero 304 es completamente inerte: nunca reacciona con los alimentos, sin importar la temperatura.</p>
+                    </div>
+                    <div class="desc-img">
+                        ${product.image_url
+                            ? `<img src="${product.image_url}" alt="${product.name}">`
+                            : `<i class="ti ti-tools-kitchen-2"></i>`
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESPECIFICACIONES -->
+            <div class="tab-content" id="tab-specs">
+                ${specs.length > 0
+                    ? `<div class="specs-grid">
+                        ${specs.map(s => `
+                        <div class="spec-item">
+                            <span class="spec-key">${s.key}</span>
+                            <span class="spec-val">${s.value}</span>
+                        </div>`).join('')}
+                    </div>`
+                    : `<p style="color:#6B8A7A;font-size:14px">No hay especificaciones disponibles.</p>`
+                }
+            </div>
+
+            <!-- CARACTERÍSTICAS -->
+            <div class="tab-content" id="tab-features">
+                ${features.length > 0
+                    ? `<div class="features-grid">
+                        ${features.map(f => `
+                        <div class="feature-card">
+                            <div class="feature-icon">${f.icon}</div>
+                            <p class="feature-title">${f.title}</p>
+                            <p class="feature-text">${f.text}</p>
+                        </div>`).join('')}
+                    </div>`
+                    : `<p style="color:#6B8A7A;font-size:14px">No hay características disponibles.</p>`
+                }
+            </div>
+
+            <!-- RESEÑAS -->
+            <div class="tab-content" id="tab-reviews">
+                <div class="reviews-list">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-name">María García</span>
+                            <span class="review-stars">★★★★★</span>
+                        </div>
+                        <p class="review-text">Excelente producto. La calidad del acero es notable y se nota la diferencia con otras marcas. Lo uso a diario y mantiene el calor de forma uniforme.</p>
+                        <p class="review-date">Junio 2025 · Bogotá, Colombia</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-name">Carlos López</span>
+                            <span class="review-stars">★★★★★</span>
+                        </div>
+                        <p class="review-text">Llevo 6 meses usándolo y está como nuevo. La inversión valió totalmente la pena. Compatible con mi vitrocerámica sin ningún problema.</p>
+                        <p class="review-date">Mayo 2025 · Ciudad de México</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-name">Ana Rodríguez</span>
+                            <span class="review-stars">★★★★★</span>
+                        </div>
+                        <p class="review-text">Desde que lo compré dejé de usar el teflón. Se limpia fácil y cocina parejo. El empaque llegó en perfectas condiciones.</p>
+                        <p class="review-date">Abril 2025 · Lima, Perú</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RELACIONADOS -->
+        <div class="related">
+            <div class="related-inner">
+                <p class="related-eyebrow">También te puede interesar</p>
+                <h2 class="related-title">Completa tu cocina</h2>
+                <div class="related-grid" id="related-grid">
+                    <div style="color:#6B8A7A;font-size:13px">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
+            <p>© 2025 Velonox · Cocina de por vida</p>
+        </footer>
+    `;
+}
+
+// ── Productos relacionados ────────────────────────────────────────────────────
+async function loadRelatedProducts(currentId) {
+    try {
+        const products = await getProducts();
+        const related = products.filter(p => p.id !== currentId).slice(0, 4);
+        const grid = document.getElementById("related-grid");
+        if (!grid) return;
+
+        if (related.length === 0) {
+            grid.innerHTML = `<p style="color:#6B8A7A;font-size:13px">No hay más productos disponibles.</p>`;
+            return;
+        }
+
+        grid.innerHTML = related.map(p => `
+            <div class="related-card" onclick="window.location.href='product.html?id=${p.id}'">
+                <div class="related-img">
+                    ${p.image_url
+                        ? `<img src="${p.image_url}" alt="${p.name}">`
+                        : `<i class="ti ti-tools-kitchen-2"></i>`
+                    }
+                </div>
+                <div class="related-info">
+                    <p class="related-name">${p.name}</p>
+                    <p class="related-price">$${p.price.toFixed(2)} USD</p>
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {}
+}
+
+// ── Interacciones ─────────────────────────────────────────────────────────────
+function showTab(tab, btn) {
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById(`tab-${tab}`).classList.add("active");
+    btn.classList.add("active");
+}
+
+function changeQty(delta) {
+    quantity = Math.max(1, Math.min(quantity + delta, currentProduct?.stock || 1));
+    document.getElementById("qty-display").textContent = quantity;
+}
+
+function selectVariant(btn) {
+    btn.closest(".variants").querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+}
+
+function selectThumb(thumb, imageUrl) {
+    document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
+    thumb.classList.add("active");
+    const main = document.getElementById("gallery-main");
+    if (imageUrl) {
+        main.innerHTML = `<img src="${imageUrl}" alt="Producto"><span class="gallery-badge">VELONOX</span>`;
+    }
+}
+
+async function handleAddToCart() {
+    if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+    }
+    try {
+        await addToCart(currentProduct.id, quantity);
+        showToast(`"${currentProduct.name}" agregado al carrito ✅`, "ok");
+    } catch(e) {
+        showToast(e.message, "err");
+    }
+}
+
+function showError(msg) {
+    document.getElementById("page-content").innerHTML = `
+        <div class="loading">
+            <i class="ti ti-alert-circle"></i>
+            <p style="margin-bottom:1rem">${msg}</p>
+            <button class="btn-back" onclick="window.location.href='index.html'"
+                style="margin:0 auto;display:inline-flex">
+                <i class="ti ti-arrow-left"></i> Volver a la tienda
+            </button>
+        </div>`;
+}
+
+// ── Funciones de API para product pages ───────────────────────────────────────
+async function getProductPage(productId) {
+    const response = await fetch(`${API}/product-pages/${productId}`);
+    if (!response.ok) throw new Error("Error cargando página del producto");
+    return response.json();
+}
+
+init();
+</script>
+</body>
+</html>
