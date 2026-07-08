@@ -5,13 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito — Velonox</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .cart-qty-btn{
+            width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+            font-size:1.1rem;line-height:1;padding:0;
+        }
+        .cart-empty{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+        .cart-empty p{margin-bottom:1.5rem;font-size:1.05rem}
+        @media (max-width:640px){
+            .cart-item{flex-wrap:wrap}
+            .cart-item .item-info{flex:1 1 60%;min-width:0}
+            .cart-item .item-line-total{margin-left:auto}
+        }
+    </style>
 </head>
 <body>
     <nav>
         <a href="index.html" class="logo text-brand">Velo<span class="accent">nox</span></a>
         <div class="nav-links">
             <a href="index.html">← Seguir comprando</a>
-            <a href="#" onclick="logout()">Salir</a>
+            <a href="#" id="nav-logout" onclick="logout(); return false;" style="display:none">Salir</a>
         </div>
     </nav>
 
@@ -23,79 +36,125 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
     <script>
-        if (!isLoggedIn()) window.location.href = "login.html";
+        // Mostrar "Salir" solo si hay sesión iniciada (no obligamos a loguearse)
+        if (isLoggedIn()) document.getElementById("nav-logout").style.display = "";
+
+        let productMap = {};   // product_id -> producto
 
         async function loadCart() {
+            const container = document.getElementById("cart-content");
+            const cart = getLocalCart();
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-empty">
+                        <p>Tu carrito está vacío.</p>
+                        <a href="index.html" class="btn btn-primary">Ver productos</a>
+                    </div>`;
+                return;
+            }
+
+            // Traer productos reales para precios/imágenes actualizados
             try {
-                const cart = await getCart();
-                const container = document.getElementById("cart-content");
+                const products = await getProducts();
+                productMap = {};
+                products.forEach(p => productMap[p.id] = p);
+            } catch (e) {
+                container.innerHTML = `<div class="alert alert-error">No se pudieron cargar los productos. Intenta de nuevo.</div>`;
+                return;
+            }
 
-                if (cart.items.length === 0) {
-                    container.innerHTML = `
-                        <div class="loading">
-                            Tu carrito está vacío.<br><br>
-                            <a href="index.html" class="btn btn-primary">Ver productos</a>
-                        </div>`;
-                    return;
-                }
+            // Filtrar items cuyo producto ya no existe
+            const validItems = cart.filter(i => productMap[i.product_id]);
+            if (validItems.length !== cart.length) saveLocalCart(validItems);
+            if (validItems.length === 0) { loadCart(); return; }
 
-                const itemsHTML = cart.items.map(item => `
+            let total = 0;
+            const itemsHTML = validItems.map(item => {
+                const p = productMap[item.product_id];
+                const lineTotal = p.price * item.quantity;
+                total += lineTotal;
+                return `
                     <div class="cart-item">
-                        <img src="${item.product.image_url || 'https://via.placeholder.com/80'}"
-                             alt="${item.product.name}">
+                        <img src="${p.image_url || 'https://via.placeholder.com/80'}" alt="${p.name}">
                         <div class="item-info">
-                            <div class="item-name">${item.product.name}</div>
-                            <div class="item-price">$${item.product.price.toFixed(2)} c/u</div>
+                            <div class="item-name">${p.name}</div>
+                            <div class="item-price">$${p.price.toFixed(2)} c/u</div>
                         </div>
                         <div style="display:flex; align-items:center; gap:0.5rem">
-                            <button class="btn btn-outline" onclick="changeQty('${item.id}', ${item.quantity - 1})">−</button>
+                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${p.id}', ${item.quantity - 1})">−</button>
                             <span style="min-width:2rem; text-align:center; font-weight:600">${item.quantity}</span>
-                            <button class="btn btn-outline" onclick="changeQty('${item.id}', ${item.quantity + 1})">+</button>
+                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${p.id}', ${item.quantity + 1})">+</button>
                         </div>
-                        <div style="font-weight:700; min-width:80px; text-align:right">
-                            $${(item.product.price * item.quantity).toFixed(2)}
+                        <div class="item-line-total" style="font-weight:700; min-width:80px; text-align:right">
+                            $${lineTotal.toFixed(2)}
                         </div>
-                        <button class="btn btn-danger" onclick="removeItem('${item.id}')">✕</button>
-                    </div>
-                `).join("");
-
-                container.innerHTML = `
-                    ${itemsHTML}
-                    <div class="cart-total">
-                        <div class="total-amount">Total: $${cart.total.toFixed(2)}</div>
-                        <button class="btn btn-primary" onclick="handleCheckout()">
-                            💳 Proceder al pago
-                        </button>
+                        <button class="btn btn-danger cart-qty-btn" onclick="removeItem('${p.id}')">✕</button>
                     </div>`;
-            } catch (e) {
-                document.getElementById("cart-content").innerHTML =
-                    `<div class="alert alert-error">${e.message}</div>`;
+            }).join("");
+
+            container.innerHTML = `
+                ${itemsHTML}
+                <div class="cart-total">
+                    <div class="total-amount">Total: $${total.toFixed(2)}</div>
+                    <button class="btn btn-primary" id="pay-btn" onclick="handleCheckout()">
+                        Proceder al pago
+                    </button>
+                </div>`;
+        }
+
+        function changeQty(productId, newQty) {
+            const p = productMap[productId];
+            if (p && newQty > p.stock) {
+                alert(`Solo hay ${p.stock} unidades disponibles.`);
+                return;
             }
+            setLocalQty(productId, newQty);
+            loadCart();
         }
 
-        async function changeQty(itemId, newQty) {
-            try {
-                await updateCartItem(itemId, newQty);
-                loadCart();
-            } catch (e) { alert(e.message); }
-        }
-
-        async function removeItem(itemId) {
-            try {
-                await removeFromCart(itemId);
-                loadCart();
-            } catch (e) { alert(e.message); }
+        function removeItem(productId) {
+            removeLocalItem(productId);
+            loadCart();
         }
 
         async function handleCheckout() {
+            if (getLocalCart().length === 0) return;
+
+            // El pago SÍ requiere sesión. Si no hay, guardamos la intención y
+            // enviamos a login; al volver, el pago continúa automáticamente.
+            if (!isLoggedIn()) {
+                localStorage.setItem("velonox_checkout_intent", "1");
+                window.location.href = "login.html?redirect=cart.html";
+                return;
+            }
+
+            const btn = document.getElementById("pay-btn");
+            if (btn) { btn.disabled = true; btn.textContent = "Procesando..."; }
             try {
+                await syncLocalCartToBackend();
                 const data = await checkout();
+                // No vaciamos el carrito local aquí: solo al confirmarse el pago
+                // (checkout.html), para no perderlo si el usuario cancela en Stripe.
                 window.location.href = data.checkout_url;
-            } catch (e) { alert(`❌ ${e.message}`); }
+            } catch (e) {
+                alert(e.message);
+                if (btn) { btn.disabled = false; btn.textContent = "Proceder al pago"; }
+            }
         }
 
-        loadCart();
+        // Al cargar: si el usuario acaba de iniciar sesión para pagar, continuar solo.
+        (async function init() {
+            if (isLoggedIn() && localStorage.getItem("velonox_checkout_intent")) {
+                localStorage.removeItem("velonox_checkout_intent");
+                await loadCart();
+                handleCheckout();
+                return;
+            }
+            loadCart();
+        })();
     </script>
 </body>
 </html>

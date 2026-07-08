@@ -87,8 +87,11 @@
 
     <script src="js/api.js"></script>
     <script>
-        // Si ya está logueado, redirigir a la tienda
-        if (isLoggedIn()) window.location.href = "index.html";
+        // Página a la que volver tras iniciar sesión (p. ej. el carrito al pagar)
+        const redirectTo = new URLSearchParams(location.search).get("redirect") || "index.html";
+
+        // Si ya está logueado, ir directo al destino
+        if (isLoggedIn()) window.location.href = redirectTo;
 
         function showTab(tab) {
             document.getElementById("login-form").style.display = tab === "login" ? "block" : "none";
@@ -109,7 +112,7 @@
             if (!email || !password) return showAlert("Completa todos los campos");
             try {
                 await login(email, password);
-                window.location.href = "index.html";
+                window.location.href = redirectTo;
             } catch (e) {
                 showAlert(e.message);
             }

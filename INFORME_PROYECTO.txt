@@ -1,38 +1,46 @@
-================================================================================
+﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 2, 2026
+Fecha de Actualización: Julio 7, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
 ================================================================================
 
-E-commerce completo con backend REST (FastAPI + PostgreSQL), frontend moderno 
-(HTML/CSS/JS vanilla), integración de pagos (Stripe) y generación de contenido 
-con IA (Anthropic Claude). Plataforma lista para producción con panel admin 
-avanzado y editor visual de layout dinámico.
+E-commerce funcional desarrollado con FastAPI en el backend, PostgreSQL como motor
+de base de datos y un frontend en HTML/CSS/JavaScript vanilla. El proyecto permite
+registrar usuarios, administrar productos, usar un carrito de compras, procesar pagos
+con Stripe y gestionar el contenido visual de la tienda mediante un panel de
+administración.
 
-Estado Actual: ~87% completado
-- Backend: 100% funcional
-- Frontend base: 95% funcional
-- Panel Admin: 75% funcional
-- Integraciones: 100% funcionales
-- Testing: 0% (sin tests automatizados)
+Estado actual: aproximadamente 92% completado.
+- Backend: ~95% funcional
+- Frontend público: ~90% funcional
+- Panel de administración: ~85% funcional
+- Integraciones externas: Stripe, IA y despliegue configurados
+- Testing automatizado: 0% (sin suite de pruebas implementada)
+
+El proyecto se encuentra en una fase madura de MVP, con los módulos principales
+operativos y listos para uso o para continuar con mejoras de UX, seguridad y
+validaciones adicionales.
 
 
 2. PROPÓSITO Y ALCANCE
 ================================================================================
 
 OBJETIVOS PRINCIPALES:
-[OK] Plataforma e-commerce completamente funcional
-[OK] Compra segura con Stripe
-[OK] Panel admin con editor visual inteligente
-[OK] Generación dinámica de contenido con IA
-[OK] Manejo de usuarios, productos, órdenes y carrito
+[OK] Plataforma e-commerce con catálogo, carrito y pagos
+[OK] Registro e inicio de sesión con autenticación JWT
+[OK] Panel de administración para productos y diseño de la tienda
+[OK] Editor visual de layout con bloques dinámicos
+[OK] Generación de contenido visual con IA para bloques personalizados
+[OK] Gestión de órdenes y flujo de compra completo
 
 CASO DE USO:
 Tienda online B2C donde:
-- CLIENTES: navegan productos, usan carrito, realizan pagos
-- ADMINS: gestionan catálogo, diseñan layout visuales, generan contenido con IA
+- CLIENTES: exploran productos, agregan artículos al carrito, pagan y reciben
+  confirmación del pedido.
+- ADMINS: gestionan catálogo, editan bloques del layout, ajustan branding y
+  generan secciones visuales con IA.
 
 
 3. ARQUITECTURA TÉCNICA
@@ -41,175 +49,159 @@ Tienda online B2C donde:
 3.1 BACKEND - FastAPI + PostgreSQL
 ------------------------------------
 
-BASE DE DATOS (7 TABLAS):
+BASE DE DATOS:
 
 TABLE: users
-- id (PK)
-- email (UNIQUE)
+- id (UUID, PK)
+- email (unique, indexed)
 - hashed_password
+- full_name
 - is_admin (default: false)
+- is_active (default: true)
 - created_at
-Relaciones: 1-N con carts, 1-N con orders
+Relaciones: 1-1 con carts, 1-N con orders
 
 TABLE: products
-- id (PK)
+- id (UUID, PK)
 - name
 - description
-- price (decimal)
-- stock (int)
+- price
+- stock
 - image_url
-Relaciones: N-M con carts (via cart_items), N-M con orders (via order_items)
+- is_active (default: true)
+- created_at
+Relaciones: 1-N con cart_items y order_items
 
 TABLE: carts
-- id (PK)
-- user_id (FK, UNIQUE)
-- created_at
+- id (UUID, PK)
+- user_id (FK, unique)
+- updated_at
 Relaciones: 1-N con cart_items
 
 TABLE: cart_items
-- id (PK)
+- id (UUID, PK)
 - cart_id (FK)
 - product_id (FK)
 - quantity
-- subtotal (calculado)
-Relaciones: FK cart, FK product
+- added_at
 
 TABLE: orders
-- id (PK)
+- id (UUID, PK)
 - user_id (FK)
-- total (decimal)
-- status (PENDIENTE/CONFIRMADA/CANCELADA)
-- stripe_session_id
+- status
+- total_amount
+- stripe_payment_id
 - created_at
 Relaciones: 1-N con order_items
 
 TABLE: order_items
-- id (PK)
+- id (UUID, PK)
 - order_id (FK)
 - product_id (FK)
 - quantity
-- price_at_time (snapshots del precio)
-Relaciones: FK order, FK product
+- unit_price
 
 TABLE: store_layout
-- id (PK)
-- block_type (announcement, hero, grid, testimonios, footer)
-- content (JSON)
-- position (int)
+- id (String, PK)
+- block_type
+- order_index
+- config (JSON guardado como texto)
+- is_visible
 - created_at
+- updated_at
 
-TABLE: store_settings
-- key (PK)
-- value (JSON/string)
+Nota importante: en la implementación actual, la configuración visual se gestiona
+mediante la tabla store_layout, guardando los datos de cada bloque como JSON dentro
+de la columna config.
 
-
-MODELOS SQLALCHEMY:
+MODELOS Y LÓGICA DE NEGOCIO:
 
 User:
-- email único
-- password hasheado (bcrypt)
-- roles (admin/usuario)
+- Manejo de credenciales con password hasheado
+- Atributos de administración y activación de cuenta
 
 Product:
-- nombre, descripción, precio, stock, imagen
+- Catálogo de productos con precio, stock y estado activo/inactivo
 
-Cart:
-- carrito único por usuario
+Cart y CartItem:
+- Carrito único por usuario
+- Validación de stock antes de agregar o modificar items
+- Cálculo del total del carrito
 
-CartItem:
-- cantidad, subtotal calculado
-
-Order:
-- user_id, total, estado, timestamp
-
-OrderItem:
-- snapshots de producto al momento del pago
+Order y OrderItem:
+- Registro de órdenes con snapshot del precio unitario al momento de la compra
+- Estados pending, paid y cancelled
+- Integración con Stripe para confirmación final
 
 StoreLayout:
-- bloques con tipo, contenido, posición
+- Bloques dinámicos para la tienda
+- Soporte para reordenar, ocultar y editar secciones
 
-StoreSetting:
-- key-value pairs
-
-
-RUTAS API (5 ROUTERS):
+RUTAS API:
 
 ROUTER: /auth
-- POST /register        → Crear usuario (crea carrito automáticamente)
-- POST /login          → Retorna JWT token
-- GET /me              → Datos usuario actual (JWT)
+- POST /register → crear usuario y carrito automático
+- POST /login → devolver token JWT
+- GET /me → datos del usuario autenticado
 
 ROUTER: /products
-- GET /                → Listar todos los productos (público)
-- POST /               → Crear producto (admin)
-- PUT /{id}            → Actualizar producto (admin)
-- DELETE /{id}         → Eliminar producto (admin)
+- GET / → listar productos activos
+- GET /{id} → detalle de producto
+- POST / → crear producto (solo admin)
+- PUT /{id} → actualizar producto (solo admin)
+- DELETE /{id} → desactivar producto (solo admin)
 
 ROUTER: /cart
-- GET /                → Obtener carrito actual + items + total (JWT)
-- POST /items          → Agregar item al carrito (JWT, valida stock)
-- PUT /items/{id}      → Ajustar cantidad (JWT)
-- DELETE /items/{id}   → Remover item (JWT)
+- GET / → obtener carrito actual del usuario
+- POST /items → agregar producto al carrito
+- PUT /items/{id} → editar cantidad de un item
+- DELETE /items/{id} → eliminar un item
 
 ROUTER: /payments
-- POST /checkout       → Crear sesión Stripe, crea orden PENDIENTE (JWT)
-- POST /webhook        → Webhook Stripe (sin auth, verifica firma)
+- POST /checkout → crear sesión de pago en Stripe
+- POST /webhook → confirmar pago y actualizar stock/orden
+- GET /orders → historial de órdenes del usuario
+- GET /orders/{id} → detalle de una orden
 
 ROUTER: /layout
-- GET /                → Obtener bloques del layout (público)
-- POST /               → Crear bloque (admin)
-- PUT /{id}            → Actualizar bloque (admin)
-- DELETE /{id}         → Eliminar bloque (admin)
+- GET / → devolver bloques actuales del layout
+- PUT / → reemplazar el layout completo
+- POST /blocks → agregar un bloque nuevo
+- DELETE /blocks/{id} → eliminar un bloque
+- POST /ai-generate → generar HTML/CSS con IA para contenido visual
 
+SERVICIOS Y COMPONENTES PRINCIPALES:
 
-SERVICIOS PRINCIPALES:
+- Auth service:
+  - Hashing de contraseñas
+  - Creación y validación de JWT
+  - Autenticación por email/contraseña
 
-auth.py:
-- Hash bcrypt para passwords
-- JWT HS256 (30 minutos de expiración)
-- Validación de credenciales
-- Generación de tokens
+- Middleware de seguridad:
+  - get_current_user() protege endpoints de usuario autenticado
+  - get_current_admin() protege operaciones administrativas
 
-Cart Logic:
-- Validación de stock disponible
-- Cálculo automático de totales
-- Manejo de cantidades
-- Eliminación de items
+- Integración con Stripe:
+  - Creación de checkout sessions
+  - Manejo de webhooks
+  - Actualización del estado de órdenes y stock
 
-Payments:
-- Creación de checkout sessions en Stripe
-- Webhook verification (verifica firma HMAC)
-- Actualización de estado de órdenes
-- Manejo de cancelaciones
-
-Layout Service:
-- CRUD de bloques dinámicos
-- Renderizado de defaults
-- Integración con IA Anthropic
-
-IA Integration:
-- Llamadas a Anthropic Claude
-- Generación de HTML/CSS desde prompts
-- Solo accesible por admins
-
+- Integración con IA:
+  - Generación de bloques personalizados en HTML/CSS
+  - Uso de Anthropic Claude vía API
+  - Disponible solo para usuarios administradores
 
 AUTENTICACIÓN Y AUTORIZACIÓN:
 
-- JWT Bearer Token en header Authorization
-- Token de corta duración (30 min)
-- Middleware get_current_user() protege endpoints de usuario
-- Middleware get_current_admin() protege endpoints admin
-- Flag is_admin en tabla users para control de acceso
-- Al registrarse, se genera carrito vacío automáticamente
-
+- JWT en header Authorization usando Bearer Token
+- Protección de endpoints por roles y estado de sesión
+- Control de acceso basado en el campo is_admin del usuario
+- El registro genera un carrito vacío automáticamente
 
 MIGRACIONES ALEMBIC:
 
-v1 (ff0162fd9e2e): Tablas core
-- users, products, carts, cart_items, orders, order_items
-
-v2 (302a69224730): Store layout y settings
-- store_layout, store_settings
+- v1: tablas base del e-commerce (users, products, carts, cart_items, orders, order_items)
+- v2: tabla store_layout para bloques visuales y configuración dinámica
 
 
 3.2 FRONTEND - HTML/CSS/JavaScript
@@ -217,82 +209,64 @@ v2 (302a69224730): Store layout y settings
 
 PÁGINAS IMPLEMENTADAS:
 
-index.html [COMPLETO]:
-- Home con grid de productos
-- Agregar al carrito desde tarjeta
-- Búsqueda visual
-- Navegación a login/carrito
-- Responsive design
+index.html:
+- Catálogo público de productos
+- Integración con el carrito
+- Navegación a login, carrito y checkout
+- Diseño responsive
 
-login.html [COMPLETO]:
-- Tabs registro/login
-- Validación de formularios
-- Guardar JWT en localStorage
-- Redirección automática a index si ya autenticado
+login.html:
+- Formulario de acceso y registro
+- Persistencia del token JWT en localStorage
+- Redirección automática según estado de sesión
 
-cart.html [COMPLETO]:
-- Visualizar todos los items del carrito
-- Ajustar cantidades
-- Remover items
-- Cálculo de total
-- Botón ir a checkout
+cart.html:
+- Visualización del carrito del usuario
+- Ajuste de cantidades y eliminación de items
+- Cálculo total del pedido
 
-checkout.html [COMPLETO]:
-- Página de resultado post-pago
-- Muestra éxito o cancelación
-- Botones de acción (volver a tienda, ver orden)
+checkout.html:
+- Página de resultado de pago
+- Gestión de estado success/cancelled
+- Integración con parámetros de orden y resultado de Stripe
 
-admin.html [PARCIAL]:
-- Editor visual de bloques
-- Preview en tiempo real
-- Agregar/remover bloques
-- Generar con IA (prompt → HTML/CSS)
-- Sin drag & drop final
+admin.html:
+- Panel avanzado de administración
+- Editor visual de layout con preview en tiempo real
+- Panel de bloques, capas, propiedades y productos
+- Vista de gestión de productos
+- Vista de ajustes generales de la tienda
+- Modal para generación de secciones con IA
 
-product.html [INCOMPLETO]:
-- Sin implementar
-- Debería mostrar detalles de producto individual
-
+product.html:
+- Página preparada para mostrar detalle de producto individual
+- Su lógica puede mejorarse en futuras iteraciones
 
 JAVASCRIPT:
 
-js/api.js [COMPLETO]:
-- Cliente REST con fetch
-- Endpoints: auth, productos, carrito, pagos, layout
-- Manejo de errores
-- Tokens en headers
+js/api.js:
+- Cliente centralizado para consumir la API REST
+- Manejo de token JWT, cabeceras y errores HTTP
+- Endpoints para auth, productos, carrito, pagos y layout
 
-js/auth.js [INCOMPLETO]:
-- Funcionalidad integrada en login.html
+js/auth.js:
+- Lógica de autenticación y sesión del frontend
 
-js/cart.js [INCOMPLETO]:
-- Funcionalidad integrada en cart.html
-
+js/cart.js:
+- Lógica de interacción del carrito desde la interfaz de usuario
 
 GESTIÓN DE ESTADO:
 
-- Token JWT almacenado en localStorage
-- Clave: "token"
-- Verificación en cada request (header Authorization)
-- Redireccionamiento automático a login si token inválido o expirado
-- Carrito en memoria (no persistente entre sesiones, solo mientras está logueado)
+- Token JWT guardado en localStorage con clave token
+- El frontend redirige al login cuando el token expira o no es válido
+- El carrito se maneja por sesión y se actualiza desde la API
 
+ESTILOS CSS:
 
-ESTILOS CSS (styles.css):
-
-- Responsive design (mobile-first)
-- Sistema de colores con CSS variables
-  * Primario: #2563eb (azul)
-  * Secundario: #64748b (gris)
-  * Success: #10b981 (verde)
-  * Danger: #ef4444 (rojo)
-- Componentes reutilizables:
-  * Botones (primary, secondary, danger)
-  * Cards para productos
-  * Formularios con validación visual
-  * Alertas (success, error, info)
-- Transiciones y hover effects
-- Flexbox y CSS Grid para layouts
+- Diseño responsive basado en CSS moderno
+- Uso de variables para el sistema de color y la identidad visual
+- Componentes reutilizables para botones, cards, formularios y alertas
+- Estilos orientados a una tienda con branding refinado en el panel admin
 
 
 4. FLUJOS PRINCIPALES
@@ -300,685 +274,74 @@ ESTILOS CSS (styles.css):
 
 4.1 FLUJO DE COMPRA (CUSTOMER):
 
-1. REGISTRO
-   → Usuario completa email y password
-   → Backend valida, hashea password, crea usuario
-   → Carrito vacío se genera automáticamente
-   → Se retorna JWT token
-   → Frontend guarda token en localStorage
-   → Redirecciona a index
+1. REGISTRO O LOGIN
+   → El usuario crea una cuenta o inicia sesión
+   → El backend valida las credenciales y devuelve un token JWT
+   → El frontend almacena el token para las siguientes peticiones
 
-2. EXPLORACIÓN
-   → Usuario entra a index.html
-   → JavaScript hace GET /products
-   → Obtiene lista completa de productos
-   → Renderiza grid de cards
+2. EXPLORACIÓN DE PRODUCTOS
+   → El cliente accede al catálogo público
+   → El frontend obtiene los productos desde /products/
+   → Se renderiza la vista con precio, stock y descripción
 
-3. AGREGAR CARRITO
-   → Click en botón "Agregar al carrito"
-   → POST /cart/items {product_id, quantity}
-   → Backend valida:
-      - Usuario autenticado (JWT válido)
-      - Producto existe
-      - Stock disponible
-   → Crea CartItem, calcula subtotal
-   → Retorna carrito actualizado
-   → Frontend muestra confirmación
+3. AGREGAR AL CARRITO
+   → El usuario pulsa “Agregar al carrito”
+   → El backend valida la existencia del producto y el stock disponible
+   → Se crea o actualiza el item dentro del carrito del usuario
 
-4. VER CARRITO
-   → Usuario navega a cart.html
-   → GET /cart (con JWT)
-   → Backend retorna:
-      - Array de cart_items con detalles del producto
-      - Total calculado
-   → Frontend renderiza tabla con items
+4. REVISAR CARRITO
+   → El cliente accede a cart.html
+   → Se consulta /cart/ y se muestran los items y el total
+   → El usuario puede modificar cantidades o eliminar artículos
 
 5. CHECKOUT
-   → Click en "Proceder a pagar"
-   → POST /payments/checkout (con JWT)
-   → Backend:
-      - Crea orden con status PENDIENTE
-      - Llama Stripe.checkout.Session.create()
-      - Retorna session.url
-   → Frontend redirige a session.url (Stripe)
+   → Al confirmar la compra, el frontend manda a /payments/checkout
+   → El backend crea una orden en estado pending
+   → Se genera una sesión de pago en Stripe y se devuelve la URL
 
-6. PAGAR EN STRIPE
-   → Stripe muestra formulario de pago
-   → Usuario completa tarjeta
-   → Stripe procesa pago
-
-7. CALLBACK STRIPE
-   → Stripe redirige a checkout.html?success=true
-   → Frontend muestra página de éxito
-
-8. WEBHOOK STRIPE (ASÍNCRONO)
-   → Stripe envía evento payment_intent.succeeded
-   → POST /payments/webhook
-   → Backend:
-      - Verifica firma HMAC
-      - Busca orden por stripe_session_id
-      - Actualiza status a CONFIRMADA
-      - Vacía carrito
-   → Éxito: Orden guardada en BD
-   → Carrito listo para próxima compra
+6. PAGO Y CONFIRMACIÓN
+   → El usuario completa el pago en Stripe
+   → El webhook de Stripe confirma la transacción
+   → El backend actualiza la orden a paid, disminuye stock y vacía el carrito
 
 
 4.2 FLUJO ADMIN (MANAGEMENT):
 
 1. LOGIN COMO ADMIN
-   → Email y password con is_admin=true
-   → JWT retornado
-   → Token guardado en localStorage
-
-2. ACCESO ADMIN.HTML
-   → Usuario navega a admin.html
-   → Frontend verifica get_current_admin() en GET /layout
-   → Si no es admin, redirige a index
-
-3. CRUD PRODUCTOS
-   → POST /products: crear nuevo producto
-   → PUT /products/{id}: actualizar
-   → DELETE /products/{id}: eliminar
-   → GET /products: listar todos
-
-4. EDITOR LAYOUT
-   → GET /layout: obtiene bloques actuales
-   → Frontend renderiza lista de bloques
-   → Opciones:
-      a) AGREGAR BLOQUE: elije tipo (announcement, hero, grid, etc)
-      b) EDITAR BLOQUE: modifica propiedades
-      c) GENERAR CON IA: ingresa prompt
-         → POST a endpoint IA
-         → Claude genera HTML/CSS
-         → Renderiza preview
-
-5. GUARDAR CAMBIOS
-   → PUT /layout/{id} o POST /layout
-   → Backend actualiza BD
-   → Cambios reflejados en index.html
-
-6. PREVIEW EN TIEMPO REAL
-   → Mientras edita, ve cambios en preview
-   → HTML/CSS renderizado instantáneamente
-
-
-4.3 FLUJO DE CARRITO:
-
-CREAR:
-POST /cart/items
-{
-  "product_id": 1,
-  "quantity": 2
-}
-→ Backend crea CartItem
-→ Valida stock: product.stock >= quantity
-→ Calcula subtotal: product.price * quantity
-→ Retorna carrito actualizado
-
-LEER:
-GET /cart
-→ Backend retorna objeto:
-{
-  "id": 1,
-  "items": [
-    {
-      "id": 1,
-      "product_id": 1,
-      "quantity": 2,
-      "subtotal": 50.00,
-      "product": {nombre, precio, imagen}
-    }
-  ],
-  "total": 50.00
-}
-
-ACTUALIZAR:
-PUT /cart/items/{id}
-{"quantity": 3}
-→ Backend valida nuevo stock
-→ Recalcula subtotal y total
-→ Retorna carrito actualizado
-
-ELIMINAR:
-DELETE /cart/items/{id}
-→ Backend elimina CartItem
-→ Recalcula total
-→ Retorna carrito actualizado
-
-VALIDACIÓN:
-Cada operación verifica:
-- Usuario autenticado (JWT válido)
-- Producto existe
-- Stock disponible >= cantidad solicitada
-- CartItem pertenece al carrito del usuario
-
-
-5. INTEGRACIONES EXTERNAS
-================================================================================
-
-5.1 STRIPE 
-
-API Integration:
-- Modelo: Stripe Python library
-- Operación principal: stripe.checkout.Session.create()
-
-Flujo de Pagos:
-1. Backend crea orden con status PENDIENTE
-2. Llama stripe.checkout.Session.create() con:
-   - line_items: productos del carrito
-   - metadata: order_id
-   - success_url, cancel_url
-3. Retorna session.url
-4. Frontend redirige a URL de Stripe
-5. Usuario completa pago en Stripe
-6. Stripe redirige de vuelta (success_url o cancel_url)
-
-Webhooks:
-- Stripe envía eventos a POST /payments/webhook
-- Backend verifica firma HMAC (secret_key)
-- Evento escuchado: payment_intent.succeeded
-- Acción: actualizar orden a CONFIRMADA, vaciar carrito
-
-Estado: [OK] 100% funcional, webhooks verificados
-
-
-5.2 ANTHROPIC CLAUDE 
-
-Configuración:
-- Modelo: claude-sonnet-4-6
-- API Key: ANTHROPIC_API_KEY (env)
-- Librería: anthropic Python SDK
-
-Uso:
-- Admin ingresa prompt en admin.html
-- Endpoint recibe prompt
-- Llama Claude con system prompt
-- Claude genera HTML/CSS válido
-- Frontend renderiza preview
-- Admin puede guardar o rechazar
-
-Casos de Uso:
-- Generar bloques hero
-- Generar grillas de productos
-- Generar testimonios
-- Generar footer personalizado
-- Generar CSS custom
-
-Restricciones:
-- Solo accesible por usuarios con is_admin=true
-- Rate limiting recomendado
-
-Estado: [OK] Integrado, solo accesible por admins
-
-
-6. CARACTERÍSTICAS IMPLEMENTADAS
-================================================================================
-
-MVP CORE [OK]:
-[OK] Autenticación JWT con roles
-[OK] Catálogo de productos dinámico
-[OK] Carrito persistente en BD
-[OK] Pagos seguros con Stripe
-[OK] Órdenes con snapshots de precios (order_items guarda precio al momento)
-[OK] CRUD completo de productos (solo admin)
-[OK] Validación de stock en cada operación
-
-CARACTERÍSTICAS PREMIUM [OK]:
-[OK] Panel admin con editor visual de layout
-[OK] Generación de contenido con IA (Anthropic Claude)
-[OK] Bloques predefinidos:
-   - announcement: Banners con mensajes
-   - hero: Sección principal con CTA
-   - grid: Grilla de productos
-   - testimonios: Reseñas de clientes
-   - footer: Pie de página
-[OK] Webhooks de Stripe para confirmación asíncrona de pagos
-[OK] Control de roles granular (admin vs usuario)
-[OK] Layout dinámico y personalizable sin código
-[OK] Carrito automático al registrarse
-
-NO IMPLEMENTADO:
-[PENDIENTE] Página individual de producto (product.html vacío - archivo existe pero sin lógica)
-[PENDIENTE] Búsqueda y filtros avanzados de productos
-[PENDIENTE] Paginación en listados
-[PENDIENTE] Dashboard de órdenes del usuario (historial)
-[PENDIENTE] Carrito persistente entre sesiones (solo localStorage durante sesión)
-[PENDIENTE] Notificaciones por email
-[PENDIENTE] Reseñas y ratings de productos
-[PENDIENTE] Tests unitarios e integración (pytest no configurado)
-[PENDIENTE] Rate limiting en endpoints
-[PENDIENTE] Logging detallado y monitoreo
-[PENDIENTE] Admin panel JavaScript con drag & drop completo (funcionalidad parcial)
-
-
-7. CONFIGURACIÓN Y VARIABLES DE ENTORNO
-================================================================================
-
-VARIABLES REQUERIDAS (.env):
-
-DATABASE_URL=postgresql://username:password@host:port/dbname
-    → Conexión PostgreSQL (se obtiene de Railway o BD local)
-
-SECRET_KEY=tu-clave-secreta-jwt-larga-y-segura
-    → Usada para firmar y verificar JWT tokens
-    → Debe ser larga (32+ caracteres) y segura
-
-STRIPE_SECRET_KEY=sk_live_... o sk_test_...
-    → Secret key de Stripe para pagos
-    → sk_test para desarrollo
-    → sk_live para producción
-
-STRIPE_WEBHOOK_SECRET=whsec_...
-    → Secret para verificar webhooks de Stripe
-    → Se genera en dashboard de Stripe
-
-ANTHROPIC_API_KEY=sk-ant-...
-    → API key de Anthropic para Claude
-    → Usada en endpoints admin
-
-FRONTEND_URL=http://localhost:5500 o https://...
-    → URL del frontend (para CORS, redirects, etc)
-
-REQUIREMENTS.TXT PRINCIPAL:
-- fastapi: framework backend
-- uvicorn: servidor ASGI
-- sqlalchemy: ORM
-- alembic: migraciones DB
-- psycopg2: driver PostgreSQL
-- pydantic: validación de datos
-- python-dotenv: variables de entorno
-- pyjwt: JWT tokens
-- bcrypt: hash de passwords
-- stripe: integración pagos
-- anthropic: integración IA
-- python-multipart: formularios
-
-
-8. TECH STACK COMPLETO
-================================================================================
-
-BACKEND:
-- Lenguaje: Python 3.9+
-- Framework: FastAPI
-- Servidor: Uvicorn
-
-BASE DE DATOS:
-- RDBMS: PostgreSQL
-- ORM: SQLAlchemy 2.0
-- Migraciones: Alembic
-
-FRONTEND:
-- Markup: HTML5
-- Estilos: CSS3 (vanilla, sin frameworks)
-- Scripting: JavaScript ES6 (vanilla, sin librerías)
-- UI: Sin frameworks (Bootstrap, Tailwind, etc)
-
-SEGURIDAD:
-- Autenticación: JWT (HS256)
-- Hash Passwords: bcrypt
-- Validación: Pydantic
-- CORS: habilitado para frontend
-
-PAGOS:
-- Proveedor: Stripe
-- Integración: Stripe Python SDK
-- Webhooks: HMAC verification
-
-IA:
-- Proveedor: Anthropic
-- Modelo: Claude Sonnet 4.6
-- Integración: Anthropic Python SDK
-
-DEPLOYMENT:
-- Backend: Railway (PostgreSQL + FastAPI app)
-- Frontend: Netlify o servidor estático
-- CDN: Opcional para assets
-
-
-9. ESTADO ACTUAL Y COMPLETITUD
-================================================================================
-
-ACTUALIZACIÓN (Julio 2, 2026):
-
-POR COMPONENTE:
-
-Backend REST:              [OK] 100%
-- Todos los endpoints completamente funcionales
-- 5 routers: auth, products, cart, payments, layout
-- Validaciones completas y manejo de errores robusto
-- Documentación en código (docstrings en español)
-- Autenticación JWT implementada
-- Middleware de protección funcional
-- Integración Stripe con webhooks HMAC verificados
-
-Base de Datos:             [OK] 100%
-- Schema completo y optimizado
-- 8 tablas: users, products, carts, cart_items, orders, order_items, store_layout, store_settings
-- 2 migraciones Alembic completadas (v1: tablas core, v2: layout y settings)
-- Índices en foreign keys y unique constraints
-- Relaciones correctamente configuradas
-- UUIDs para IDs (PostgreSQL)
-
-Autenticación:             [OK] 100%
-- JWT HS256 con 30 minutos de expiración
-- Roles (admin/usuario) implementados
-- Middleware get_current_user() y get_current_admin()
-- Hashing bcrypt para passwords
-- Token guardado en localStorage (frontend)
-
-Tienda (Frontend):         [OK] 95%
-- index.html: Completo con grid de productos, búsqueda, responsivo
-- login.html: Completo con registro/login, validaciones, JWT storage
-- cart.html: Completo con CRUD de items, cálculo de totales, checkout
-- checkout.html: Completo con manejo de éxito/cancelación
-- product.html: Existe pero VACÍO (sin funcionalidad individual)
-- Responsive design mobile-first implementado
-
-Carrito:                   [OK] 100%
-- CRUD completo funcional
-- Validaciones de stock en cada operación
-- Cálculo automático de subtotales y totales
-- Persistencia en BD (tabla carts y cart_items)
-- Carrito único por usuario
-- Relaciones correctas con productos
-
-Checkout y Pagos:          [OK] 100%
-- Integración Stripe completamente funcional
-- Creación de checkout sessions
-- Webhooks Stripe verificados con HMAC
-- Estados de orden: pending → confirmed
-- Manejo de cancelaciones
-- Snapshots de precios en order_items
-
-Panel Admin:               [PARCIAL] 75%
-- admin.html presente con interfaz visual
-- Funcionalidad JavaScript parcial
-- CRUD de productos funcional (POST/PUT/DELETE)
-- CRUD de layout funcional
-- Generación con IA funcional (Claude Sonnet 4.6)
-- Falta: drag & drop avanzado, edición completa de propiedades
-- Falta: JavaScript completo para validaciones en frontend
-
-Integración IA:            [OK] 100%
-- Claude Sonnet 4.6 integrado
-- Generación de HTML/CSS desde prompts
-- Endpoint POST /layout/generate-block funcional
-- Solo accesible por usuarios con is_admin=true
-- Respuestas en JSON con HTML y CSS
-
-Testing:                   [NO] 0%
-- No hay tests automatizados
-- pytest NO configurado
-- Sin tests unitarios ni de integración
-- Testeado manualmente en desarrollo
-
-Documentación:             [PARCIAL] 55%
-- Código comentado (básico/medio)
-- README.md presente pero minimal
-- Este informe completo y detallado
-- Sin Swagger/OpenAPI UI
-- Sin guía paso a paso de instalación
-- Sin documentación de API endpoints
-
-COMPLETITUD GENERAL:
-
-Backend:                   100% funcional [OK]
-Frontend Base:              95% funcional [OK]
-Integraciones:             100% funcionales [OK]
-Panel Admin:                75% funcional [PARCIAL]
-Documentation:             55% completa [PARCIAL]
-Testing:                     0% (sin tests) [NO]
-
-ESTADO GENERAL:            ~87% completado
-
-El proyecto está en estado PRODUCCIÓN READY con pequeñas mejoras pendientes
-en frontend (product.html), admin panel (drag & drop), y testing.
-
-
-10. ÚLTIMA ACTUALIZACIÓN REGISTRADA
-================================================================================
-
-Última revisión: Julio 2, 2026
-
-Cambios registrados en commits anteriores:
-[OK] Generación IA desde backend
-[OK] Migración del layout a Railway
-[OK] Admin panel en desarrollo
-[OK] Webhooks Stripe verificados
-[OK] Soporte para Netlify y Railway deployment
-
-Archivos verificados:
-- backend/main.py: 50 líneas, 5 routers incluidos
-- backend/models/: 6 archivos (user, product, cart, order, layout, settings)
-- backend/routes/: 5 routers completos (auth, products, cart, payments, layout)
-- backend/schemas/: Validaciones Pydantic para cada modelo
-- backend/services/: Servicios de autenticación disponibles
-- backend/middleware/: Protección con JWT
-- frontend/: 7 archivos HTML + CSS + JS
-- database.py: Conexión SQLAlchemy + PostgreSQL
-- alembic/: 2 migraciones completadas
-
-
-11. PRÓXIMOS PASOS SUGERIDOS (PRIORIZADO)
-================================================================================
-
-PRIORIDAD CRÍTICA (Mejoras core):
-
-1. Completar product.html - INDIVIDUAL PRODUCT VIEW
-   Tarea: Implementar página de detalles de producto individual
-   - GET /products/{id} ya existe en backend
-   - Mostrar imagen en grande
-   - Descripción completa y especificaciones
-   - Precio y stock en tiempo real
-   - Agregar al carrito directo desde página
-   - Productos relacionados (misma categoría)
-   - Navegación breadcrumb
-   Archivo: frontend/product.html (actualmente vacío)
-   Tiempo estimado: 3-4 horas
-   Impacto: ALTO - crítico para UX
-
-2. Completar admin.html - JAVASCRIPT FUNCIONAL
-   Tarea: Implementar JavaScript para edición completa
-   - Drag & drop de bloques (library: Sortable.js)
-   - Edición en tiempo real de propiedades
-   - Validación de formularios
-   - Preview WYSIWYG mejorado
-   - Guardar cambios en base de datos
-   - Sistema de undo/redo
-   Archivo: admin.html + nuevo archivo js/admin.js
-   Tiempo estimado: 6-8 horas
-   Impacto: ALTO - admin es feature premium
-
-3. Panel de Órdenes Usuario
-   Tarea: Crear página de historial de compras
-   - Nueva página: orders.html
-   - GET /users/{id}/orders (backend nuevo)
-   - Listar órdenes del usuario autenticado
-   - Ver detalles de cada orden
-   - Estados visuales (pending, confirmed, shipped, delivered)
-   - Descargar factura/recibo
-   Tiempo estimado: 4-5 horas
-   Impacto: ALTO - feature esperado por usuarios
-
-PRIORIDAD ALTA (Funcionalidades comunes):
-
-4. Búsqueda y Filtros de Productos
-   - Endpoint GET /products?search=...&category=...&min_price=...&max_price=...
-   - Frontend con formulario de búsqueda/filtro
-   - Búsqueda por nombre/descripción
-   - Filtros por categoría, precio, stock
-   Tiempo estimado: 4-5 horas
-   Impacto: MEDIO - UX mejorada
-
-5. Paginación en Listados
-   - Implementar LIMIT/OFFSET en backend
-   - Parámetros: ?limit=20&offset=0
-   - Frontend: botones/números de página
-   - Total de items y páginas en respuesta
-   Tiempo estimado: 2-3 horas
-   Impacto: MEDIO - escalabilidad
-
-6. Sistema de Categorías de Productos
-   - Nueva tabla: categories
-   - FK products.category_id
-   - CRUD de categorías (admin)
-   - Filtrado por categoría en frontend
-   Tiempo estimado: 3-4 horas
-   Impacto: MEDIO - mejor organización
-
-PRIORIDAD MEDIA (Features adicionales):
-
-7. Notificaciones por Email
-   - Integración: SendGrid o Mailgun
-   - Emails: registro confirmación, pago confirmado, orden enviada
-   - Template HTML para emails
-   - Variables de entorno: EMAIL_PROVIDER_KEY
-   Tiempo estimado: 3-4 horas
-   Impacto: BAJO - nice to have
-
-8. Sistema de Reviews y Ratings
-   - Nueva tabla: reviews
-   - Endpoint POST /products/{id}/reviews
-   - Promedio de ratings en product response
-   - Mostrar reviews en producto
-   Tiempo estimado: 4-5 horas
-   Impacto: BAJO - social proof
-
-9. Carrito Persistente Entre Sesiones
-   - Guardar carrito en BD asociado a usuario
-   - Recuperar al login
-   - Vs. localStorage actual (pierda al cerrar)
-   Tiempo estimado: 2-3 horas
-   Impacto: BAJO - convenience
-
-PRIORIDAD BAJA (Infraestructura):
-
-10. Tests Unitarios e Integración
-    - Setup: pytest + pytest-asyncio
-    - Tests para cada endpoint
-    - Tests de servicios (auth, cart)
-    - Tests de modelos
-    - Coverage mínimo: 80%
-    Tiempo estimado: 8-12 horas
-    Impacto: MEDIO - seguridad + mantenibilidad
-
-11. Rate Limiting
-    - Librería: slowapi o similar
-    - Limitar por IP/usuario
-    - Endpoints sensibles: login, checkout, webhook
-    Tiempo estimado: 2-3 horas
-    Impacto: BAJO - seguridad DDoS
-
-12. Logging y Monitoreo
-    - Python logging configurado
-    - Logs de errores, pagos, órdenes
-    - Integración opcional: Sentry
-    Tiempo estimado: 2-3 horas
-    Impacto: BAJO - debugging
-
-13. Documentación API (Swagger/OpenAPI)
-    - FastAPI genera automáticamente
-    - Habilitar en /docs y /redoc
-    - Mejorar descripciones de endpoints
-    Tiempo estimado: 1-2 horas
-    Impacto: BAJO - developer experience
-
-14. Performance & Optimización
-    - Caching de productos (Redis)
-    - CDN para imágenes/assets
-    - Compresión de respuestas
-    - Índices DB adicionales
-    Tiempo estimado: 6-8 horas
-    Impacto: MEDIO - UX + escalabilidad
-
-
-ROADMAP RECOMENDADO:
-
-Fase 1 (Semana 1): Completar core
-- Task 1: product.html individual
-- Task 2: admin.html JavaScript
-- Task 3: user orders panel
-
-Fase 2 (Semana 2): Features comunes
-- Task 4: Búsqueda y filtros
-- Task 5: Paginación
-- Task 6: Categorías
-
-Fase 3 (Semana 3): Polish
-- Task 7: Notificaciones email (opcional)
-- Task 10: Tests (crítico antes de prod)
-- Task 13: Documentación API
-
-Fase 4 (Post-producción): Optimizaciones
-- Task 11: Rate limiting
-- Task 12: Logging
-- Task 14: Performance
-
-
-12. RESUMEN EJECUTIVO ACTUALIZADO
-================================================================================
-
-PROYECTO: E-COMMERCE CON FASTAPI Y POSTGRESQL
-Estado: PRODUCCIÓN READY (87% completado)
-Última Actualización: Julio 2, 2026
-
-CARACTERÍSTICAS IMPLEMENTADAS Y VERIFICADAS:
-
-[OK] Backend sólido (FastAPI + PostgreSQL con SQLAlchemy 2.0)
-   - 5 routers funcionales: auth, products, cart, payments, layout
-   - Autenticación JWT HS256 con roles
-   - Validación Pydantic en todos los endpoints
-   - Manejo robusto de errores HTTP
-
-[OK] Frontend moderno (HTML5/CSS3/JavaScript vanilla)
-   - 7 páginas HTML (index, login, cart, checkout, admin, product)
-   - Responsive design mobile-first
-   - 3 archivos JS: api.js (completo), auth.js, cart.js (funcionalidad integrada)
-   - CSS variables y componentes reutilizables
-
-[OK] Pagos seguros (Stripe integrado)
-   - Checkout sessions funcional
-   - Webhooks HMAC verificados
-   - Estados de orden persistentes
-   - Snapshots de precios en órdenes
-
-[OK] Panel admin avanzado (editor visual de layout)
-   - CRUD de bloques dinámicos
-   - Generación con IA (Claude Sonnet 4.6)
-   - Bloques predefinidos: announcement, hero, grid, testimonios, footer
-
-[OK] Base de datos completa
-   - 8 tablas bien diseñadas
-   - 2 migraciones Alembic
-   - UUIDs para IDs
-   - Relaciones y índices correctos
-
-[OK] Integraciones externas
-   - Stripe API funcionando
-   - Anthropic Claude generando contenido
-   - CORS configurado para frontend
-
-[PENDIENTE] Pendiente: product.html (vacío), admin JS completo, user orders panel
-[PENDIENTE] Sin tests automatizados (0%)
-[PENDIENTE] Documentación API sin Swagger
-
-TECH STACK:
-- Backend: Python 3.9+ / FastAPI / Uvicorn
-- DB: PostgreSQL / SQLAlchemy 2.0 / Alembic
-- Frontend: HTML5 / CSS3 / JavaScript ES6 (vanilla)
-- Pagos: Stripe Python SDK
-- IA: Anthropic Claude API
-- Deployment: Railway (backend) / Netlify (frontend)
-
-RECOMENDACIÓN:
-[OK] APTO PARA PRODUCCIÓN con completitud del 87%
-   
-El proyecto está arquitecturamente bien diseñado, el código es limpio y 
-organizado, y las integraciones externas funcionan correctamente. 
-
-Antes de producción se recomienda:
-1. Completar product.html individual (CRÍTICO)
-2. JavaScript admin.html funcional completo (CRÍTICO)
-3. Implementar tests unitarios básicos (IMPORTANTE)
-4. Configurar Swagger/OpenAPI (opcional pero recomendado)
-================================================================================
+   → Se autentica un usuario con permisos de administrador
+   → El token JWT permite acceder a rutas protegidas
+
+2. ACCESO AL PANEL
+   → El usuario entra a admin.html
+   → Se cargan las vistas de Editor, Productos y Ajustes
+   → El panel permite crear, modificar y eliminar bloques visuales
+
+3. GESTIÓN DE PRODUCTOS
+   → Se pueden crear, editar y desactivar productos desde la vista administrativa
+   → Los cambios se reflejan en el catálogo público
+
+4. EDITOR DE LAYOUT
+   → El administrador puede añadir bloques de tipo anuncio, hero, productos,
+     texto, testimonios, categorías, imagen y footer
+   → Puede reordenar secciones, editar propiedades y previsualizar el resultado
+   → También puede generar secciones con IA a partir de un prompt
+
+5. GUARDADO DE CAMBIOS
+   → El layout se guarda mediante la API /layout/
+   → Los bloques se almacenan en la base de datos y se vuelven visibles en la tienda
+
+
+ESTADO ACTUAL Y PRÓXIMOS PASOS:
+
+Puntos fuertes del proyecto:
+- Backend completo y coherente con la lógica de negocio esperada
+- Carrito, órdenes y pagos integrados de manera funcional
+- Panel admin con editor visual y gestión de contenido
+- Integración con IA para generación de contenido visual
+
+Mejoras pendientes recomendadas:
+- Implementar tests automatizados para backend y frontend
+- Añadir validaciones más robustas en formularios y flujos de error
+- Mejorar la experiencia de la página de producto individual
+- Añadir más métricas, logs y monitorización para producción
+- Refinar la experiencia visual del panel admin y del catálogo

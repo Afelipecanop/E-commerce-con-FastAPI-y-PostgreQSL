@@ -26,11 +26,13 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const box = document.getElementById("result");
 
         if (params.get("success")) {
+            clearLocalCart();   // el pago se confirmó: vaciamos el carrito local
             box.innerHTML = `
                 <div class="icon">🎉</div>
                 <h2>¡Pago exitoso!</h2>

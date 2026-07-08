@@ -121,6 +121,32 @@
         .toast.show{opacity:1;transform:translateY(0)}
         .toast.ok{border-left:3px solid #1D7A4F}
         .toast.err{border-left:3px solid #DC2626}
+
+        /* ── RESPONSIVE ── */
+        @media (max-width:860px){
+            .nav{padding:0 1rem}
+            .nav-links{display:none}
+            .sec{padding:2.5rem 1.25rem}
+            .why{padding:2.5rem 1.25rem}
+            .gift{padding:2.5rem 1.25rem}
+            .footer{padding:1.5rem 1.25rem}
+            .footer-top{gap:1.25rem}
+            .trust{gap:1rem 1.5rem;padding:.75rem 1rem}
+            /* El badge absoluto se salía encima del título: lo bajamos al flujo */
+            .hero{padding:3.5rem 1.25rem 3rem;min-height:auto;text-align:left}
+            .hero-badge{position:static;transform:none;margin-top:2rem;align-items:flex-start}
+            .hero-title{letter-spacing:-1px}
+            .hero-sub{font-size:15px}
+        }
+        @media (max-width:520px){
+            .hero{padding:3rem 1.1rem 2.5rem}
+            .hero-badge{display:none}   /* en pantallas muy pequeñas lo ocultamos */
+            .hero-actions{flex-direction:column;align-items:stretch}
+            .hero-actions .btn-primary,.hero-actions .btn-ghost{width:100%;text-align:center}
+            .sec-header{flex-direction:column;align-items:flex-start;gap:.5rem}
+            .trust{gap:.75rem 1.25rem}
+            .trust-item{font-size:11px}
+        }
     </style>
 </head>
 <body>
@@ -163,6 +189,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="js/api.js"></script>
+<script src="js/cart.js"></script>
 <script>
     const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 
@@ -183,16 +210,15 @@
                 if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
             } catch(e) {}
         }
+        updateCartBadge();
         await loadLayoutBlocks();
     }
 
-    async function handleAdd(id, name, stock) {
-        if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    // Agregar al carrito NO requiere login: se guarda en el carrito local.
+    function handleAdd(id, name, stock) {
         if (stock <= 0) { showToast("Producto sin stock", "err"); return; }
-        try {
-            await addToCart(id, 1);
-            showToast(`"${name}" agregado al carrito`, "ok");
-        } catch(e) { showToast(e.message, "err"); }
+        addToLocalCart(id, 1);
+        showToast(`"${name}" agregado al carrito`, "ok");
     }
 
     async function loadLayoutBlocks() {
