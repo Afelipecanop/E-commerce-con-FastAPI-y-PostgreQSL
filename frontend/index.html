@@ -350,19 +350,35 @@
                                 <div><span class="a">Velo</span><span class="b">nox</span></div>
                                 <p class="footer-tagline">${c.tagline}</p>
                             </div>
-                            <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a><a href="index.html">Ofertas</a></div>
-                            <div class="footer-col"><p>Ayuda</p><a href="ayuda.html">Envíos</a><a href="ayuda.html">Devoluciones</a><a href="contacto.html">Contacto</a></div>
-                            <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+                            <div class="footer-col"><p>Tienda</p>
+                                <a href="index.html">Catálogo</a>
+                                <a href="index.html">Sets regalo</a>
+                                <a href="index.html">Ofertas</a>
+                            </div>
+                            <div class="footer-col"><p>Ayuda</p>
+                                <a href="contacto.html">Contáctanos</a>
+                                <a href="politicas.html">Envíos</a>
+                                <a href="politicas.html#devoluciones">Devoluciones</a>
+                                <a href="politicas.html#garantia">Garantía</a>
+                            </div>
+                            <div class="footer-col"><p>Nosotros</p>
+                                <a href="nosotros.html">Nuestra historia</a>
+                                <a href="nosotros.html">Por qué acero</a>
+                            </div>
+                            <div class="footer-col"><p>Legal</p>
+                                <a href="terminos.html">Términos y condiciones</a>
+                                <a href="politicas.html#privacidad">Privacidad</a>
+                            </div>
                         </div>
                         <div class="footer-bottom">
-                            <p class="footer-copy">© 2025 ${c.store_name}. Todos los derechos reservados.</p>
+                            <p class="footer-copy">© 2026 ${c.store_name}. Todos los derechos reservados.</p>
                             <div class="footer-social">
                                 <i class="ti ti-brand-instagram"></i>
                                 <i class="ti ti-brand-tiktok"></i>
                                 <i class="ti ti-brand-facebook"></i>
                             </div>
                         </div>
-                    </footer>`;
+                </footer>`;
                 break;
             case "custom_html":
                 div.innerHTML = `<style>${c.css||''}</style>${c.html||''}`;
