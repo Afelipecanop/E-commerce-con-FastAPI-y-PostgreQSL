@@ -32,6 +32,7 @@ app.add_middleware(
         "http://localhost:5500",
         "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app",
         "https://e-commerceutcocina.netlify.app",
+        "https://a954c208.e-commerce-con-fastapi-y-postgreqsl.pages.dev",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
