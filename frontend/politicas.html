@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Políticas — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover{opacity:1}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;cursor:pointer;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+
+        /* HERO */
+        .hero{background:#0F1A14;padding:5rem 2rem 4rem;text-align:center}
+        .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem}
+        .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,56px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-2px;margin-bottom:1rem}
+        .hero p{font-size:15px;color:#6B8A7A;max-width:500px;margin:0 auto;line-height:1.7}
+
+        /* NAV TABS */
+        .policy-nav{background:white;border-bottom:2px solid #E8E8E4;position:sticky;top:56px;z-index:99}
+        .policy-nav-inner{max-width:900px;margin:0 auto;display:flex;overflow-x:auto}
+        .policy-nav a{padding:1rem 1.5rem;font-size:13px;font-weight:500;color:#B0BEB8;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s}
+        .policy-nav a:hover{color:#0F1A14}
+        .policy-nav a.active{color:#1D7A4F;border-bottom-color:#1D7A4F}
+
+        /* CONTENT */
+        .content{max-width:900px;margin:0 auto;padding:3rem 2rem 5rem}
+
+        /* SECCIÓN */
+        .policy-section{margin-bottom:4rem;scroll-margin-top:120px}
+        .section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #E8E8E4}
+        .section-icon{width:44px;height:44px;background:#0F1A14;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .section-icon i{font-size:20px;color:#1D7A4F}
+        .section-eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.25rem}
+        .section-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#0F1A14}
+
+        /* TEXTO */
+        .policy-text p{font-size:14px;color:#4A6A5A;line-height:1.8;margin-bottom:1rem}
+        .policy-text h4{font-size:14px;font-weight:600;color:#0F1A14;margin:1.5rem 0 .5rem}
+        .policy-text ul{padding-left:1.25rem;margin-bottom:1rem}
+        .policy-text ul li{font-size:14px;color:#4A6A5A;line-height:1.8;margin-bottom:.3rem}
+
+        /* CARDS DE INFO */
+        .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+        .info-card{background:#0F1A14;border-radius:4px;padding:1.25rem;text-align:center}
+        .info-card i{font-size:24px;color:#1D7A4F;margin-bottom:.6rem;display:block}
+        .info-card strong{font-size:13px;color:#C8D8C0;display:block;margin-bottom:.3rem}
+        .info-card span{font-size:12px;color:#4A6A5A;line-height:1.4}
+
+        /* TABLA */
+        .policy-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:13px}
+        .policy-table th{background:#0F1A14;color:#C8D8C0;padding:.75rem 1rem;text-align:left;font-weight:500;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+        .policy-table td{padding:.75rem 1rem;border-bottom:1px solid #E8E8E4;color:#4A6A5A;vertical-align:top}
+        .policy-table tr:last-child td{border-bottom:none}
+        .policy-table tr:nth-child(even) td{background:#FAFAF8}
+
+        /* HIGHLIGHT */
+        .highlight{background:#F0FAF5;border:1px solid #A8D8BC;border-radius:4px;padding:1rem 1.25rem;margin:1.5rem 0;display:flex;gap:.75rem;align-items:flex-start}
+        .highlight i{color:#1D7A4F;font-size:18px;flex-shrink:0;margin-top:1px}
+        .highlight p{font-size:13px;color:#1D5A3A;line-height:1.6;margin:0}
+        .highlight strong{color:#0F3A20}
+
+        .warning{background:#FFFBEB;border:1px solid #FCD34D;border-radius:4px;padding:1rem 1.25rem;margin:1.5rem 0;display:flex;gap:.75rem;align-items:flex-start}
+        .warning i{color:#D97706;font-size:18px;flex-shrink:0;margin-top:1px}
+        .warning p{font-size:13px;color:#78350F;line-height:1.6;margin:0}
+
+        /* CTA */
+        .cta-box{background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:2rem;text-align:center;margin-top:3rem}
+        .cta-box p{font-size:14px;color:#6B8A7A;margin-bottom:1rem;line-height:1.6}
+        .cta-box strong{color:#C8D8C0;display:block;font-family:'Playfair Display',serif;font-size:20px;margin-bottom:.5rem}
+        .whatsapp-btn{display:inline-flex;align-items:center;gap:.6rem;background:#1D7A4F;color:#F5F5F3;padding:.75rem 1.5rem;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px;transition:background .2s}
+        .whatsapp-btn:hover{background:#22904F}
+
+        /* FOOTER */
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer}
+        .footer-social i:hover{color:#1D7A4F}
+
+        @media(max-width:768px){.nav-links{display:none}.info-cards{grid-template-columns:1fr 1fr}}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Cocina</a><a href="index.html">Sets</a><a href="index.html">Regalos</a><a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <p class="hero-eyebrow">Transparencia total</p>
+    <h1>Políticas de Velonox</h1>
+    <p>Aquí explicamos claramente cómo funcionan nuestros envíos, devoluciones, garantías y el manejo de tu información personal.</p>
+</section>
+
+<!-- NAVEGACIÓN DE POLÍTICAS -->
+<div class="policy-nav">
+    <div class="policy-nav-inner">
+        <a href="#envios" class="active" onclick="setActive(this)">📦 Envíos</a>
+        <a href="#devoluciones" onclick="setActive(this)">↩️ Devoluciones</a>
+        <a href="#garantia" onclick="setActive(this)">🛡️ Garantía</a>
+        <a href="#privacidad" onclick="setActive(this)">🔒 Privacidad</a>
+        <a href="#pagos" onclick="setActive(this)">💳 Pagos</a>
+    </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="content">
+
+    <!-- ENVÍOS -->
+    <div class="policy-section" id="envios">
+        <div class="section-header">
+            <div class="section-icon"><i class="ti ti-truck"></i></div>
+            <div>
+                <p class="section-eyebrow">Política de envíos</p>
+                <h2 class="section-title">Envíos y tiempos de entrega</h2>
+            </div>
+        </div>
+        <div class="policy-text">
+            <div class="highlight">
+                <i class="ti ti-info-circle"></i>
+                <p><strong>Envío gratis</strong> en todos los pedidos mayores a $80 USD. Para pedidos menores, el costo de envío se calcula al momento del checkout según tu ubicación.</p>
+            </div>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <i class="ti ti-map-pin"></i>
+                    <strong>Colombia</strong>
+                    <span>2 a 5 días hábiles</span>
+                </div>
+                <div class="info-card">
+                    <i class="ti ti-world"></i>
+                    <strong>México · Perú · Chile</strong>
+                    <span>7 a 15 días hábiles</span>
+                </div>
+                <div class="info-card">
+                    <i class="ti ti-package"></i>
+                    <strong>Despacho</strong>
+                    <span>1 a 2 días hábiles tras confirmar pago</span>
+                </div>
+            </div>
+
+            <h4>¿Cómo funciona el proceso?</h4>
+            <ul>
+                <li>Una vez confirmado tu pago, procesamos y empacamos tu pedido en 1 a 2 días hábiles.</li>
+                <li>Recibirás un email con el número de guía de seguimiento cuando tu paquete sea despachado.</li>
+                <li>Puedes rastrear tu pedido en tiempo real con ese número en la página del transportista.</li>
+                <li>Si en 5 días hábiles no recibes tu guía de seguimiento, escríbenos por WhatsApp.</li>
+            </ul>
+
+            <h4>Países con cobertura actual</h4>
+            <table class="policy-table">
+                <thead>
+                    <tr><th>País</th><th>Tiempo estimado</th><th>Envío gratis desde</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>🇨🇴 Colombia</td><td>2 a 5 días hábiles</td><td>$80 USD</td></tr>
+                    <tr><td>🇲🇽 México</td><td>7 a 12 días hábiles</td><td>$80 USD</td></tr>
+                    <tr><td>🇵🇪 Perú</td><td>8 a 15 días hábiles</td><td>$80 USD</td></tr>
+                    <tr><td>🇨🇱 Chile</td><td>7 a 12 días hábiles</td><td>$80 USD</td></tr>
+                </tbody>
+            </table>
+
+            <div class="warning">
+                <i class="ti ti-alert-triangle"></i>
+                <p>Los tiempos de entrega son estimados y pueden variar por factores externos como aduanas, condiciones climáticas o temporadas de alta demanda. Si tu país no aparece en la lista, escríbenos — buscamos una solución.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEVOLUCIONES -->
+    <div class="policy-section" id="devoluciones">
+        <div class="section-header">
+            <div class="section-icon"><i class="ti ti-refresh"></i></div>
+            <div>
+                <p class="section-eyebrow">Política de devoluciones</p>
+                <h2 class="section-title">Devoluciones y reembolsos</h2>
+            </div>
+        </div>
+        <div class="policy-text">
+            <div class="highlight">
+                <i class="ti ti-heart"></i>
+                <p><strong>30 días para decidir.</strong> Si por cualquier razón no estás satisfecho con tu compra, tienes 30 días calendario desde la fecha de recepción para solicitar una devolución.</p>
+            </div>
+
+            <h4>Condiciones para devolución</h4>
+            <ul>
+                <li>El producto debe estar en condiciones originales — sin uso, sin daños y en su empaque original.</li>
+                <li>Debes incluir la factura o comprobante de compra.</li>
+                <li>La solicitud debe realizarse dentro de los 30 días calendario posteriores a la recepción.</li>
+                <li>Los productos personalizados o de sets abiertos no son elegibles para devolución.</li>
+            </ul>
+
+            <h4>¿Cómo solicitar una devolución?</h4>
+            <ul>
+                <li><strong>Paso 1:</strong> Escríbenos por WhatsApp (+57 310 888 7296) o formulario de contacto indicando tu número de pedido y el motivo de la devolución.</li>
+                <li><strong>Paso 2:</strong> Te enviaremos las instrucciones de empaque y la dirección de envío de devolución.</li>
+                <li><strong>Paso 3:</strong> Una vez recibido e inspeccionado el producto (2 a 3 días hábiles), procesamos el reembolso.</li>
+                <li><strong>Paso 4:</strong> El reembolso se acredita al método de pago original en 5 a 10 días hábiles.</li>
+            </ul>
+
+            <h4>¿Qué no es elegible para devolución?</h4>
+            <ul>
+                <li>Productos con daños causados por mal uso, caídas o uso inadecuado de utensilios.</li>
+                <li>Productos sin empaque original.</li>
+                <li>Solicitudes realizadas después de 30 días de la recepción.</li>
+                <li>Productos de la categoría "Liquidación" o "Oferta final".</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- GARANTÍA -->
+    <div class="policy-section" id="garantia">
+        <div class="section-header">
+            <div class="section-icon"><i class="ti ti-shield-check"></i></div>
+            <div>
+                <p class="section-eyebrow">Política de garantía</p>
+                <h2 class="section-title">Garantía de 2 años</h2>
+            </div>
+        </div>
+        <div class="policy-text">
+            <div class="highlight">
+                <i class="ti ti-certificate"></i>
+                <p>Todos los productos Velonox cuentan con <strong>garantía de 2 años contra defectos de fabricación</strong> desde la fecha de compra. Si algo falla por nuestra parte, lo resolvemos sin costo.</p>
+            </div>
+
+            <h4>¿Qué cubre la garantía?</h4>
+            <ul>
+                <li>Deformaciones o alabeos del fondo difusor sin causa de mal uso.</li>
+                <li>Defectos en soldaduras de mangos o tapas.</li>
+                <li>Desprendimiento del acabado interior o exterior por defecto de fábrica.</li>
+                <li>Fallas en la compatibilidad con inducción por defecto de fabricación.</li>
+                <li>Cualquier defecto que impida el uso normal del producto.</li>
+            </ul>
+
+            <h4>¿Qué NO cubre la garantía?</h4>
+            <ul>
+                <li>Daños por caídas, golpes o impactos.</li>
+                <li>Rayones causados por utensilios metálicos, estropajos abrasivos o lavavajillas en ciclos agresivos.</li>
+                <li>Decoloración por exposición prolongada a fuego directo a máxima potencia.</li>
+                <li>Daños por uso en condiciones no recomendadas (microondas, fogones a leña).</li>
+                <li>Desgaste normal por uso prolongado.</li>
+            </ul>
+
+            <h4>¿Cómo hacer válida la garantía?</h4>
+            <ul>
+                <li>Contáctanos por WhatsApp con fotos del defecto y tu número de pedido.</li>
+                <li>Evaluamos el caso en 24 a 48 horas hábiles.</li>
+                <li>Si aplica, te enviamos un producto de reemplazo o gestionamos el reembolso sin costo adicional.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- PRIVACIDAD -->
+    <div class="policy-section" id="privacidad">
+        <div class="section-header">
+            <div class="section-icon"><i class="ti ti-lock"></i></div>
+            <div>
+                <p class="section-eyebrow">Política de privacidad</p>
+                <h2 class="section-title">Tus datos, tu privacidad</h2>
+            </div>
+        </div>
+        <div class="policy-text">
+            <p>En Velonox tomamos la privacidad de tus datos muy en serio. Esta política explica qué información recopilamos, cómo la usamos y cómo la protegemos.</p>
+
+            <h4>¿Qué información recopilamos?</h4>
+            <ul>
+                <li><strong>Datos de cuenta:</strong> nombre, email y contraseña (almacenada de forma encriptada, nunca en texto plano).</li>
+                <li><strong>Datos de compra:</strong> dirección de envío, historial de pedidos y preferencias de producto.</li>
+                <li><strong>Datos de pago:</strong> procesados exclusivamente por Stripe. Velonox nunca almacena datos de tarjetas.</li>
+                <li><strong>Datos de navegación:</strong> páginas visitadas y productos vistos, para mejorar tu experiencia.</li>
+            </ul>
+
+            <h4>¿Para qué usamos tu información?</h4>
+            <ul>
+                <li>Procesar y enviar tus pedidos.</li>
+                <li>Enviarte actualizaciones sobre tu pedido por email.</li>
+                <li>Mejorar nuestros productos y la experiencia en la tienda.</li>
+                <li>Enviarte comunicaciones de marketing solo si das tu consentimiento explícito.</li>
+            </ul>
+
+            <h4>¿Compartimos tu información?</h4>
+            <ul>
+                <li>Con transportistas, exclusivamente los datos necesarios para la entrega.</li>
+                <li>Con Stripe para procesar pagos de forma segura.</li>
+                <li>Nunca vendemos ni compartimos tu información con terceros para fines publicitarios.</li>
+            </ul>
+
+            <div class="highlight">
+                <i class="ti ti-user-check"></i>
+                <p>Tienes derecho a solicitar la eliminación de tu cuenta y datos en cualquier momento. Escríbenos por WhatsApp o formulario de contacto y lo procesamos en menos de 72 horas.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGOS -->
+    <div class="policy-section" id="pagos">
+        <div class="section-header">
+            <div class="section-icon"><i class="ti ti-credit-card"></i></div>
+            <div>
+                <p class="section-eyebrow">Política de pagos</p>
+                <h2 class="section-title">Medios de pago y seguridad</h2>
+            </div>
+        </div>
+        <div class="policy-text">
+            <div class="highlight">
+                <i class="ti ti-shield"></i>
+                <p>Todos los pagos en Velonox son procesados por <strong>Stripe</strong>, uno de los procesadores de pago más seguros del mundo. Tu información financiera nunca pasa por nuestros servidores.</p>
+            </div>
+
+            <h4>Métodos de pago aceptados</h4>
+            <ul>
+                <li>Tarjetas de crédito y débito Visa, Mastercard y American Express.</li>
+                <li>Tarjetas internacionales habilitadas para compras en línea.</li>
+                <li>Próximamente: PSE (Colombia), OXXO (México) y otros métodos locales.</li>
+            </ul>
+
+            <h4>Seguridad de tus pagos</h4>
+            <ul>
+                <li>Conexión cifrada SSL en todas las páginas de checkout.</li>
+                <li>Procesamiento 3D Secure para verificación adicional cuando aplica.</li>
+                <li>Velonox nunca almacena datos de tarjetas de crédito o débito.</li>
+                <li>Stripe cumple con el estándar PCI DSS nivel 1, el más alto de la industria.</li>
+            </ul>
+
+            <h4>¿Qué pasa si mi pago falla?</h4>
+            <ul>
+                <li>No se realiza ningún cargo si el pago no se completa exitosamente.</li>
+                <li>Puedes intentarlo de nuevo con la misma u otra tarjeta.</li>
+                <li>Si el problema persiste, escríbenos por WhatsApp y te ayudamos a resolverlo.</li>
+            </ul>
+
+            <h4>Moneda y precios</h4>
+            <p>Todos los precios en Velonox están expresados en <strong>dólares estadounidenses (USD)</strong>. Tu banco o procesador de tarjeta aplicará la tasa de cambio vigente al momento de la transacción.</p>
+        </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="cta-box">
+        <strong>¿Tienes alguna duda sobre nuestras políticas?</strong>
+        <p>Estamos disponibles de lunes a viernes de 8am a 6pm y sábados de 9am a 1pm. Respondemos en menos de 2 horas.</p>
+        <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20tengo%20una%20duda%20sobre%20sus%20pol%C3%ADticas" target="_blank" class="whatsapp-btn">
+            <i class="ti ti-brand-whatsapp"></i>
+            Hablar con nosotros
+        </a>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script>
+    async function init() {
+        if (isLoggedIn()) {
+            document.getElementById("nav-login").style.display = "none";
+            document.getElementById("nav-logout").style.display = "block";
+            try {
+                const me = await getMe();
+                document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+                if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+            } catch(e) {}
+        }
+    }
+
+    function setActive(el) {
+        document.querySelectorAll(".policy-nav a").forEach(a => a.classList.remove("active"));
+        el.classList.add("active");
+    }
+
+    // Actualiza el tab activo al hacer scroll
+    window.addEventListener("scroll", () => {
+        const sections = ["envios","devoluciones","garantia","privacidad","pagos"];
+        for (const id of sections) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= 130 && rect.bottom > 130) {
+                document.querySelectorAll(".policy-nav a").forEach(a => a.classList.remove("active"));
+                const link = document.querySelector(`.policy-nav a[href="#${id}"]`);
+                if (link) link.classList.add("active");
+                break;
+            }
+        }
+    });
+
+    init();
+</script>
+</body>
+</html>

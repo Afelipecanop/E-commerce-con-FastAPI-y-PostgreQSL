@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover{opacity:1}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;cursor:pointer;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+        .hero{background:#0F1A14;padding:5rem 2rem 4rem;text-align:center}
+        .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem}
+        .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,60px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-2px;margin-bottom:1rem}
+        .hero h1 em{color:#1D7A4F;font-style:normal}
+        .hero p{font-size:15px;color:#6B8A7A;max-width:500px;margin:0 auto;line-height:1.7}
+        .main{max-width:1100px;margin:0 auto;padding:4rem 2rem;display:grid;grid-template-columns:1fr 1.4fr;gap:4rem;align-items:start}
+        .contact-info{display:flex;flex-direction:column;gap:2rem}
+        .info-block{background:#0F1A14;border-radius:4px;padding:1.5rem}
+        .info-block-eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;color:#4A6A5A;text-transform:uppercase;margin-bottom:.75rem}
+        .info-block h3{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#C8D8C0;margin-bottom:.5rem}
+        .info-block p{font-size:13px;color:#6B8A7A;line-height:1.6}
+        .whatsapp-btn{display:flex;align-items:center;gap:.75rem;background:#1D7A4F;color:#F5F5F3;padding:1rem 1.25rem;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px;transition:background .2s;margin-top:.75rem}
+        .whatsapp-btn:hover{background:#22904F}
+        .whatsapp-btn i{font-size:22px}
+        .whatsapp-sub{font-size:11px;font-weight:400;opacity:.8}
+        .horario-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.75rem}
+        .horario-item{font-size:12px;color:#4A6A5A}
+        .horario-item strong{color:#C8D8C0;display:block;font-size:12px;font-weight:500}
+        .tiempo-resp{display:flex;align-items:center;gap:.5rem;background:#1A2820;border-radius:2px;padding:.6rem .75rem;margin-top:.75rem}
+        .tiempo-resp i{color:#1D7A4F;font-size:14px}
+        .tiempo-resp span{font-size:12px;color:#6B8A7A}
+        .tiempo-resp strong{color:#C8D8C0}
+        .contact-form{background:white;border:1px solid #E8E8E4;border-radius:4px;padding:2.5rem}
+        .form-eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.5rem}
+        .form-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0F1A14;margin-bottom:2rem}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .form-group{margin-bottom:1.2rem}
+        .form-group label{display:block;font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:.65rem .9rem;border:1px solid #E8E8E4;border-radius:2px;font-size:14px;color:#0F1A14;font-family:'DM Sans',sans-serif;transition:border-color .2s;background:white}
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:#1D7A4F}
+        .form-group textarea{resize:vertical;min-height:120px}
+        .btn-submit{width:100%;padding:1rem;background:#1D7A4F;color:#F5F5F3;border:none;border-radius:2px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.02em;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+        .btn-submit:hover{background:#22904F}
+        .btn-submit:disabled{background:#B0BEB8;cursor:not-allowed}
+        .form-note{font-size:11px;color:#B0BEB8;text-align:center;margin-top:.75rem;line-height:1.5}
+        .alert{padding:.75rem 1rem;border-radius:2px;margin-bottom:1rem;font-size:13px;font-weight:500;display:none}
+        .alert.show{display:block}
+        .alert-ok{background:#F0FAF5;border:1px solid #A8D8BC;color:#1D7A4F}
+        .alert-err{background:#FEF2F2;border:1px solid #FBBFBF;color:#DC2626}
+        .faq{background:#0F1A14;padding:4rem 2rem}
+        .faq-inner{max-width:800px;margin:0 auto}
+        .faq-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem}
+        .faq h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#C8D8C0;margin-bottom:2rem}
+        .faq-item{border-bottom:1px solid #1A2820;padding:1.25rem 0}
+        .faq-q{font-size:14px;font-weight:500;color:#C8D8C0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+        .faq-q i{color:#1D7A4F;font-size:16px;transition:transform .3s;flex-shrink:0}
+        .faq-q.open i{transform:rotate(45deg)}
+        .faq-a{font-size:13px;color:#6B8A7A;line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+        .faq-a.open{max-height:200px;padding-top:.75rem}
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px;transition:color .2s}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer}
+        .footer-social i:hover{color:#1D7A4F}
+        @media(max-width:768px){.main{grid-template-columns:1fr;gap:2rem;padding:2rem 1rem}.form-row{grid-template-columns:1fr}.nav-links{display:none}}
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Cocina</a><a href="index.html">Sets</a><a href="index.html">Regalos</a><a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+<section class="hero">
+    <p class="hero-eyebrow">Estamos aquí para ayudarte</p>
+    <h1>Hablemos de <em>cocina.</em></h1>
+    <p>¿Tienes dudas sobre nuestros productos, tu pedido o quieres saber qué set es el ideal para tu cocina? Escríbenos.</p>
+</section>
+<div class="main">
+    <div class="contact-info">
+        <div class="info-block">
+            <p class="info-block-eyebrow">WhatsApp Business</p>
+            <h3>Respuesta más rápida</h3>
+            <p>Para consultas sobre productos, pedidos o asesoría personalizada. Respondemos en menos de 2 horas en horario hábil.</p>
+            <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20tengo%20una%20consulta%20sobre%20sus%20productos" target="_blank" class="whatsapp-btn">
+                <i class="ti ti-brand-whatsapp"></i>
+                <div><div>Escribir por WhatsApp</div><div class="whatsapp-sub">+57 310 888 7296</div></div>
+            </a>
+        </div>
+        <div class="info-block">
+            <p class="info-block-eyebrow">Horario de atención</p>
+            <h3>Cuándo estamos disponibles</h3>
+            <div class="horario-grid">
+                <div class="horario-item"><strong>Lunes — Viernes</strong>8:00 am — 6:00 pm</div>
+                <div class="horario-item"><strong>Sábados</strong>9:00 am — 1:00 pm</div>
+            </div>
+            <div class="tiempo-resp">
+                <i class="ti ti-clock"></i>
+                <span>Tiempo de respuesta: <strong>menos de 2 horas</strong></span>
+            </div>
+        </div>
+        <div class="info-block">
+            <p class="info-block-eyebrow">Ubicación</p>
+            <h3>Colombia</h3>
+            <p>Operamos desde Colombia con envíos a toda Latinoamérica. Próximamente con presencia en México, Perú y Chile.</p>
+        </div>
+    </div>
+    <div class="contact-form">
+        <p class="form-eyebrow">Formulario de contacto</p>
+        <h2 class="form-title">¿En qué te podemos ayudar?</h2>
+        <div id="form-alert" class="alert"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="f-name" placeholder="Tu nombre"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
+        </div>
+        <div class="form-group">
+            <label>Motivo de contacto</label>
+            <select id="f-motivo">
+                <option value="">Selecciona un motivo</option>
+                <option value="producto">Consulta sobre un producto</option>
+                <option value="pedido">Estado de mi pedido</option>
+                <option value="devolucion">Devolución o garantía</option>
+                <option value="envio">Información de envíos</option>
+                <option value="mayoreo">Compras al por mayor</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Mensaje</label><textarea id="f-mensaje" placeholder="Cuéntanos en qué te podemos ayudar..."></textarea></div>
+        <button class="btn-submit" id="btn-submit" onclick="handleSubmit()">
+            <i class="ti ti-send"></i> Enviar mensaje
+        </button>
+        <p class="form-note">También puedes escribirnos directo por WhatsApp para una respuesta más rápida.</p>
+    </div>
+</div>
+<section class="faq">
+    <div class="faq-inner">
+        <p class="faq-eyebrow">Preguntas frecuentes</p>
+        <h2>Lo que más nos preguntan</h2>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿El acero inoxidable 304 es seguro para cocinar?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">Sí, completamente. El acero inoxidable 304 es el estándar de la industria alimentaria mundial. Es inerte — no reacciona con los alimentos, no libera químicos y no se degrada con el tiempo ni con el calor.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿Cuánto tiempo tarda el envío?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">En Colombia: 2 a 5 días hábiles. Para el resto de Latinoamérica: 7 a 15 días hábiles. Recibirás un número de seguimiento una vez despachado tu pedido.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿Los productos son compatibles con inducción?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">Sí. Todos los productos Velonox son compatibles con inducción, vitrocerámica, gas y horno convencional. El fondo difusor de triple capa garantiza rendimiento óptimo en cualquier fuente de calor.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿Qué cubre la garantía de 2 años?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">Nuestra garantía cubre cualquier defecto de fabricación: deformaciones, problemas con el fondo, soldaduras o acabados defectuosos. No cubre daños por mal uso, caídas o rayones por utensilios inadecuados.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿Puedo devolver un producto si no me convence?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">Sí. Tienes 30 días desde la recepción para solicitar una devolución. El producto debe estar en condiciones originales. Escríbenos por WhatsApp o formulario y gestionamos todo.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">¿Hacen envíos a toda Latinoamérica?<i class="ti ti-plus"></i></div>
+            <div class="faq-a">Actualmente enviamos a Colombia, México, Perú y Chile. Si tu país no aparece en el checkout, escríbenos y buscamos una solución.</div>
+        </div>
+    </div>
+</section>
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>
+<script src="js/api.js"></script>
+<script>
+    async function init() {
+        if (isLoggedIn()) {
+            document.getElementById("nav-login").style.display = "none";
+            document.getElementById("nav-logout").style.display = "block";
+            try {
+                const me = await getMe();
+                document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+                if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+            } catch(e) {}
+        }
+    }
+    function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const isOpen = answer.classList.contains("open");
+        document.querySelectorAll(".faq-a").forEach(a => a.classList.remove("open"));
+        document.querySelectorAll(".faq-q").forEach(q => q.classList.remove("open"));
+        if (!isOpen) { answer.classList.add("open"); el.classList.add("open"); }
+    }
+    function showAlert(msg, type) {
+        const el = document.getElementById("form-alert");
+        el.textContent = msg;
+        el.className = `alert show alert-${type}`;
+    }
+    async function handleSubmit() {
+        const name = document.getElementById("f-name").value.trim();
+        const email = document.getElementById("f-email").value.trim();
+        const motivo = document.getElementById("f-motivo").value;
+        const mensaje = document.getElementById("f-mensaje").value.trim();
+        if (!name || !email || !motivo || !mensaje) { showAlert("Por favor completa todos los campos.", "err"); return; }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) { showAlert("Ingresa un email válido.", "err"); return; }
+        const btn = document.getElementById("btn-submit");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+        await new Promise(r => setTimeout(r, 1200));
+        const motivoTexto = document.getElementById("f-motivo").options[document.getElementById("f-motivo").selectedIndex].text;
+        const waMsg = encodeURIComponent(`Hola Velonox 👋\n\nNombre: ${name}\nEmail: ${email}\nMotivo: ${motivoTexto}\n\nMensaje: ${mensaje}`);
+        showAlert("✅ Perfecto. Te redirigiremos a WhatsApp para continuar la conversación.", "ok");
+        btn.innerHTML = '<i class="ti ti-check"></i> Enviado';
+        setTimeout(() => { window.open(`https://wa.me/573108887296?text=${waMsg}`, "_blank"); }, 1500);
+    }
+    init();
+</script>
+</body>
+</html>

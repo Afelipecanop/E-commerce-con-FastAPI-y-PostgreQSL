@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover{opacity:1}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;cursor:pointer;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+
+        /* HERO */
+        .hero{background:#0F1A14;padding:5rem 2rem 4rem;text-align:center}
+        .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem}
+        .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-2px;margin-bottom:1rem}
+        .hero p{font-size:14px;color:#6B8A7A;max-width:500px;margin:0 auto;line-height:1.7}
+        .hero-date{font-size:12px;color:#4A6A5A;margin-top:.75rem}
+
+        /* ÍNDICE */
+        .index-box{background:white;border:1px solid #E8E8E4;border-radius:4px;padding:1.5rem 2rem;margin-bottom:3rem}
+        .index-box h3{font-size:13px;font-weight:600;color:#0F1A14;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.06em}
+        .index-list{display:grid;grid-template-columns:1fr 1fr;gap:.3rem}
+        .index-list a{font-size:13px;color:#1D7A4F;text-decoration:none;padding:.2rem 0;transition:color .2s}
+        .index-list a:hover{color:#0F3A20}
+
+        /* CONTENT */
+        .content{max-width:860px;margin:0 auto;padding:3rem 2rem 5rem}
+
+        /* SECCIÓN */
+        .tc-section{margin-bottom:3rem;scroll-margin-top:80px}
+        .tc-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#E8E8E4;line-height:1;margin-bottom:.25rem}
+        .tc-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#0F1A14;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid #E8E8E4}
+        .tc-text p{font-size:14px;color:#4A6A5A;line-height:1.8;margin-bottom:1rem}
+        .tc-text ul{padding-left:1.25rem;margin-bottom:1rem}
+        .tc-text ul li{font-size:14px;color:#4A6A5A;line-height:1.8;margin-bottom:.3rem}
+        .tc-text h4{font-size:14px;font-weight:600;color:#0F1A14;margin:1.5rem 0 .5rem}
+
+        /* HIGHLIGHT */
+        .highlight{background:#F0FAF5;border:1px solid #A8D8BC;border-radius:4px;padding:1rem 1.25rem;margin:1.5rem 0;display:flex;gap:.75rem;align-items:flex-start}
+        .highlight i{color:#1D7A4F;font-size:18px;flex-shrink:0;margin-top:1px}
+        .highlight p{font-size:13px;color:#1D5A3A;line-height:1.6;margin:0}
+
+        .warning{background:#FFFBEB;border:1px solid #FCD34D;border-radius:4px;padding:1rem 1.25rem;margin:1.5rem 0;display:flex;gap:.75rem;align-items:flex-start}
+        .warning i{color:#D97706;font-size:18px;flex-shrink:0;margin-top:1px}
+        .warning p{font-size:13px;color:#78350F;line-height:1.6;margin:0}
+
+        /* CTA */
+        .cta-box{background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:2rem;text-align:center;margin-top:3rem}
+        .cta-box strong{color:#C8D8C0;display:block;font-family:'Playfair Display',serif;font-size:20px;margin-bottom:.5rem}
+        .cta-box p{font-size:14px;color:#6B8A7A;margin-bottom:1.25rem;line-height:1.6}
+        .whatsapp-btn{display:inline-flex;align-items:center;gap:.6rem;background:#1D7A4F;color:#F5F5F3;padding:.75rem 1.5rem;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px;transition:background .2s}
+        .whatsapp-btn:hover{background:#22904F}
+
+        /* FOOTER */
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer}
+        .footer-social i:hover{color:#1D7A4F}
+        @media(max-width:768px){.nav-links{display:none}.index-list{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Cocina</a><a href="index.html">Sets</a><a href="index.html">Regalos</a><a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+
+<section class="hero">
+    <p class="hero-eyebrow">Legal</p>
+    <h1>Términos y Condiciones</h1>
+    <p>Al comprar en Velonox aceptas estos términos. Los redactamos en lenguaje claro para que entiendas exactamente tus derechos y los nuestros.</p>
+    <p class="hero-date">Última actualización: julio de 2026</p>
+</section>
+
+<div class="content">
+
+    <!-- ÍNDICE -->
+    <div class="index-box">
+        <h3>Contenido</h3>
+        <div class="index-list">
+            <a href="#aceptacion">1. Aceptación de términos</a>
+            <a href="#productos">2. Productos y precios</a>
+            <a href="#cuenta">3. Cuenta de usuario</a>
+            <a href="#pedidos">4. Pedidos y pagos</a>
+            <a href="#envios">5. Envíos</a>
+            <a href="#devoluciones">6. Devoluciones</a>
+            <a href="#garantia">7. Garantía</a>
+            <a href="#propiedad">8. Propiedad intelectual</a>
+            <a href="#responsabilidad">9. Limitación de responsabilidad</a>
+            <a href="#modificaciones">10. Modificaciones</a>
+        </div>
+    </div>
+
+    <div class="tc-section" id="aceptacion">
+        <div class="tc-num">01</div>
+        <h2 class="tc-title">Aceptación de términos</h2>
+        <div class="tc-text">
+            <p>Al acceder y utilizar el sitio web de Velonox (velonox.com) y realizar una compra, aceptas estar sujeto a estos Términos y Condiciones. Si no estás de acuerdo con alguno de estos términos, te pedimos que no utilices nuestros servicios.</p>
+            <p>Estos términos aplican a todos los visitantes, usuarios y personas que accedan o usen el servicio. Velonox se reserva el derecho de actualizar estos términos en cualquier momento, notificando los cambios en esta misma página.</p>
+            <div class="highlight">
+                <i class="ti ti-info-circle"></i>
+                <p>Al finalizar una compra, confirmas que eres mayor de 18 años o que cuentas con autorización de un adulto responsable, y que los datos que proporcionas son verídicos y completos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tc-section" id="productos">
+        <div class="tc-num">02</div>
+        <h2 class="tc-title">Productos y precios</h2>
+        <div class="tc-text">
+            <p>Velonox se esfuerza por mostrar los colores, dimensiones y características de los productos con la mayor precisión posible. Sin embargo, no garantizamos que la visualización en tu pantalla sea 100% fiel al producto físico.</p>
+            <h4>Sobre los precios</h4>
+            <ul>
+                <li>Todos los precios están expresados en dólares estadounidenses (USD) e incluyen el producto pero no el costo de envío, salvo que se indique expresamente.</li>
+                <li>Velonox se reserva el derecho de modificar precios en cualquier momento sin previo aviso.</li>
+                <li>Una vez confirmado y pagado tu pedido, el precio no cambia aunque se modifique posteriormente en la tienda.</li>
+                <li>En caso de error de precio evidente en la tienda, nos reservamos el derecho de cancelar el pedido y reembolsar el monto pagado.</li>
+            </ul>
+            <h4>Disponibilidad</h4>
+            <p>El stock mostrado en la tienda es en tiempo real. Velonox no garantiza la disponibilidad permanente de ningún producto. Si un producto se agota después de realizar tu pago, te notificaremos y ofreceremos un reembolso completo o producto alternativo.</p>
+        </div>
+    </div>
+
+    <div class="tc-section" id="cuenta">
+        <div class="tc-num">03</div>
+        <h2 class="tc-title">Cuenta de usuario</h2>
+        <div class="tc-text">
+            <p>Para realizar compras en Velonox debes crear una cuenta. Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran bajo tu cuenta.</p>
+            <ul>
+                <li>Debes proporcionar información precisa, completa y actualizada al registrarte.</li>
+                <li>Eres responsable de notificarnos inmediatamente ante cualquier uso no autorizado de tu cuenta.</li>
+                <li>Velonox no será responsable por pérdidas causadas por el uso no autorizado de tu cuenta.</li>
+                <li>Nos reservamos el derecho de cerrar cuentas que violen estos términos.</li>
+            </ul>
+            <p>Puedes solicitar la eliminación de tu cuenta y datos en cualquier momento contactándonos por WhatsApp. Procesamos la solicitud en menos de 72 horas.</p>
+        </div>
+    </div>
+
+    <div class="tc-section" id="pedidos">
+        <div class="tc-num">04</div>
+        <h2 class="tc-title">Pedidos y pagos</h2>
+        <div class="tc-text">
+            <p>Al realizar un pedido, recibirás un email de confirmación. Este email no constituye la aceptación definitiva del pedido — la venta se confirma cuando el pago es procesado exitosamente.</p>
+            <h4>Procesamiento de pagos</h4>
+            <ul>
+                <li>Los pagos son procesados por Stripe, plataforma certificada PCI DSS nivel 1.</li>
+                <li>Velonox nunca almacena datos de tarjetas de crédito o débito.</li>
+                <li>Aceptamos tarjetas Visa, Mastercard y American Express habilitadas para compras internacionales.</li>
+                <li>El cargo se realiza en el momento de confirmar el pedido.</li>
+            </ul>
+            <h4>Cancelación de pedidos</h4>
+            <p>Puedes cancelar tu pedido sin costo dentro de las primeras 2 horas de realizado, siempre que no haya sido despachado. Para cancelaciones, contáctanos inmediatamente por WhatsApp.</p>
+            <div class="warning">
+                <i class="ti ti-alert-triangle"></i>
+                <p>Una vez despachado el pedido, no es posible cancelarlo. En ese caso aplica nuestra política de devoluciones de 30 días una vez recibido el producto.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tc-section" id="envios">
+        <div class="tc-num">05</div>
+        <h2 class="tc-title">Envíos</h2>
+        <div class="tc-text">
+            <p>Los tiempos de entrega son estimados y pueden variar por factores externos como aduanas, condiciones climáticas o temporadas de alta demanda. Velonox no se responsabiliza por demoras causadas por terceros.</p>
+            <ul>
+                <li>Colombia: 2 a 5 días hábiles desde el despacho.</li>
+                <li>México, Perú, Chile: 7 a 15 días hábiles desde el despacho.</li>
+                <li>El envío es gratuito en pedidos mayores a $80 USD.</li>
+                <li>Recibirás un número de guía de seguimiento por email una vez despachado tu pedido.</li>
+            </ul>
+            <p>Velonox no se hace responsable por paquetes extraviados una vez entregados a la empresa transportista, aunque haremos todo lo posible por ayudarte a rastrear y recuperar tu envío.</p>
+        </div>
+    </div>
+
+    <div class="tc-section" id="devoluciones">
+        <div class="tc-num">06</div>
+        <h2 class="tc-title">Devoluciones y reembolsos</h2>
+        <div class="tc-text">
+            <p>Tienes 30 días calendario desde la recepción del producto para solicitar una devolución, siempre que el producto esté en condiciones originales, sin uso y con su empaque original.</p>
+            <ul>
+                <li>Los reembolsos se procesan al método de pago original en 5 a 10 días hábiles.</li>
+                <li>Los costos de envío de devolución son responsabilidad del cliente, salvo que el producto presente un defecto de fabricación.</li>
+                <li>Productos de liquidación, ofertas finales o kits parcialmente abiertos no son elegibles para devolución.</li>
+            </ul>
+            <p>Para más detalles, consulta nuestra <a href="politicas.html#devoluciones" style="color:#1D7A4F">Política de Devoluciones</a> completa.</p>
+        </div>
+    </div>
+
+    <div class="tc-section" id="garantia">
+        <div class="tc-num">07</div>
+        <h2 class="tc-title">Garantía</h2>
+        <div class="tc-text">
+            <p>Todos los productos Velonox cuentan con garantía de 2 años contra defectos de fabricación desde la fecha de compra. La garantía no cubre daños por mal uso, caídas o desgaste normal.</p>
+            <p>Para hacer válida la garantía, contacta a nuestro equipo por WhatsApp con fotos del defecto y tu número de pedido. Evaluamos cada caso en 24 a 48 horas hábiles.</p>
+            <p>Para más detalles, consulta nuestra <a href="politicas.html#garantia" style="color:#1D7A4F">Política de Garantía</a> completa.</p>
+        </div>
+    </div>
+
+    <div class="tc-section" id="propiedad">
+        <div class="tc-num">08</div>
+        <h2 class="tc-title">Propiedad intelectual</h2>
+        <div class="tc-text">
+            <p>Todo el contenido de la tienda Velonox — incluyendo textos, imágenes, logotipos, diseños, videos y el software de la plataforma — es propiedad de Velonox o de sus licenciantes y está protegido por leyes de propiedad intelectual.</p>
+            <ul>
+                <li>No está permitido reproducir, distribuir, modificar o usar el contenido de Velonox con fines comerciales sin autorización escrita previa.</li>
+                <li>El uso personal y no comercial del contenido está permitido, citando la fuente.</li>
+                <li>Las marcas Velonox, el logotipo y el slogan "Cocina de por vida" son marca registrada.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tc-section" id="responsabilidad">
+        <div class="tc-num">09</div>
+        <h2 class="tc-title">Limitación de responsabilidad</h2>
+        <div class="tc-text">
+            <p>Velonox no será responsable por daños indirectos, incidentales, especiales o consecuentes derivados del uso o la imposibilidad de uso de nuestros productos o servicios.</p>
+            <ul>
+                <li>La responsabilidad máxima de Velonox ante cualquier reclamación se limita al valor del pedido en cuestión.</li>
+                <li>Velonox no garantiza que el sitio web esté libre de errores, interrupciones o virus.</li>
+                <li>No nos responsabilizamos por el contenido de sitios web de terceros a los que se pueda acceder desde nuestra tienda.</li>
+            </ul>
+            <div class="highlight">
+                <i class="ti ti-shield-check"></i>
+                <p>Estas limitaciones aplican en la medida máxima permitida por la ley colombiana y las leyes aplicables en cada país de destino.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tc-section" id="modificaciones">
+        <div class="tc-num">10</div>
+        <h2 class="tc-title">Modificaciones y legislación aplicable</h2>
+        <div class="tc-text">
+            <p>Velonox se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entran en vigor en el momento de su publicación en esta página. El uso continuado de la tienda después de la publicación de cambios implica la aceptación de los nuevos términos.</p>
+            <p>Estos términos se rigen por las leyes de la República de Colombia. Cualquier disputa será sometida a los tribunales competentes de Colombia, sin perjuicio de las leyes de protección al consumidor aplicables en el país de residencia del comprador.</p>
+            <p>Para cualquier consulta sobre estos términos, contáctanos:</p>
+            <ul>
+                <li>WhatsApp: +57 310 888 7296</li>
+                <li>Formulario: <a href="contacto.html" style="color:#1D7A4F">velonox.com/contacto</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="cta-box">
+        <strong>¿Tienes dudas sobre estos términos?</strong>
+        <p>Escríbenos y te explicamos cualquier punto con claridad. Respondemos en menos de 2 horas en horario hábil.</p>
+        <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20tengo%20una%20duda%20sobre%20los%20t%C3%A9rminos%20y%20condiciones" target="_blank" class="whatsapp-btn">
+            <i class="ti ti-brand-whatsapp"></i>
+            Hablar con nosotros
+        </a>
+    </div>
+
+</div>
+
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos y condiciones</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script>
+    async function init() {
+        if (isLoggedIn()) {
+            document.getElementById("nav-login").style.display = "none";
+            document.getElementById("nav-logout").style.display = "block";
+            try {
+                const me = await getMe();
+                document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+                if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+            } catch(e) {}
+        }
+    }
+    init();
+</script>
+</body>
+</html>
