@@ -1,6 +1,6 @@
 ﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 8, 2026
+Fecha de Actualización: Julio 9, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
@@ -9,7 +9,8 @@ Fecha de Actualización: Julio 8, 2026
 Proyecto e-commerce en desarrollo activo, con backend desarrollado en FastAPI,
 PostgreSQL como motor de base de datos y un frontend en HTML, CSS y JavaScript
 vanilla. La plataforma permite gestionar usuarios, catálogo de productos, carrito,
-pagos y el contenido visual de la tienda desde un panel administrativo.
+pagos, contenido visual de la tienda y una experiencia de compra más completa
+para clientes y administradores.
 
 Estado actual: aproximadamente 95% del MVP funcional.
 - Backend: ~95% funcional
@@ -55,6 +56,7 @@ BASE DE DATOS:
 - carts y cart_items: carrito de compras por usuario
 - orders y order_items: órdenes y detalle de compra
 - store_layout: bloques dinámicos del layout de la tienda
+- product_pages: configuraciones adicionales del contenido de páginas de producto
 
 PRINCIPALES FUNCIONALIDADES BACKEND:
 - Rutas de autenticación y perfil de usuario
@@ -64,6 +66,7 @@ PRINCIPALES FUNCIONALIDADES BACKEND:
 - Confirmación de pagos y actualización del estado de órdenes
 - Gestión de bloques del layout con persistencia en base de datos
 - Endpoints para generación de contenido con IA
+- Endpoints dinámicos para personalizar páginas de producto
 
 SERVICIOS Y CAPAS:
 - Auth service: registro, login y generación de tokens
@@ -85,6 +88,7 @@ PÁGINAS IMPLEMENTADAS:
 - admin.html: panel administrativo y editor visual
 - product.html: página de detalle de producto con descripción, características,
   especificaciones y productos relacionados
+- nosotros.html: página institucional con información de marca y propuesta de valor
 
 COMPONENTES DESTACADOS:
 - Diseño responsive
@@ -117,6 +121,7 @@ COMPONENTES DESTACADOS:
   - características destacadas
   - reseñas de referencia
   - productos relacionados
+- Página institucional de la marca con enfoque comercial y emocional
 
 4.3 INTEGRACIONES
 - Pagos con Stripe
@@ -125,7 +130,79 @@ COMPONENTES DESTACADOS:
 - Integración con IA para generación de contenido visual
 
 
-5. ESTADO ACTUAL Y PRÓXIMOS PASOS
+5. INFRAESTRUCTURA DEL PROYECTO
+================================================================================
+
+5.1 ARQUITECTURA DE INFRAESTRUCTURA
+------------------------------------
+
+El proyecto está compuesto por tres capas principales:
+- Capa de frontend: archivos estáticos HTML/CSS/JS servidos desde un hosting estático.
+- Capa de backend: API REST desarrollada con FastAPI y ejecutada mediante Uvicorn.
+- Capa de datos: base de datos PostgreSQL gestionada por un servicio relacional.
+
+La comunicación entre el frontend y el backend se realiza mediante peticiones HTTP
+seguras, con autenticación por token JWT y configuración de CORS para permitir el
+acceso desde entornos locales y de despliegue.
+
+5.2 COMPONENTES DE DESPLIEGUE
+------------------------------------
+
+Backend:
+- Ejecutado con Uvicorn en un entorno ASGI.
+- Configuración de arranque mediante Procfile.
+- Versión de runtime definida en runtime.txt para compatibilidad del entorno.
+- Endpoints de salud disponibles en /health y /db-check para verificación básica.
+
+Frontend:
+- Estructurado como sitio estático con archivos HTML, CSS y JS.
+- Diseñado para abrirse directamente desde un navegador o desde un hosting estático.
+- Integra la API remota mediante JavaScript y variables de entorno en la lógica del cliente.
+
+Base de datos:
+- PostgreSQL como motor principal.
+- Modelos relacionales gestionados con SQLAlchemy.
+- Migraciones disponibles a través de Alembic.
+
+5.3 VARIABLES Y CONFIGURACIÓN
+------------------------------------
+
+La aplicación depende de variables de entorno para su funcionamiento en distintos
+entornos. Entre las más importantes se encuentran:
+- DATABASE_URL: conexión a la base de datos PostgreSQL
+- SECRET_KEY: firma de tokens JWT
+- STRIPE_SECRET_KEY: acceso a la API de Stripe
+- STRIPE_WEBHOOK_SECRET: verificación de eventos webhook
+- FRONTEND_URL: URL base del frontend para redirecciones y CORS
+- ANTHROPIC_API_KEY: acceso a la integración de IA
+
+Estas variables deben configurarse de forma segura y no deben exponerse en el código
+ni en archivos compartidos públicamente.
+
+5.4 SEGURIDAD E INFRAESTRUCTURA
+------------------------------------
+
+La infraestructura actual contempla:
+- Protección de endpoints con middleware de autenticación y autorización
+- Tokens JWT para sesiones de usuario y administración
+- CORS habilitado para orígenes permitidos
+- Gestión de secretos vía variables de entorno
+- Integración con webhooks para confirmación de pagos de forma asíncrona
+
+5.5 ESTADO DE LA INFRAESTRUCTURA
+------------------------------------
+
+La base de infraestructura del proyecto ya está definida y operativa en su estructura
+principal. El backend puede ejecutarse como servicio web, el frontend funciona como
+contenido estático y la base de datos se integra de forma consistente con el modelo de
+negocio. El siguiente paso natural es fortalecer la infraestructura con:
+- contenedores o Docker
+- CI/CD automatizado
+- ambientes de staging y producción separados
+- monitoreo y logs más completos
+
+
+6. ESTADO ACTUAL Y PRÓXIMOS PASOS
 ================================================================================
 
 PUNTOS FUERTES:
@@ -140,6 +217,7 @@ MEJORAS PENDIENTES:
 - Refinar aún más la experiencia de administración
 - Expandir documentación técnica y de uso
 - Continuar optimizando rendimiento y experiencia visual
+- Fortalecer la infraestructura con despliegue más robusto y automatizado
 
 ESTADO GENERAL:
 - Desarrollo activo
@@ -147,9 +225,9 @@ ESTADO GENERAL:
 - Preparado para seguir evolucionando con nuevas funcionalidades
 
 
-6. NOTA DE SEGURIDAD Y DOCUMENTACIÓN
+7. NOTA DE SEGURIDAD Y DOCUMENTACIÓN
 ================================================================================
 
 Este documento no incluye credenciales, tokens ni secretos del proyecto.
-La información registrada aquí está orientada a describir el alcance, la estructura
-y el estado de desarrollo del sistema de forma general y segura.
+La información registrada aquí está orientada a describir el alcance, la estructura,
+la infraestructura y el estado de desarrollo del sistema de forma general y segura.
