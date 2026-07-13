@@ -1,0 +1,97 @@
+// ─── Renderizador compartido de bloques para páginas de contenido ────────────
+// Usado por contacto.html, nosotros.html, politicas.html y terminos.html.
+// Requiere que js/api.js se haya cargado antes (usa API_URL).
+
+async function initPageBlocks(slug) {
+    const container = document.getElementById("layout-container");
+    if (!container) return;
+    try {
+        const res = await fetch(`${API_URL}/layout/?page=${slug}`);
+        const blocks = await res.json();
+        container.innerHTML = blocks
+            .filter(b => b.is_visible)
+            .map(b => renderPageBlock(b))
+            .join("\n");
+    } catch (e) {
+        console.error("Error cargando contenido de la página:", e);
+    }
+}
+
+function renderPageBlock(block) {
+    const c = block.config;
+    switch (block.block_type) {
+        case "content_hero":
+            return `<section class="hero">
+                ${c.eyebrow ? `<p class="hero-eyebrow">${c.eyebrow}</p>` : ""}
+                <h1>${c.title_html || ""}</h1>
+                <div class="hero-cut"></div>
+                ${c.text ? `<p>${c.text}</p>` : ""}
+            </section>`;
+
+        case "custom_html":
+            return `<style>${c.css || ""}</style>${c.html || ""}`;
+
+        case "footer":
+            return `<footer>
+                <div class="footer-top">
+                    <div>
+                        <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
+                        <p class="footer-tagline">${c.tagline || ""}</p>
+                    </div>
+                    <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
+                    <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
+                    <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos y condiciones</a><a href="politicas.html#privacidad">Privacidad</a></div>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-copy">© 2026 ${c.store_name || "Velonox"}. Todos los derechos reservados.</p>
+                    <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                </div>
+            </footer>`;
+
+        // Tipos genéricos de la librería de bloques, por si el admin los añade aquí
+        case "announcement_bar":
+            return `<div style="background:${c.background_color || "#1D7A4F"};color:${c.text_color || "#fff"};text-align:center;padding:0.5rem 1rem;font-size:12px;font-weight:500;letter-spacing:.3px">${c.text || ""}</div>`;
+
+        case "text_section":
+            return `<section style="background:${c.background_color || "#F5F5F3"};padding:3.5rem 2rem;text-align:${c.text_align || "center"}">
+                <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:1rem">${c.title || ""}</h2>
+                <p style="font-size:15px;color:#6B8A7A;max-width:600px;margin:0 auto;line-height:1.7">${c.content || ""}</p>
+            </section>`;
+
+        case "image_banner":
+            if (!c.image_url) return "";
+            return `<div style="width:100%;height:${c.height || 300}px;overflow:hidden"><img src="${c.image_url}" alt="${c.alt_text || ""}" style="width:100%;height:100%;object-fit:cover"></div>`;
+
+        case "testimonials": {
+            const items = c.items || [];
+            return `<section style="background:#F5F5F3;padding:3.5rem 2rem">
+                <div style="margin-bottom:2rem"><h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14">${c.title || ""}</h2></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+                    ${items.map(item => `
+                    <div style="background:white;border:1px solid #E8E8E4;border-radius:2px;padding:1.2rem">
+                        <div style="color:#D6C5A0;margin-bottom:.5rem;font-size:13px">${"★".repeat(item.rating || 5)}</div>
+                        <p style="color:#4A6A5A;font-size:13px;margin-bottom:.7rem;line-height:1.6">"${item.text || ""}"</p>
+                        <strong style="font-size:12px;color:#0F1A14">— ${item.name || ""}</strong>
+                    </div>`).join("")}
+                </div>
+            </section>`;
+        }
+
+        case "categories": {
+            const cats = c.items || [];
+            return `<section style="padding:3.5rem 2rem">
+                <div style="margin-bottom:2rem"><h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14">${c.title || ""}</h2></div>
+                <div class="cat-grid">
+                    ${cats.map(cat => `
+                    <div class="cat-card">
+                        <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
+                        <p class="cat-name">${cat}</p>
+                    </div>`).join("")}
+                </div>
+            </section>`;
+        }
+
+        default:
+            return "";
+    }
+}

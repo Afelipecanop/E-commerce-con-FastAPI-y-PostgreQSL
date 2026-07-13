@@ -102,110 +102,9 @@
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
     </div>
 </nav>
-<section class="hero">
-    <p class="hero-eyebrow">Estamos aquí para ayudarte</p>
-    <h1>Hablemos de <em>cocina.</em></h1>
-    <p>¿Tienes dudas sobre nuestros productos, tu pedido o quieres saber qué set es el ideal para tu cocina? Escríbenos.</p>
-</section>
-<div class="main">
-    <div class="contact-info">
-        <div class="info-block">
-            <p class="info-block-eyebrow">WhatsApp Business</p>
-            <h3>Respuesta más rápida</h3>
-            <p>Para consultas sobre productos, pedidos o asesoría personalizada. Respondemos en menos de 2 horas en horario hábil.</p>
-            <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20tengo%20una%20consulta%20sobre%20sus%20productos" target="_blank" class="whatsapp-btn">
-                <i class="ti ti-brand-whatsapp"></i>
-                <div><div>Escribir por WhatsApp</div><div class="whatsapp-sub">+57 310 888 7296</div></div>
-            </a>
-        </div>
-        <div class="info-block">
-            <p class="info-block-eyebrow">Horario de atención</p>
-            <h3>Cuándo estamos disponibles</h3>
-            <div class="horario-grid">
-                <div class="horario-item"><strong>Lunes — Viernes</strong>8:00 am — 6:00 pm</div>
-                <div class="horario-item"><strong>Sábados</strong>9:00 am — 1:00 pm</div>
-            </div>
-            <div class="tiempo-resp">
-                <i class="ti ti-clock"></i>
-                <span>Tiempo de respuesta: <strong>menos de 2 horas</strong></span>
-            </div>
-        </div>
-        <div class="info-block">
-            <p class="info-block-eyebrow">Ubicación</p>
-            <h3>Colombia</h3>
-            <p>Operamos desde Colombia con envíos a toda Latinoamérica. Próximamente con presencia en México, Perú y Chile.</p>
-        </div>
-    </div>
-    <div class="contact-form">
-        <p class="form-eyebrow">Formulario de contacto</p>
-        <h2 class="form-title">¿En qué te podemos ayudar?</h2>
-        <div id="form-alert" class="alert"></div>
-        <div class="form-row">
-            <div class="form-group"><label>Nombre</label><input type="text" id="f-name" placeholder="Tu nombre"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
-        </div>
-        <div class="form-group">
-            <label>Motivo de contacto</label>
-            <select id="f-motivo">
-                <option value="">Selecciona un motivo</option>
-                <option value="producto">Consulta sobre un producto</option>
-                <option value="pedido">Estado de mi pedido</option>
-                <option value="devolucion">Devolución o garantía</option>
-                <option value="envio">Información de envíos</option>
-                <option value="mayoreo">Compras al por mayor</option>
-                <option value="otro">Otro</option>
-            </select>
-        </div>
-        <div class="form-group"><label>Mensaje</label><textarea id="f-mensaje" placeholder="Cuéntanos en qué te podemos ayudar..."></textarea></div>
-        <button class="btn-submit" id="btn-submit" onclick="handleSubmit()">
-            <i class="ti ti-send"></i> Enviar mensaje
-        </button>
-        <p class="form-note">También puedes escribirnos directo por WhatsApp para una respuesta más rápida.</p>
-    </div>
-</div>
-<section class="faq">
-    <div class="faq-inner">
-        <p class="faq-eyebrow">Preguntas frecuentes</p>
-        <h2>Lo que más nos preguntan</h2>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿El acero inoxidable 304 es seguro para cocinar?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">Sí, completamente. El acero inoxidable 304 es el estándar de la industria alimentaria mundial. Es inerte — no reacciona con los alimentos, no libera químicos y no se degrada con el tiempo ni con el calor.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Cuánto tiempo tarda el envío?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">En Colombia: 2 a 5 días hábiles. Para el resto de Latinoamérica: 7 a 15 días hábiles. Recibirás un número de seguimiento una vez despachado tu pedido.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Los productos son compatibles con inducción?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">Sí. Todos los productos Velonox son compatibles con inducción, vitrocerámica, gas y horno convencional. El fondo difusor de triple capa garantiza rendimiento óptimo en cualquier fuente de calor.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Qué cubre la garantía de 2 años?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">Nuestra garantía cubre cualquier defecto de fabricación: deformaciones, problemas con el fondo, soldaduras o acabados defectuosos. No cubre daños por mal uso, caídas o rayones por utensilios inadecuados.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Puedo devolver un producto si no me convence?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">Sí. Tienes 30 días desde la recepción para solicitar una devolución. El producto debe estar en condiciones originales. Escríbenos por WhatsApp o formulario y gestionamos todo.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Hacen envíos a toda Latinoamérica?<i class="ti ti-plus"></i></div>
-            <div class="faq-a">Actualmente enviamos a Colombia, México, Perú y Chile. Si tu país no aparece en el checkout, escríbenos y buscamos una solución.</div>
-        </div>
-    </div>
-</section>
-<footer>
-    <div class="footer-top">
-        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
-        <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
-        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
-        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
-    </div>
-    <div class="footer-bottom">
-        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
-        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
-    </div>
-</footer>
+<div id="layout-container"></div>
 <script src="js/api.js"></script>
+<script src="js/page-blocks.js"></script>
 <script>
     async function init() {
         if (isLoggedIn()) {
@@ -217,6 +116,7 @@
                 if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
             } catch(e) {}
         }
+        await initPageBlocks("contacto");
     }
     function toggleFaq(el) {
         const answer = el.nextElementSibling;

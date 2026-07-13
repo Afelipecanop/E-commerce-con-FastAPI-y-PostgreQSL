@@ -268,6 +268,7 @@
             <div class="block-library">
                 <div class="block-btn" onclick="addBlock('announcement_bar')"><i class="ti ti-speakerphone"></i>Anuncio</div>
                 <div class="block-btn" onclick="addBlock('hero_banner')"><i class="ti ti-photo"></i>Banner</div>
+                <div class="block-btn" onclick="addBlock('content_hero')"><i class="ti ti-heading"></i>Encabezado</div>
                 <div class="block-btn" onclick="addBlock('product_grid')"><i class="ti ti-building-store"></i>Productos</div>
                 <div class="block-btn" onclick="addBlock('text_section')"><i class="ti ti-align-left"></i>Texto</div>
                 <div class="block-btn" onclick="addBlock('testimonials')"><i class="ti ti-star"></i>Testimonios</div>
@@ -305,10 +306,14 @@
             </div>
             <select id="page-selector" class="page-selector" onchange="loadPage(this.value)">
                 <option value="__live__">Página principal (edición en vivo)</option>
-                <option value="cart.html">Carrito</option>
-                <option value="login.html">Login</option>
-                <option value="product.html">Producto</option>
-                <option value="checkout.html">Checkout</option>
+                <option value="contacto">Contacto (edición en vivo)</option>
+                <option value="nosotros">Nosotros (edición en vivo)</option>
+                <option value="politicas">Políticas (edición en vivo)</option>
+                <option value="terminos">Términos (edición en vivo)</option>
+                <option value="cart.html">Carrito (solo vista previa)</option>
+                <option value="login.html">Login (solo vista previa)</option>
+                <option value="product.html">Producto (solo vista previa)</option>
+                <option value="checkout.html">Checkout (solo vista previa)</option>
             </select>
             <span id="preview-url" class="preview-url"><i class="ti ti-bolt"></i>Vista previa en tiempo real</span>
         </div>
@@ -518,10 +523,20 @@ let currentDevice = 'desktop';
 let previewProducts = [];   // productos reales para el preview en vivo
 let currentPage = '__live__';
 
+// ── Páginas editables con bloques (slug de backend + archivo real) ────────────
+const EDITABLE_PAGES = {
+    __live__:  { slug: "home",      file: "index.html" },
+    contacto:  { slug: "contacto",  file: "contacto.html" },
+    nosotros:  { slug: "nosotros",  file: "nosotros.html" },
+    politicas: { slug: "politicas", file: "politicas.html" },
+    terminos:  { slug: "terminos",  file: "terminos.html" }
+};
+
 // ── Nombres e iconos de bloques (Tabler, sin emojis) ──────────────────────────
 const BLOCK_META = {
     announcement_bar: { name: "Barra de anuncio", icon: "ti-speakerphone" },
     hero_banner:      { name: "Banner principal", icon: "ti-photo" },
+    content_hero:     { name: "Encabezado de página", icon: "ti-heading" },
     product_grid:     { name: "Grid de productos", icon: "ti-building-store" },
     text_section:     { name: "Sección de texto", icon: "ti-align-left" },
     testimonials:     { name: "Testimonios", icon: "ti-star" },
@@ -547,6 +562,11 @@ const BLOCK_DEFAULTS = {
         image_url: "",
         background_color: "#0F1A14",
         text_color: "#ffffff"
+    },
+    content_hero: {
+        eyebrow: "Encabezado",
+        title_html: "Título de la página",
+        text: "Breve descripción de esta página."
     },
     product_grid: {
         title: "Los favoritos",
@@ -612,17 +632,22 @@ async function init() {
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 async function loadLayout() {
+    const page = EDITABLE_PAGES[currentPage] || EDITABLE_PAGES.__live__;
     try {
-        const blocks = await apiFetch("/layout/");
+        const blocks = await apiFetch(`/layout/?page=${page.slug}`);
         layout = blocks;
+        selectedBlockId = null;
         renderLayers();
+        renderProps();
     } catch(e) { showToast("Error cargando el layout", "error"); }
 }
 
 function renderLayers() {
     const list = document.getElementById("layers-list");
     if (!layout.length) {
-        list.innerHTML = `<div class="no-selection"><i class="ti ti-stack-2"></i>Aún no hay secciones.<br>Añade una desde la pestaña <strong>Añadir</strong>.</div>`;
+        list.innerHTML = EDITABLE_PAGES[currentPage]
+            ? `<div class="no-selection"><i class="ti ti-stack-2"></i>Aún no hay secciones.<br>Añade una desde la pestaña <strong>Añadir</strong>.</div>`
+            : `<div class="no-selection"><i class="ti ti-eye-off"></i>Esta página es solo de vista previa.<br>No se puede editar desde aquí.</div>`;
         return;
     }
     list.innerHTML = layout.map(block => `
@@ -693,6 +718,10 @@ function removeBlock(id) {
 }
 
 function addBlock(type) {
+    if (!EDITABLE_PAGES[currentPage]) {
+        showToast("Esta vista es solo de previsualización, no se puede editar", "error");
+        return;
+    }
     const newBlock = {
         id: "block-" + Date.now(),
         block_type: type,
@@ -732,6 +761,13 @@ function renderProps() {
             ${propText("button_text", "Texto del botón", c.button_text)}
             ${propText("image_url", "URL de imagen de fondo", c.image_url)}
             ${propColor("background_color", "Color de fondo", c.background_color)}
+        `;
+    } else if (block.block_type === "content_hero") {
+        fields = `
+            ${propText("eyebrow", "Texto pequeño superior", c.eyebrow)}
+            ${propTextarea("title_html", "Título (admite HTML simple, ej: <em>palabra</em>)", c.title_html)}
+            ${propTextarea("text", "Texto debajo del título", c.text)}
+            <div class="prop-note"><i class="ti ti-info-circle"></i>Este encabezado se usa al inicio de páginas de contenido como Contacto, Nosotros, Políticas o Términos.</div>
         `;
     } else if (block.block_type === "product_grid") {
         fields = `
@@ -858,24 +894,56 @@ function updateConfigJSON(blockId, key, el) {
 }
 
 // ── Preview en vivo (mismo estilo que la tienda real) ─────────────────────────
-function renderPreview() {
-    if (currentPage !== '__live__') return;
+async function renderPreview() {
     const frame = document.getElementById("preview-frame");
-    frame.removeAttribute("src");
-    frame.srcdoc = generatePreviewHTML();
+    const page = EDITABLE_PAGES[currentPage];
+    if (!page) return; // páginas de solo vista previa no pasan por aquí
+
+    if (currentPage === '__live__') {
+        frame.removeAttribute("src");
+        frame.srcdoc = generatePreviewHTML();
+        return;
+    }
+
+    // Páginas de contenido: se toma el HTML real de la página (con su nav,
+    // estilos y footer propios) y se inyectan los bloques editados en vivo
+    // dentro de su contenedor, para que el preview sea idéntico a producción.
+    try {
+        const res = await fetch(page.file);
+        const raw = await res.text();
+        const blocksHTML = layout.filter(b => b.is_visible).map(b => renderBlock(b)).join("\n");
+        const html = raw.replace(
+            '<div id="layout-container"></div>',
+            `<div id="layout-container">${blocksHTML}</div>`
+        );
+        frame.removeAttribute("src");
+        frame.srcdoc = html;
+    } catch(e) {
+        frame.removeAttribute("srcdoc");
+        frame.src = page.file;
+    }
 }
 
-function loadPage(value) {
+async function loadPage(value) {
     currentPage = value;
-    const frame = document.getElementById("preview-frame");
     const urlEl = document.getElementById("preview-url");
-    if (value === '__live__') {
-        urlEl.innerHTML = `<i class="ti ti-bolt"></i>Vista previa en tiempo real`;
-        renderPreview();
+    const page = EDITABLE_PAGES[value];
+
+    if (page) {
+        urlEl.innerHTML = value === '__live__'
+            ? `<i class="ti ti-bolt"></i>Vista previa en tiempo real`
+            : `<i class="ti ti-bolt"></i>Editando: ${page.file}`;
+        await loadLayout();
+        await renderPreview();
     } else {
+        const frame = document.getElementById("preview-frame");
         frame.removeAttribute("srcdoc");
         frame.src = value;
-        urlEl.innerHTML = `<i class="ti ti-eye"></i>Viendo: ${value}`;
+        urlEl.innerHTML = `<i class="ti ti-eye"></i>Viendo: ${value} (solo vista previa, no editable)`;
+        layout = [];
+        selectedBlockId = null;
+        renderLayers();
+        renderProps();
     }
 }
 
@@ -1001,6 +1069,14 @@ function renderBlock(block) {
                 <div class="hero-badge"><div class="hero-badge-ring"><span class="num">304</span><span class="txt">Grado<br>acero</span></div></div>
             </section>`;
 
+        case "content_hero":
+            return `<section style="background:#0F1A14;padding:5rem 2rem 4rem;text-align:center">
+                <style>.chero-title em{color:#1D7A4F;font-style:normal}</style>
+                ${c.eyebrow ? `<p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem">${c.eyebrow}</p>` : ''}
+                <h1 class="chero-title" style="font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,60px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-2px;margin-bottom:1rem">${c.title_html||''}</h1>
+                ${c.text ? `<p style="font-size:15px;color:#6B8A7A;max-width:500px;margin:0 auto;line-height:1.7">${c.text}</p>` : ''}
+            </section>`;
+
         case "product_grid": {
             const cols = c.columns || 3;
             const limit = parseInt(c.limit) || 6;
@@ -1102,14 +1178,19 @@ function renderBlock(block) {
 
 // ── Guardar layout ────────────────────────────────────────────────────────────
 async function saveLayout() {
+    const page = EDITABLE_PAGES[currentPage];
+    if (!page) {
+        showToast("Esta vista es solo de previsualización, no se puede guardar", "error");
+        return;
+    }
     try {
         layout.forEach((b, i) => b.order_index = i);
-        await apiFetch("/layout/", {
+        await apiFetch(`/layout/?page=${page.slug}`, {
             method: "PUT",
             body: JSON.stringify({ blocks: layout })
         });
         showToast("Cambios guardados", "success");
-        if (currentPage === '__live__') renderPreview();
+        renderPreview();
     } catch(e) {
         showToast("Error guardando: " + e.message, "error");
     }
@@ -1134,7 +1215,15 @@ function switchTab(tab) {
     document.querySelectorAll(".topbar .tab").forEach((btn, i) => {
         btn.classList.toggle("active", ["editor","products","metrics","settings"][i] === tab);
     });
-    if (tab === "metrics") loadMetrics();
+    if (tab === "metrics") {
+        loadMetrics();
+        // Refresca cada 5 minutos mientras estás en el tab
+        if (window._metricsInterval) clearInterval(window._metricsInterval);
+        window._metricsInterval = setInterval(loadMetrics, 5 * 60 * 1000);
+    } else {
+        // Para el refresh al salir del tab
+        if (window._metricsInterval) clearInterval(window._metricsInterval);
+    }
 }
 
 function showSidebarTab(tab) {

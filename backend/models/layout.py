@@ -7,6 +7,7 @@ class StoreLayout(Base):
     __tablename__ = "store_layout"
 
     id = Column(String, primary_key=True)
+    page_slug = Column(String, nullable=False, default="home", server_default="home")
     block_type = Column(String, nullable=False)
     order_index = Column(Integer, nullable=False, default=0)
     config = Column(Text, nullable=False, default="{}")
