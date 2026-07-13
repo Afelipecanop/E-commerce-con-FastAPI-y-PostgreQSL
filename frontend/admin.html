@@ -241,6 +241,7 @@
     <div class="tabs">
         <button class="tab active" onclick="switchTab('editor')"><i class="ti ti-layout-2"></i>Editor</button>
         <button class="tab" onclick="switchTab('products')"><i class="ti ti-package"></i>Productos</button>
+        <button class="tab" onclick="switchTab('metrics')"><i class="ti ti-chart-bar"></i>Métricas</button>
         <button class="tab" onclick="switchTab('settings')"><i class="ti ti-settings"></i>Ajustes</button>
     </div>
     <div class="spacer"></div>
@@ -348,6 +349,72 @@
                 <div id="products-table"></div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<!-- Tab Métricas -->
+<div id="metrics-tab" style="display:none; padding:2rem; overflow-y:auto; flex:1; background:#0F1A14">
+    <div style="max-width:1200px;margin:0 auto">
+
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+            <div>
+                <p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.3rem">Panel de control</p>
+                <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#C8D8C0">Métricas del negocio</h2>
+            </div>
+            <button onclick="loadMetrics()" style="background:#1A2820;color:#C8D8C0;border:1px solid #2A4A38;padding:.5rem 1rem;border-radius:4px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.4rem">
+                <i class="ti ti-refresh"></i> Actualizar
+            </button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div id="kpi-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem">
+            <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem;text-align:center;color:#6B8A7A">
+                <i class="ti ti-loader" style="font-size:24px"></i>
+                <p style="margin-top:.5rem;font-size:13px">Cargando métricas...</p>
+            </div>
+        </div>
+
+        <!-- Gráfico + Top productos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+
+            <!-- Gráfico de ventas -->
+            <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+                <p style="font-size:11px;font-weight:500;letter-spacing:.1em;color:#4A6A5A;text-transform:uppercase;margin-bottom:.5rem">Ventas</p>
+                <p style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0;margin-bottom:1.5rem">Últimos 14 días</p>
+                <div id="sales-chart" style="height:180px;display:flex;align-items:flex-end;gap:4px;padding-top:1rem">
+                    <div style="color:#4A6A5A;font-size:12px">Cargando...</div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:.5rem" id="chart-labels"></div>
+            </div>
+
+            <!-- Top productos -->
+            <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+                <p style="font-size:11px;font-weight:500;letter-spacing:.1em;color:#4A6A5A;text-transform:uppercase;margin-bottom:.5rem">Catálogo</p>
+                <p style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0;margin-bottom:1.5rem">Top productos</p>
+                <div id="top-products"></div>
+            </div>
+        </div>
+
+        <!-- Alertas de stock + Órdenes recientes -->
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.5rem">
+
+            <!-- Alertas -->
+            <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+                <p style="font-size:11px;font-weight:500;letter-spacing:.1em;color:#4A6A5A;text-transform:uppercase;margin-bottom:.5rem">Inventario</p>
+                <p style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0;margin-bottom:1.5rem">Alertas de stock</p>
+                <div id="stock-alerts"></div>
+            </div>
+
+            <!-- Órdenes recientes -->
+            <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+                <p style="font-size:11px;font-weight:500;letter-spacing:.1em;color:#4A6A5A;text-transform:uppercase;margin-bottom:.5rem">Actividad</p>
+                <p style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0;margin-bottom:1.5rem">Órdenes recientes</p>
+                <div id="recent-orders"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -1062,10 +1129,12 @@ function setDevice(device, btn) {
 function switchTab(tab) {
     document.getElementById("editor-tab").style.display = tab === "editor" ? "flex" : "none";
     document.getElementById("products-tab").style.display = tab === "products" ? "block" : "none";
+    document.getElementById("metrics-tab").style.display = tab === "metrics" ? "block" : "none";
     document.getElementById("settings-tab").style.display = tab === "settings" ? "block" : "none";
     document.querySelectorAll(".topbar .tab").forEach((btn, i) => {
-        btn.classList.toggle("active", ["editor","products","settings"][i] === tab);
+        btn.classList.toggle("active", ["editor","products","metrics","settings"][i] === tab);
     });
+    if (tab === "metrics") loadMetrics();
 }
 
 function showSidebarTab(tab) {
@@ -1254,6 +1323,230 @@ function showToast(msg, type = "success") {
     toast.innerHTML = `<i class="ti ${icon}"></i>${msg}`;
     toast.className = "toast show " + type;
     setTimeout(() => { toast.className = "toast " + type; }, 3000);
+}
+
+// ── MÉTRICAS ──────────────────────────────────────────────────────────────────
+
+async function loadMetrics() {
+    try {
+        const data = await apiFetch("/metrics/dashboard");
+        renderKPIs(data);
+        renderSalesChart(data.ventas_por_dia);
+        renderTopProducts(data.top_productos);
+        renderStockAlerts(data.productos);
+        renderRecentOrders(data.ordenes_recientes);
+    } catch(e) {
+        showToast("Error cargando métricas: " + e.message, "error");
+    }
+}
+
+function renderKPIs(data) {
+    const v = data.ventas;
+    const o = data.ordenes;
+    const u = data.usuarios;
+    const p = data.productos;
+
+    const varVentas = v.variacion_pct >= 0
+        ? `<span style="color:#1D7A4F">↑ ${v.variacion_pct}%</span>`
+        : `<span style="color:#DC2626">↓ ${Math.abs(v.variacion_pct)}%</span>`;
+
+    const varUsuarios = u.variacion_pct >= 0
+        ? `<span style="color:#1D7A4F">↑ ${u.variacion_pct}%</span>`
+        : `<span style="color:#DC2626">↓ ${Math.abs(u.variacion_pct)}%</span>`;
+
+    document.getElementById("kpi-cards").innerHTML = `
+        <!-- Ventas totales -->
+        <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+                <div style="width:40px;height:40px;background:#0F1A14;border-radius:4px;display:flex;align-items:center;justify-content:center">
+                    <i class="ti ti-currency-dollar" style="color:#1D7A4F;font-size:20px"></i>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:#4A6A5A;text-transform:uppercase;letter-spacing:.06em">30 días</span>
+            </div>
+            <p style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#C8D8C0;line-height:1">$${v.ultimos_30d.toFixed(0)}</p>
+            <p style="font-size:12px;color:#4A6A5A;margin-top:.3rem">Ingresos · ${varVentas} vs período anterior</p>
+            <p style="font-size:11px;color:#2A4A38;margin-top:.5rem">Total histórico: $${v.total_historico.toFixed(0)} USD</p>
+        </div>
+
+        <!-- Órdenes -->
+        <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+                <div style="width:40px;height:40px;background:#0F1A14;border-radius:4px;display:flex;align-items:center;justify-content:center">
+                    <i class="ti ti-shopping-bag" style="color:#1D7A4F;font-size:20px"></i>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:#4A6A5A;text-transform:uppercase;letter-spacing:.06em">Este mes</span>
+            </div>
+            <p style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#C8D8C0;line-height:1">${o.este_mes}</p>
+            <p style="font-size:12px;color:#4A6A5A;margin-top:.3rem">Órdenes pagadas</p>
+            <p style="font-size:11px;color:#2A4A38;margin-top:.5rem">
+                ${o.pendientes > 0 ? `<span style="color:#D97706">${o.pendientes} pendientes · </span>` : ''}
+                Total: ${o.total} órdenes
+            </p>
+        </div>
+
+        <!-- Ticket promedio -->
+        <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+                <div style="width:40px;height:40px;background:#0F1A14;border-radius:4px;display:flex;align-items:center;justify-content:center">
+                    <i class="ti ti-receipt" style="color:#1D7A4F;font-size:20px"></i>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:#4A6A5A;text-transform:uppercase;letter-spacing:.06em">Promedio</span>
+            </div>
+            <p style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#C8D8C0;line-height:1">$${o.ticket_promedio.toFixed(0)}</p>
+            <p style="font-size:12px;color:#4A6A5A;margin-top:.3rem">Ticket promedio por orden</p>
+            <p style="font-size:11px;color:#2A4A38;margin-top:.5rem">Basado en ${o.total} órdenes totales</p>
+        </div>
+
+        <!-- Usuarios -->
+        <div style="background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+                <div style="width:40px;height:40px;background:#0F1A14;border-radius:4px;display:flex;align-items:center;justify-content:center">
+                    <i class="ti ti-users" style="color:#1D7A4F;font-size:20px"></i>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:#4A6A5A;text-transform:uppercase;letter-spacing:.06em">30 días</span>
+            </div>
+            <p style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#C8D8C0;line-height:1">${u.ultimos_30d}</p>
+            <p style="font-size:12px;color:#4A6A5A;margin-top:.3rem">Nuevos usuarios · ${varUsuarios} vs anterior</p>
+            <p style="font-size:11px;color:#2A4A38;margin-top:.5rem">Total activos: ${u.total}</p>
+        </div>
+    `;
+}
+
+function renderSalesChart(dias) {
+    const chart = document.getElementById("sales-chart");
+    const labels = document.getElementById("chart-labels");
+    if (!dias || dias.length === 0) {
+        chart.innerHTML = `<p style="color:#4A6A5A;font-size:13px">Sin datos aún</p>`;
+        return;
+    }
+
+    const maxMonto = Math.max(...dias.map(d => d.monto), 1);
+
+    chart.innerHTML = dias.map(d => {
+        const height = Math.max((d.monto / maxMonto) * 160, d.monto > 0 ? 4 : 2);
+        const color = d.monto > 0 ? '#1D7A4F' : '#2A4A38';
+        const tooltip = d.monto > 0 ? `$${d.monto.toFixed(0)} · ${d.ordenes} orden${d.ordenes !== 1 ? 'es' : ''}` : 'Sin ventas';
+        return `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" title="${tooltip}">
+                <div style="width:100%;background:${color};border-radius:2px 2px 0 0;height:${height}px;transition:background .2s;min-height:2px"
+                    onmouseover="this.style.background='#22904F'"
+                    onmouseout="this.style.background='${color}'">
+                </div>
+            </div>`;
+    }).join('');
+
+    // Mostrar solo algunas etiquetas para no saturar
+    const step = Math.ceil(dias.length / 7);
+    labels.innerHTML = dias.map((d, i) =>
+        `<span style="font-size:9px;color:#2A4A38;flex:1;text-align:center">${i % step === 0 ? d.fecha : ''}</span>`
+    ).join('');
+}
+
+function renderTopProducts(productos) {
+    const container = document.getElementById("top-products");
+    if (!productos || productos.length === 0) {
+        container.innerHTML = `<p style="font-size:13px;color:#4A6A5A">No hay ventas registradas aún.</p>`;
+        return;
+    }
+    const maxVendido = Math.max(...productos.map(p => p.total_vendido), 1);
+    container.innerHTML = productos.map((p, i) => `
+        <div style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
+                <span style="font-size:13px;font-weight:500;color:#C8D8C0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:.5rem">${p.nombre}</span>
+                <span style="font-size:12px;color:#1D7A4F;font-weight:600;white-space:nowrap">${p.total_vendido} ud.</span>
+            </div>
+            <div style="background:#0F1A14;border-radius:2px;height:4px;width:100%">
+                <div style="background:#1D7A4F;height:4px;border-radius:2px;width:${(p.total_vendido/maxVendido)*100}%;transition:width .5s"></div>
+            </div>
+            <p style="font-size:11px;color:#4A6A5A;margin-top:.2rem">$${p.total_ingresos.toFixed(0)} USD en ingresos</p>
+        </div>
+    `).join('');
+}
+
+function renderStockAlerts(productos) {
+    const container = document.getElementById("stock-alerts");
+    const sinStock = productos.sin_stock;
+    const bajoStock = productos.bajo_stock;
+    const total = productos.total_activos;
+
+    if (sinStock === 0 && bajoStock === 0) {
+        container.innerHTML = `
+            <div style="display:flex;align-items:center;gap:.75rem;background:#0F1A14;border:1px solid #1A2820;border-radius:4px;padding:1rem;margin-bottom:.75rem">
+                <i class="ti ti-circle-check" style="color:#1D7A4F;font-size:20px"></i>
+                <div>
+                    <p style="font-size:13px;font-weight:500;color:#C8D8C0">Todo en orden</p>
+                    <p style="font-size:12px;color:#4A6A5A">${total} productos activos con stock</p>
+                </div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        ${sinStock > 0 ? `
+        <div style="display:flex;align-items:center;gap:.75rem;background:#1A0A0A;border:1px solid #DC2626;border-radius:4px;padding:1rem;margin-bottom:.75rem">
+            <i class="ti ti-alert-circle" style="color:#DC2626;font-size:20px"></i>
+            <div>
+                <p style="font-size:13px;font-weight:500;color:#FCA5A5">Sin stock</p>
+                <p style="font-size:12px;color:#6B8A7A">${sinStock} producto${sinStock !== 1 ? 's' : ''} agotado${sinStock !== 1 ? 's' : ''}</p>
+            </div>
+        </div>` : ''}
+        ${bajoStock > 0 ? `
+        <div style="display:flex;align-items:center;gap:.75rem;background:#1A1200;border:1px solid #D97706;border-radius:4px;padding:1rem;margin-bottom:.75rem">
+            <i class="ti ti-alert-triangle" style="color:#D97706;font-size:20px"></i>
+            <div>
+                <p style="font-size:13px;font-weight:500;color:#FCD34D">Stock bajo</p>
+                <p style="font-size:12px;color:#6B8A7A">${bajoStock} producto${bajoStock !== 1 ? 's' : ''} con 5 unidades o menos</p>
+            </div>
+        </div>` : ''}
+        <p style="font-size:11px;color:#2A4A38;margin-top:.5rem">${total} productos activos en total</p>
+    `;
+}
+
+function renderRecentOrders(ordenes) {
+    const container = document.getElementById("recent-orders");
+    if (!ordenes || ordenes.length === 0) {
+        container.innerHTML = `<p style="font-size:13px;color:#4A6A5A">No hay órdenes recientes.</p>`;
+        return;
+    }
+
+    const statusColors = {
+        paid: { bg: '#0A1A0A', border: '#1D7A4F', color: '#6EE7A8', label: 'Pagada' },
+        pending: { bg: '#1A1200', border: '#D97706', color: '#FCD34D', label: 'Pendiente' },
+        cancelled: { bg: '#1A0A0A', border: '#DC2626', color: '#FCA5A5', label: 'Cancelada' }
+    };
+
+    container.innerHTML = `
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead>
+                    <tr style="border-bottom:1px solid #243B2C">
+                        <th style="text-align:left;padding:.5rem .75rem;color:#4A6A5A;font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase">ID</th>
+                        <th style="text-align:left;padding:.5rem .75rem;color:#4A6A5A;font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Cliente</th>
+                        <th style="text-align:right;padding:.5rem .75rem;color:#4A6A5A;font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Total</th>
+                        <th style="text-align:center;padding:.5rem .75rem;color:#4A6A5A;font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Estado</th>
+                        <th style="text-align:right;padding:.5rem .75rem;color:#4A6A5A;font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase">Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${ordenes.map(o => {
+                        const s = statusColors[o.status] || statusColors.pending;
+                        return `
+                        <tr style="border-bottom:1px solid #1A2820">
+                            <td style="padding:.6rem .75rem;color:#4A6A5A;font-family:monospace">#${o.id}</td>
+                            <td style="padding:.6rem .75rem;color:#C8D8C0">${o.usuario}</td>
+                            <td style="padding:.6rem .75rem;color:#1D7A4F;font-weight:600;text-align:right">$${o.total.toFixed(2)}</td>
+                            <td style="padding:.6rem .75rem;text-align:center">
+                                <span style="background:${s.bg};border:1px solid ${s.border};color:${s.color};font-size:10px;font-weight:500;padding:2px 8px;border-radius:2px">
+                                    ${s.label}
+                                </span>
+                            </td>
+                            <td style="padding:.6rem .75rem;color:#4A6A5A;text-align:right">${o.fecha}</td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
 }
 
 // ── Iniciar ───────────────────────────────────────────────────────────────────
