@@ -7,10 +7,10 @@ class StoreLayout(Base):
     __tablename__ = "store_layout"
 
     id = Column(String, primary_key=True)
-    page_slug = Column(String, nullable=False, default="home", server_default="home")
     block_type = Column(String, nullable=False)
     order_index = Column(Integer, nullable=False, default=0)
     config = Column(Text, nullable=False, default="{}")
     is_visible = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    page_slug = Column(String, nullable=True, default="home")
