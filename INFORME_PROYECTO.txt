@@ -1,6 +1,6 @@
 ﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 9, 2026
+Fecha de Actualización: Julio 14, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
@@ -9,13 +9,13 @@ Fecha de Actualización: Julio 9, 2026
 Proyecto e-commerce en desarrollo activo, con backend desarrollado en FastAPI,
 PostgreSQL como motor de base de datos y un frontend en HTML, CSS y JavaScript
 vanilla. La plataforma permite gestionar usuarios, catálogo de productos, carrito,
-pagos, contenido visual de la tienda y una experiencia de compra más completa
-para clientes y administradores.
+pagos, contenido visual de la tienda, páginas de producto personalizadas y una
+experiencia de compra más completa para clientes y administradores.
 
-Estado actual: aproximadamente 95% del MVP funcional.
-- Backend: ~95% funcional
-- Frontend público: ~92% funcional
-- Panel de administración: ~88% funcional
+Estado actual: aproximadamente 97% del MVP funcional.
+- Backend: ~97% funcional
+- Frontend público: ~95% funcional
+- Panel de administración: ~90% funcional
 - Integraciones externas: activas y en uso
 - Testing automatizado: 0% (sin suite implementada aún)
 
@@ -33,12 +33,13 @@ OBJETIVOS PRINCIPALES:
 [OK] Editor de layout con bloques dinámicos
 [OK] Integración con IA para generar contenido visual
 [OK] Flujo completo de compra y confirmación de órdenes
+[OK] Gestión de páginas de producto y métricas de negocio
 
 CASO DE USO:
 Tienda online B2C donde:
 - CLIENTES: exploran productos, agregan artículos al carrito y completan compras.
-- ADMINS: gestionan productos, editan la experiencia visual de la tienda y
-  generan nuevas secciones de contenido.
+- ADMINS: gestionan productos, editan la experiencia visual de la tienda,
+  generan nuevas secciones de contenido y revisan métricas del negocio.
 
 
 3. ARQUITECTURA TÉCNICA
@@ -57,6 +58,7 @@ BASE DE DATOS:
 - orders y order_items: órdenes y detalle de compra
 - store_layout: bloques dinámicos del layout de la tienda
 - product_pages: configuraciones adicionales del contenido de páginas de producto
+- settings: configuraciones generales de la tienda
 
 PRINCIPALES FUNCIONALIDADES BACKEND:
 - Rutas de autenticación y perfil de usuario
@@ -67,6 +69,7 @@ PRINCIPALES FUNCIONALIDADES BACKEND:
 - Gestión de bloques del layout con persistencia en base de datos
 - Endpoints para generación de contenido con IA
 - Endpoints dinámicos para personalizar páginas de producto
+- Endpoints de métricas para seguimiento del negocio
 
 SERVICIOS Y CAPAS:
 - Auth service: registro, login y generación de tokens
@@ -84,11 +87,13 @@ PÁGINAS IMPLEMENTADAS:
 - index.html: catálogo principal
 - login.html: registro e inicio de sesión
 - cart.html: visualización y gestión del carrito
-- checkout.html: resultado del flujo de pago
+- checkout.html: flujo de compra y confirmación de pago
 - admin.html: panel administrativo y editor visual
 - product.html: página de detalle de producto con descripción, características,
   especificaciones y productos relacionados
 - nosotros.html: página institucional con información de marca y propuesta de valor
+- contacto.html: formulario de contacto y canal de comunicación
+- politicas.html y terminos.html: información legal y condiciones de uso
 
 COMPONENTES DESTACADOS:
 - Diseño responsive
@@ -122,12 +127,14 @@ COMPONENTES DESTACADOS:
   - reseñas de referencia
   - productos relacionados
 - Página institucional de la marca con enfoque comercial y emocional
+- Módulo de métricas para seguimiento de indicadores del negocio
 
 4.3 INTEGRACIONES
 - Pagos con Stripe
 - Confirmación de pagos vía webhook
 - Manejo de stock al procesar órdenes
 - Integración con IA para generación de contenido visual
+- Endpoints de salud y verificación de base de datos
 
 
 5. INFRAESTRUCTURA DEL PROYECTO
@@ -168,7 +175,7 @@ Base de datos:
 ------------------------------------
 
 La aplicación depende de variables de entorno para su funcionamiento en distintos
-entornos. Entre las más importantes se encuentran:
+eventos. Entre las más importantes se encuentran:
 - DATABASE_URL: conexión a la base de datos PostgreSQL
 - SECRET_KEY: firma de tokens JWT
 - STRIPE_SECRET_KEY: acceso a la API de Stripe
@@ -210,6 +217,7 @@ PUNTOS FUERTES:
 - El backend expone rutas funcionales para el flujo comercial principal
 - El frontend ya cubre las experiencias clave para clientes y administradores
 - El proyecto demuestra un avance sólido en la implementación del MVP
+- La integración de layout, páginas de producto y métricas aporta valor real al negocio
 
 MEJORAS PENDIENTES:
 - Añadir más pruebas automatizadas
