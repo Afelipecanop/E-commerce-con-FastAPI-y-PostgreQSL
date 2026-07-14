@@ -356,7 +356,8 @@ footer {
 
 @media (max-width: 860px) {
     nav { padding: 0 1rem; }
-    .nav-links { display: none; }
+    .nav-links { gap: 0.6rem; }
+    .nav-links a { font-size: 12px; padding: 0.3rem 0.5rem; }
     .container { padding: 1.5rem; }
     .products-grid, .cart-item { gap: 1rem; }
 }

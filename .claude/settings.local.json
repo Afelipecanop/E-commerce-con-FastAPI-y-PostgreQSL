@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(xargs grep *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(pip show *)",
+      "Bash(python3 -c \"import playwright\")",
+      "Bash(npx --version)",
+      "Bash(where node *)",
+      "Bash(pip install *)",
+      "Bash(python3 -m playwright install chromium --with-deps)",
+      "Bash(python3 *)"
     ]
   }
 }

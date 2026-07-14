@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nosotros — Velonox</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="vendor/tabler-icons/tabler-icons.min.css">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
@@ -23,6 +23,11 @@
         .nav-icon:hover{opacity:1}
         .nav-user{font-size:12px;color:#6B8A7A}
         .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+        .nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:22px;height:18px;background:none;border:none;cursor:pointer;padding:0}
+        .nav-burger span{display:block;width:100%;height:2px;background:#C8D8C0;transition:transform .25s,opacity .25s}
+        .nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+        .nav-burger.open span:nth-child(2){opacity:0}
+        .nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
         /* HERO */
         .hero{background:#0F1A14;padding:6rem 2rem 5rem;text-align:center;position:relative;overflow:hidden}
@@ -143,7 +148,15 @@
         @media(max-width:768px){
             .historia,.mv-grid,.cliente-inner{grid-template-columns:1fr}
             .historia-img,.cliente-visual{display:none}
-            .nav-links{display:none}
+            .nav-burger{display:flex}
+            .nav-links{
+                display:flex;position:absolute;top:56px;left:0;right:0;
+                flex-direction:column;gap:0;background:#0F1A14;
+                max-height:0;overflow:hidden;border-bottom:1px solid #1A2820;
+                transition:max-height .25s ease;
+            }
+            .nav-links.open{max-height:260px}
+            .nav-links a{padding:.9rem 1.25rem;opacity:1;border-top:1px solid #1A2820}
             .proposito-stats{gap:1.5rem}
         }
     </style>
@@ -168,6 +181,9 @@
         <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
         <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+        <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
+            <span></span><span></span><span></span>
+        </button>
     </div>
 </nav>
 
@@ -188,6 +204,18 @@
         }
         await initPageBlocks("nosotros");
     }
+
+    function toggleNavMenu() {
+        const open = document.querySelector(".nav-links").classList.toggle("open");
+        const burger = document.getElementById("nav-burger");
+        burger.classList.toggle("open", open);
+        burger.setAttribute("aria-expanded", open);
+    }
+    document.querySelectorAll(".nav-links a").forEach(a => a.addEventListener("click", () => {
+        document.querySelector(".nav-links").classList.remove("open");
+        document.getElementById("nav-burger").classList.remove("open");
+    }));
+
     init();
 </script>
 </body>
