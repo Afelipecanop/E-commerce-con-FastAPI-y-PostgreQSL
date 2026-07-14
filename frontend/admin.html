@@ -634,7 +634,7 @@ async function init() {
 async function loadLayout() {
     const page = EDITABLE_PAGES[currentPage] || EDITABLE_PAGES.__live__;
     try {
-        const blocks = await apiFetch(`/layout/`);;
+        const blocks = await apiFetch(`/layout/?page=${page.slug}`);
         layout = blocks;
         selectedBlockId = null;
         renderLayers();
