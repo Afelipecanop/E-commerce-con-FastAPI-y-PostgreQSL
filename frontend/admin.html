@@ -347,6 +347,16 @@
                     <div class="form-group"><label>Stock</label><input type="number" id="p-stock" placeholder="0"></div>
                 </div>
                 <div class="form-group"><label>URL de imagen</label><input type="text" id="p-image" placeholder="https://..."></div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="p-category" style="width:100%;padding:.5rem .7rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem;background:white;cursor:pointer">
+                        <option value="">Sin categoría</option>
+                        <option value="ollas">Ollas y cacerolas</option>
+                        <option value="sartenes">Sartenes</option>
+                        <option value="utensilios">Utensilios</option>
+                        <option value="accesorios">Accesorios</option>
+                    </select>
+                </div>
                 <button class="btn-primary" onclick="handleCreateProduct()" style="width:100%">Crear producto</button>
             </div>
             <div>
@@ -1287,7 +1297,8 @@ async function handleCreateProduct() {
         description: document.getElementById("p-desc").value,
         price: parseFloat(document.getElementById("p-price").value),
         stock: parseInt(document.getElementById("p-stock").value),
-        image_url: document.getElementById("p-image").value || null
+        image_url: document.getElementById("p-image").value || null,
+        category: document.getElementById("p-category").value || null
     };
     if (!data.name || !data.price || !data.stock) {
         document.getElementById("product-form-alert").innerHTML =

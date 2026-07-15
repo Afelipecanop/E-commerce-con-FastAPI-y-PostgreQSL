@@ -4,3 +4,4 @@ from .cart import CartItemAdd, CartItemUpdate, CartItemResponse, CartResponse
 from .order import OrderItemResponse, OrderResponse, CheckoutResponse
 from .layout import BlockConfig, LayoutUpdate, BlockResponse
 from .product_page import ProductPageUpdate, ProductPageResponse
+from .category import CategoryCreate, CategoryUpdate, CategoryResponse

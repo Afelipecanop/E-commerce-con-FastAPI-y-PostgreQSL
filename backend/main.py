@@ -12,6 +12,7 @@ from routes.payments import router as payments_router
 from routes.layout import router as layout_router
 from routes.product_pages import router as product_pages_router
 from routes.metrics import router as metrics_router
+from routes.categories import router as categories_router
 
 
 
@@ -48,6 +49,7 @@ app.include_router(products_router)
 app.include_router(cart_router)
 app.include_router(payments_router)
 app.include_router(metrics_router)
+app.include_router(categories_router)
 
 
 @app.get("/")

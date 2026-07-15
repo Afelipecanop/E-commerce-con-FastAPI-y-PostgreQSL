@@ -5,3 +5,4 @@ from .cart import Cart, CartItem
 from .settings import StoreSetting
 from .layout import StoreLayout
 from .product_page import ProductPage
+from .category import Category

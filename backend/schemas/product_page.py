@@ -31,6 +31,7 @@ class ProductPageUpdate(BaseModel):
     features: Optional[List[ProductFeature]] = None
     variants: Optional[List[ProductVariant]] = None
     custom_blocks: Optional[List[Dict[str, Any]]] = None
+    category: Optional[str] = None 
 
 
 class ProductPageResponse(BaseModel):
@@ -41,7 +42,7 @@ class ProductPageResponse(BaseModel):
     features: Optional[List[ProductFeature]] = None
     variants: Optional[List[ProductVariant]] = None
     custom_blocks: Optional[List[Dict[str, Any]]] = None
-
+    category: Optional[str] = None
     class Config:
         from_attributes = True
 
