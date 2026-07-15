@@ -13,11 +13,19 @@ from models.user import User
 from models.product import Product
 from models.order import Order, OrderItem
 from models.cart import Cart, CartItem
+from models.layout import StoreLayout
+from models.product_page import ProductPage
+from models.settings import StoreSetting
 
 config = context.config
 
-# Inyecta la URL de la DB desde el .env
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+# Inyecta la URL de la DB desde el .env.
+# Railway entrega 'postgres://', pero SQLAlchemy 1.4+/2.0 requiere 'postgresql://'
+# (mismo ajuste que ya hace database.py para la app en tiempo de ejecución).
+_db_url = os.getenv("DATABASE_URL")
+if _db_url and _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+config.set_main_option("sqlalchemy.url", _db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
