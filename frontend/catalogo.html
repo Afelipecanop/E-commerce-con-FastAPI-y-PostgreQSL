@@ -20,6 +20,11 @@
         .nav-icon:hover{opacity:1}
         .nav-user{font-size:12px;color:#6B8A7A}
         .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+        .nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:22px;height:18px;background:none;border:none;cursor:pointer;padding:0}
+        .nav-burger span{display:block;width:100%;height:2px;background:#C8D8C0;transition:transform .25s,opacity .25s}
+        .nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+        .nav-burger.open span:nth-child(2){opacity:0}
+        .nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
         .breadcrumb{padding:.75rem 2rem;background:#F5F5F3;border-bottom:1px solid #E8E8E4;font-size:12px;color:#B0BEB8;display:flex;gap:.5rem;align-items:center}
         .breadcrumb a{color:#B0BEB8;text-decoration:none}.breadcrumb a:hover{color:#1D7A4F}
         .breadcrumb .sep{color:#E8E8E4}.breadcrumb .current{color:#0F1A14;font-weight:500}
@@ -84,7 +89,18 @@
         .toast.show{opacity:1;transform:translateY(0)}
         .toast.ok{border-left:3px solid #1D7A4F}
         .toast.err{border-left:3px solid #DC2626}
-        @media(max-width:768px){.nav-links{display:none}.prod-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:768px){
+            .nav-burger{display:flex}
+            .nav-links{
+                display:flex;position:absolute;top:56px;left:0;right:0;
+                flex-direction:column;gap:0;background:#0F1A14;
+                max-height:0;overflow:hidden;border-bottom:1px solid #1A2820;
+                transition:max-height .25s ease;
+            }
+            .nav-links.open{max-height:260px}
+            .nav-links a{padding:.9rem 1.25rem;opacity:1;border-top:1px solid #1A2820}
+            .prod-grid{grid-template-columns:1fr 1fr}
+        }
         @media(max-width:480px){.prod-grid{grid-template-columns:1fr}}
     </style>
 </head>
@@ -104,6 +120,9 @@
         <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
         <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+        <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
+            <span></span><span></span><span></span>
+        </button>
     </div>
 </nav>
 <div id="layout-container"></div>
@@ -143,6 +162,16 @@ async function init() {
     await loadProducts(slug);
     loadOtherCats(slug);
 }
+function toggleNavMenu() {
+    const open = document.querySelector(".nav-links").classList.toggle("open");
+    const burger = document.getElementById("nav-burger");
+    burger.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", open);
+}
+document.querySelectorAll(".nav-links a").forEach(a => a.addEventListener("click", () => {
+    document.querySelector(".nav-links").classList.remove("open");
+    document.getElementById("nav-burger").classList.remove("open");
+}));
 
 async function loadCategory(slug) {
     try {

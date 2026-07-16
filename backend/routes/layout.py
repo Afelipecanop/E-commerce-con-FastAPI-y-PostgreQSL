@@ -914,6 +914,142 @@ CONTENT_PAGE_BLOCKS = {
             }
         }
     ],
+    "tienda": [
+        {
+            "block_type": "custom_html",
+            "config": {
+                "css": "",
+                "html": """<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-text">
+            <p class="eyebrow">Colección completa · Acero 304</p>
+            <h1>Todo Velonox,<br>en un <em>solo lugar.</em></h1>
+            <p class="sub">Explora, filtra y encuentra el producto perfecto para tu cocina. Sin teflón, sin tóxicos, sin excusas.</p>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="num" id="stat-products">—</span>
+                <span class="label">Productos<br>disponibles</span>
+            </div>
+            <div class="hero-stat">
+                <span class="num">304</span>
+                <span class="label">Grado de<br>acero</span>
+            </div>
+            <div class="hero-stat">
+                <span class="num">2</span>
+                <span class="label">Años de<br>garantía</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="toolbar-inner">
+        <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input type="text" class="search-input" id="search-input"
+                placeholder="Buscar productos..."
+                oninput="handleSearch(this.value)">
+        </div>
+        <div class="filters" id="cat-filters">
+            <button class="filter-btn active" onclick="filterByCat('',this)">Todos</button>
+        </div>
+        <div class="toolbar-right">
+            <span class="results-count" id="results-count"></span>
+            <select class="sort-select" onchange="handleSort(this.value)">
+                <option value="default">Ordenar</option>
+                <option value="price-asc">Menor precio</option>
+                <option value="price-desc">Mayor precio</option>
+                <option value="name">A — Z</option>
+                <option value="stock">Con stock</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="prod-grid" id="prod-grid">
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+        <div>
+            <div class="skeleton" style="height:200px;margin-bottom:.5rem"></div>
+            <div class="skeleton" style="height:14px;width:80%;margin-bottom:.4rem"></div>
+            <div class="skeleton" style="height:12px;width:50%"></div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-bottom">
+    <p class="eyebrow">¿Necesitas ayuda?</p>
+    <h2>Te ayudamos a<br>elegir lo <em>ideal.</em></h2>
+    <p class="sub">Cuéntanos cómo cocinas y te recomendamos el set perfecto para tu hogar.</p>
+    <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20necesito%20ayuda%20para%20elegir%20productos" target="_blank" class="btn-wa">
+        <i class="ti ti-brand-whatsapp"></i>
+        Asesoría gratis por WhatsApp
+    </a>
+</div>
+
+<footer>
+    <div class="footer-top">
+        <div>
+            <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
+            <p class="footer-tagline">Cocina de por vida.</p>
+        </div>
+        <div class="footer-col"><p>Tienda</p>
+            <a href="tienda.html">Todos los productos</a>
+            <a href="categorias.html">Categorías</a>
+            <a href="index.html">Inicio</a>
+        </div>
+        <div class="footer-col"><p>Ayuda</p>
+            <a href="contacto.html">Contáctanos</a>
+            <a href="politicas.html">Envíos</a>
+            <a href="politicas.html#devoluciones">Devoluciones</a>
+            <a href="politicas.html#garantia">Garantía</a>
+        </div>
+        <div class="footer-col"><p>Nosotros</p>
+            <a href="nosotros.html">Nuestra historia</a>
+            <a href="nosotros.html">Por qué acero</a>
+        </div>
+        <div class="footer-col"><p>Legal</p>
+            <a href="terminos.html">Términos</a>
+            <a href="politicas.html#privacidad">Privacidad</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social">
+            <i class="ti ti-brand-instagram"></i>
+            <i class="ti ti-brand-tiktok"></i>
+            <i class="ti ti-brand-facebook"></i>
+        </div>
+    </div>
+</footer>"""
+            }
+        }
+    ],
 }
 
 
