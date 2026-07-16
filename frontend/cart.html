@@ -46,6 +46,40 @@
         let cartItems = [];   // {id, name, price, image_url, stock, quantity, cart_item_id?}
 
         async function loadCart() {
+            await loadTRM();
+            updateCurrencyToggle();
+            // ── TRM ───────────────────────────────────────────────────────────────────────
+            async function loadTRMAdmin() {
+                try {
+                    const data = await apiFetch("/settings/trm");
+                    document.getElementById("trm-info").innerHTML =
+                        `TRM actual: <strong>1 USD = $${data.trm.toLocaleString("es-CO")} COP</strong> · Fuente: ${data.source === "auto" ? "Automática (exchangerate-api)" : "Manual"}`;
+                    document.getElementById("trm-value").value = data.manual;
+                    document.getElementById("trm-auto").checked = data.source === "auto";
+                    document.getElementById("trm-manual-group").style.display =
+                        data.source === "auto" ? "none" : "block";
+                } catch(e) {}
+            }
+
+            function toggleTRMAuto(checked) {
+                document.getElementById("trm-manual-group").style.display = checked ? "none" : "block";
+            }
+
+            async function saveTRM() {
+                const auto = document.getElementById("trm-auto").checked;
+                const trm = parseFloat(document.getElementById("trm-value").value);
+                try {
+                    await apiFetch("/settings/trm", {
+                        method: "PUT",
+                        body: JSON.stringify({ trm: trm || 4200, auto: auto })
+                    });
+                    showToast("TRM guardada ✅", "success");
+                    loadTRMAdmin();
+                } catch(e) { showToast(e.message, "error"); }
+            }
+
+            // Cargar TRM cuando se abre el tab de ajustes
+            // Agrega loadTRMAdmin() al final del switchTab cuando tab === 'settings'
             const container = document.getElementById("cart-content");
 
             if (isLoggedIn()) {
@@ -87,7 +121,7 @@
                         <img src="${item.image_url || 'https://via.placeholder.com/80'}" alt="${item.name}">
                         <div class="item-info">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-price">$${item.price.toFixed(2)} c/u</div>
+                            <div class="item-price">${vxPrice(item.price)} c/u</div>
                         </div>
                         <div style="display:flex; align-items:center; gap:0.5rem">
                             <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${item.id}', ${item.quantity - 1})">−</button>
@@ -95,7 +129,7 @@
                             <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${item.id}', ${item.quantity + 1})">+</button>
                         </div>
                         <div class="item-line-total" style="font-weight:700; min-width:80px; text-align:right">
-                            $${lineTotal.toFixed(2)}
+                            ${vxPrice(lineTotal)}
                         </div>
                         <button class="btn btn-danger cart-qty-btn" onclick="removeItem('${item.id}')">✕</button>
                     </div>`;
@@ -104,7 +138,7 @@
             container.innerHTML = `
                 ${itemsHTML}
                 <div class="cart-total">
-                    <div class="total-amount">Total: $${total.toFixed(2)}</div>
+                    <div class="total-amount">Total: ${vxPrice(total)}</div>
                     <button class="btn btn-primary" id="pay-btn" onclick="handleCheckout()">
                         Proceder al pago
                     </button>
@@ -155,6 +189,7 @@
         }
 
         loadCart();
+        window.addEventListener("currencyChanged", function() { loadCart(); });
     </script>
 </body>
 </html>

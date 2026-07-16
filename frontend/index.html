@@ -232,6 +232,41 @@
     }));
 
     async function init() {
+        await loadTRM();
+        updateCurrencyToggle();
+        // ── TRM ───────────────────────────────────────────────────────────────────────
+        async function loadTRMAdmin() {
+            try {
+                const data = await apiFetch("/settings/trm");
+                document.getElementById("trm-info").innerHTML =
+                    `TRM actual: <strong>1 USD = $${data.trm.toLocaleString("es-CO")} COP</strong> · Fuente: ${data.source === "auto" ? "Automática (exchangerate-api)" : "Manual"}`;
+                document.getElementById("trm-value").value = data.manual;
+                document.getElementById("trm-auto").checked = data.source === "auto";
+                document.getElementById("trm-manual-group").style.display =
+                    data.source === "auto" ? "none" : "block";
+            } catch(e) {}
+        }
+
+        function toggleTRMAuto(checked) {
+            document.getElementById("trm-manual-group").style.display = checked ? "none" : "block";
+        }
+
+        async function saveTRM() {
+            const auto = document.getElementById("trm-auto").checked;
+            const trm = parseFloat(document.getElementById("trm-value").value);
+            try {
+                await apiFetch("/settings/trm", {
+                    method: "PUT",
+                    body: JSON.stringify({ trm: trm || 4200, auto: auto })
+                });
+                showToast("TRM guardada ✅", "success");
+                loadTRMAdmin();
+            } catch(e) { showToast(e.message, "error"); }
+        }
+
+        // Cargar TRM cuando se abre el tab de ajustes
+        // Agrega loadTRMAdmin() al final del switchTab cuando tab === 'settings'
+
         if (isLoggedIn()) {
             document.getElementById("nav-login").style.display = "none";
             document.getElementById("nav-logout").style.display = "block";
@@ -328,7 +363,7 @@
                                             <p class="prod-name">${p.name}</p>
                                             <p class="prod-sub">Acero 304 · ${p.stock>0?'En stock':'Sin stock'}</p>
                                             <div class="prod-row">
-                                                <span class="prod-price">$${p.price.toFixed(2)}</span>
+                                                <span class="prod-price">${vxPrice(p.price)}</span>
                                                 <button class="prod-btn" onclick="event.stopPropagation();handleAdd('${p.id}','${p.name}',${p.stock})">Agregar</button>
                                             </div>
                                         </div>
@@ -410,10 +445,24 @@
                         </div>
                         <div class="footer-bottom">
                             <p class="footer-copy">© 2026 ${c.store_name}. Todos los derechos reservados.</p>
-                            <div class="footer-social">
-                                <i class="ti ti-brand-instagram"></i>
-                                <i class="ti ti-brand-tiktok"></i>
-                                <i class="ti ti-brand-facebook"></i>
+                            <div style="display:flex;align-items:center;gap:1rem">
+                                <!-- Toggle de moneda -->
+                                <div style="display:flex;align-items:center;background:#1A2820;border:1px solid #2A4A38;border-radius:2px;overflow:hidden">
+                                    <button id="vx-btn-usd" onclick="setCurrency('USD')"
+                                        style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:#1D7A4F;color:white;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                        USD
+                                    </button>
+                                    <button id="vx-btn-cop" onclick="setCurrency('COP')"
+                                        style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4A6A5A;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                        COP
+                                    </button>
+                                </div>
+                                <!-- Redes sociales -->
+                                <div class="footer-social">
+                                    <i class="ti ti-brand-instagram"></i>
+                                    <i class="ti ti-brand-tiktok"></i>
+                                    <i class="ti ti-brand-facebook"></i>
+                                </div>
                             </div>
                         </div>
                 </footer>`;
@@ -428,6 +477,7 @@
     }
 
     init();
+    window.addEventListener("currencyChanged", function() { init(); });
 </script>
 </body>
 </html>

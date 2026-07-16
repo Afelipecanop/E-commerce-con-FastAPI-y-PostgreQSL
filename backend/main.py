@@ -14,6 +14,7 @@ from routes.product_pages import router as product_pages_router
 from routes.metrics import router as metrics_router
 from routes.categories import router as categories_router
 from routes.guest_checkout import router as guest_router
+from routes.settings import router as settings_router
 
 
 
@@ -52,6 +53,7 @@ app.include_router(payments_router)
 app.include_router(metrics_router)
 app.include_router(categories_router)
 app.include_router(guest_router)
+app.include_router(settings_router)
 
 
 @app.get("/")

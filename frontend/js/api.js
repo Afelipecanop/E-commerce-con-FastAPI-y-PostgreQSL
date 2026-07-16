@@ -209,3 +209,60 @@ async function guestCheckout(data) {
         body: JSON.stringify(data)
     });
 }
+
+// ─── SISTEMA DE MONEDA ────────────────────────────────────────────────────────
+
+const VX_CURRENCY_KEY = "velonox_currency";
+let VX_TRM = 4200; // valor por defecto
+let VX_CURRENCY = localStorage.getItem(VX_CURRENCY_KEY) || "USD";
+
+// Cargar TRM desde el backend al iniciar
+async function loadTRM() {
+    try {
+        const res = await fetch(`${API_URL}/settings/trm`);
+        const data = await res.json();
+        VX_TRM = data.trm;
+    } catch(e) {
+        VX_TRM = 4200; // fallback
+    }
+}
+
+// Formatear precio según moneda activa
+function vxPrice(usdAmount) {
+    if (VX_CURRENCY === "COP") {
+        const cop = Math.round(usdAmount * VX_TRM);
+        return "$" + cop.toLocaleString("es-CO") + " COP";
+    }
+    return "$" + parseFloat(usdAmount).toFixed(2) + " USD";
+}
+
+// Cambiar moneda y recargar precios en la página
+function setCurrency(currency) {
+    VX_CURRENCY = currency;
+    localStorage.setItem(VX_CURRENCY_KEY, currency);
+    // Dispara evento para que cada página actualice sus precios
+    window.dispatchEvent(new CustomEvent("currencyChanged", { detail: { currency } }));
+    // Actualizar visual del toggle
+    updateCurrencyToggle();
+}
+
+function getCurrency() {
+    return VX_CURRENCY;
+}
+
+function updateCurrencyToggle() {
+    const btnUSD = document.getElementById("vx-btn-usd");
+    const btnCOP = document.getElementById("vx-btn-cop");
+    if (!btnUSD || !btnCOP) return;
+    if (VX_CURRENCY === "USD") {
+        btnUSD.style.background = "#1D7A4F";
+        btnUSD.style.color = "white";
+        btnCOP.style.background = "transparent";
+        btnCOP.style.color = "#4A6A5A";
+    } else {
+        btnCOP.style.background = "#1D7A4F";
+        btnCOP.style.color = "white";
+        btnUSD.style.background = "transparent";
+        btnUSD.style.color = "#4A6A5A";
+    }
+}

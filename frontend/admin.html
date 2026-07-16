@@ -523,9 +523,28 @@
             </div>
         </div>
         <div id="settings-alert"></div>
-        <button class="btn-primary" onclick="saveSettings()"><i class="ti ti-device-floppy" style="vertical-align:-2px"></i> Guardar ajustes</button>
+        <button class="btn-primary" onclick="saveSettings()">💾 Guardar ajustes</button>
     </div>
-</div>
+
+    <!-- TRM -->
+    <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);margin-top:1rem">
+        <h3 style="margin-bottom:1.2rem">💱 Tasa de cambio USD → COP</h3>
+        <div id="trm-info" style="background:#f8fafc;border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;color:#64748b">
+            Cargando TRM...
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+            <label style="font-size:13px;font-weight:500;color:#475569">Modo automático (API en tiempo real)</label>
+            <input type="checkbox" id="trm-auto" onchange="toggleTRMAuto(this.checked)"
+                style="width:16px;height:16px;cursor:pointer;accent-color:#1D7A4F">
+        </div>
+        <div class="form-group" id="trm-manual-group">
+            <label>TRM manual (1 USD = ? COP)</label>
+            <input type="number" id="trm-value" placeholder="4200" step="10">
+        </div>
+        <button class="btn-primary" onclick="saveTRM()">💾 Guardar TRM</button>
+    </div>
+    </div>
+        </div>
 
 <!-- ── Modal IA ── -->
 <div id="ai-modal" class="modal-overlay">
@@ -748,6 +767,40 @@ function renderLayers() {
         </div>
     `).join("");
 }
+
+
+// ── TRM ───────────────────────────────────────────────────────────────────────
+async function loadTRMAdmin() {
+    try {
+        const data = await apiFetch("/settings/trm");
+        document.getElementById("trm-info").innerHTML =
+            `TRM actual: <strong>1 USD = $${data.trm.toLocaleString("es-CO")} COP</strong> · Fuente: ${data.source === "auto" ? "Automática (exchangerate-api)" : "Manual"}`;
+        document.getElementById("trm-value").value = data.manual;
+        document.getElementById("trm-auto").checked = data.source === "auto";
+        document.getElementById("trm-manual-group").style.display =
+            data.source === "auto" ? "none" : "block";
+    } catch(e) {}
+}
+
+function toggleTRMAuto(checked) {
+    document.getElementById("trm-manual-group").style.display = checked ? "none" : "block";
+}
+
+async function saveTRM() {
+    const auto = document.getElementById("trm-auto").checked;
+    const trm = parseFloat(document.getElementById("trm-value").value);
+    try {
+        await apiFetch("/settings/trm", {
+            method: "PUT",
+            body: JSON.stringify({ trm: trm || 4200, auto: auto })
+        });
+        showToast("TRM guardada ✅", "success");
+        loadTRMAdmin();
+    } catch(e) { showToast(e.message, "error"); }
+}
+
+// Cargar TRM cuando se abre el tab de ajustes
+// Agrega loadTRMAdmin() al final del switchTab cuando tab === 'settings'
 
 // ── Drag & drop de secciones ──────────────────────────────────────────────────
 let dragId = null;
@@ -1299,6 +1352,7 @@ function switchTab(tab) {
     });
     if (tab === "metrics") loadMetrics();
     if (tab === "categories") loadCategoriesPanel();
+    if  (tab === "settings") loadTRMAdmin();
     if (tab === "metrics") {
         loadMetrics();
         // Refresca cada 5 minutos mientras estás en el tab
