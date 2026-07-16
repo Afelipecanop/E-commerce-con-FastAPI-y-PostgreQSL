@@ -648,15 +648,16 @@ function selectThumb(thumb, imageUrl) {
 }
 
 async function handleAddToCart() {
-    if (!isLoggedIn()) {
-        window.location.href = "login.html";
-        return;
-    }
-    try {
-        await addToCart(currentProduct.id, quantity);
+    if (isLoggedIn()) {
+        try {
+            await addToCart(currentProduct.id, quantity);
+            showToast(`"${currentProduct.name}" agregado al carrito ✅`, "ok");
+        } catch(e) {
+            showToast(e.message, "err");
+        }
+    } else {
+        for (let i = 0; i < quantity; i++) addToGuestCart(currentProduct);
         showToast(`"${currentProduct.name}" agregado al carrito ✅`, "ok");
-    } catch(e) {
-        showToast(e.message, "err");
     }
 }
 
@@ -672,9 +673,9 @@ function handleBuyNow() {
     }
 
     // Resetear modal
-    modalQty = 1;
+    modalQty = quantity;
     modalMethod = 'anticipado';
-    document.getElementById("modal-qty").textContent = "1";
+    document.getElementById("modal-qty").textContent = modalQty;
     document.getElementById("modal-product-name").textContent = currentProduct.name;
     updateModalTotal();
     selectModalMethod('anticipado');
