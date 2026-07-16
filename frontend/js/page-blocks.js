@@ -38,7 +38,7 @@ function renderPageBlock(block) {
                         <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
                         <p class="footer-tagline">${c.tagline || ""}</p>
                     </div>
-                    <div class="footer-col"><p>Tienda</p><a href="index.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
+                    <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
                     <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
                     <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos y condiciones</a><a href="politicas.html#privacidad">Privacidad</a></div>
                 </div>

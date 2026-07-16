@@ -65,7 +65,7 @@
 
         /* CATEGORÍAS */
         .cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-        .cat-card{background:#0F1A14;border-radius:2px;padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;cursor:pointer;border:1px solid #1A2820;transition:border-color .2s}
+        .cat-card{background:#0F1A14;border-radius:2px;padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;cursor:pointer;border:1px solid #1A2820;transition:border-color .2s;text-decoration:none}
         .cat-card:hover{border-color:#1D7A4F}
         .cat-icon{width:48px;height:48px;border-radius:50%;background:#1A2820;display:flex;align-items:center;justify-content:center;border:1px solid #2A4A38}
         .cat-icon i{font-size:22px;color:#1D7A4F}
@@ -171,7 +171,7 @@
 <nav class="nav">
     <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="index.html">Cocina</a>
+        <a href="categorias.html">Cocina</a>
         <a href="index.html">Sets</a>
         <a href="index.html">Regalos</a>
         <a href="nosotros.html">Nosotros</a>
@@ -269,6 +269,13 @@
         }
     }
 
+    const KNOWN_CAT_SLUGS = ["ollas", "sartenes", "utensilios", "accesorios"];
+    function categorySlug(name) {
+        const norm = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const match = KNOWN_CAT_SLUGS.find(slug => norm.includes(slug));
+        return match || norm.replace(/\s+/g, "-");
+    }
+
     function renderLayoutBlock(block, products) {
         const c = block.config;
         const div = document.createElement("div");
@@ -304,7 +311,7 @@
                     <section class="sec" id="prod-section" style="background:#F5F5F3">
                         <div class="sec-header">
                             <h2 class="sec-title">${c.title}</h2>
-                            <a href="#" class="sec-link">Ver catálogo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
+                            <a href="categorias.html" class="sec-link">Ver catálogo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
                         </div>
                         <div class="prod-grid" style="grid-template-columns:repeat(${cols},1fr)">
                             ${prods.length === 0
@@ -360,10 +367,10 @@
                         <div class="sec-header"><h2 class="sec-title">${c.title}</h2></div>
                         <div class="cat-grid">
                             ${cats.map(cat=>`
-                            <div class="cat-card">
+                            <a href="catalogo.html?cat=${categorySlug(cat)}" class="cat-card">
                                 <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
                                 <p class="cat-name">${cat}</p>
-                            </div>`).join('')}
+                            </a>`).join('')}
                         </div>
                     </section>`;
                 break;
@@ -381,7 +388,7 @@
                                 <p class="footer-tagline">${c.tagline}</p>
                             </div>
                             <div class="footer-col"><p>Tienda</p>
-                                <a href="index.html">Catálogo</a>
+                                <a href="catalogo.html">Catálogo</a>
                                 <a href="index.html">Sets regalo</a>
                                 <a href="index.html">Ofertas</a>
                             </div>
