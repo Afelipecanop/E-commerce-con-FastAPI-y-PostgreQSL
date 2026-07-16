@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover,.nav-links a.active{opacity:1;color:#1D7A4F}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+        .breadcrumb{padding:.75rem 2rem;background:#F5F5F3;border-bottom:1px solid #E8E8E4;font-size:12px;color:#B0BEB8;display:flex;gap:.5rem;align-items:center}
+        .breadcrumb a{color:#B0BEB8;text-decoration:none}.breadcrumb a:hover{color:#1D7A4F}
+        .breadcrumb .sep{color:#E8E8E4}.breadcrumb .current{color:#0F1A14;font-weight:500}
+        .cat-header{background:#0F1A14;padding:3rem 2rem;position:relative;overflow:hidden}
+        .cat-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(29,122,79,.08) 0%,transparent 70%)}
+        .cat-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.5rem}
+        .cat-header-icon{width:64px;height:64px;background:#1A2820;border:1px solid #2A4A38;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .cat-header-icon i{font-size:28px;color:#1D7A4F}
+        .cat-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.4rem}
+        .cat-title{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-1px}
+        .cat-desc{font-size:14px;color:#6B8A7A;margin-top:.5rem;line-height:1.6}
+        .toolbar{max-width:1100px;margin:0 auto;padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .toolbar-left{display:flex;gap:.5rem;flex-wrap:wrap}
+        .filter-btn{padding:.4rem 1rem;border:1px solid #E8E8E4;border-radius:2px;font-size:12px;font-weight:500;color:#6B8A7A;background:white;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+        .filter-btn.active,.filter-btn:hover{border-color:#1D7A4F;color:#1D7A4F;background:#F0FAF5}
+        .sort-select{padding:.4rem .8rem;border:1px solid #E8E8E4;border-radius:2px;font-size:12px;color:#6B8A7A;background:white;cursor:pointer;font-family:'DM Sans',sans-serif}
+        .results-count{font-size:12px;color:#B0BEB8}
+        .products-section{max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+        .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem}
+        .prod-card{background:white;border:1px solid #E8E8E4;border-radius:2px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+        .prod-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(15,26,20,.1)}
+        .prod-img{height:200px;background:#E8ECE6;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+        .prod-img img{width:100%;height:100%;object-fit:cover}
+        .prod-img .no-img{font-size:40px;color:#B0BEB8}
+        .prod-badge{position:absolute;top:8px;left:8px;background:#1D7A4F;color:#F5F5F3;font-size:9px;font-weight:500;padding:2px 7px;letter-spacing:.04em}
+        .prod-info{padding:.875rem}
+        .stars{color:#D6C5A0;font-size:10px;margin-bottom:3px}
+        .prod-name{font-size:13px;font-weight:500;color:#0F1A14;margin-bottom:3px;line-height:1.3}
+        .prod-sub{font-size:11px;color:#B0BEB8;margin-bottom:8px}
+        .prod-row{display:flex;justify-content:space-between;align-items:center}
+        .prod-price{font-size:15px;font-weight:600;color:#0F1A14}
+        .prod-btn{background:#0F1A14;color:#C8D8C0;font-size:10px;font-weight:500;padding:5px 10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-radius:2px;transition:background .2s}
+        .prod-btn:hover{background:#1D7A4F;color:#F5F5F3}
+        .empty{text-align:center;padding:4rem 2rem;color:#6B8A7A}
+        .empty i{font-size:48px;color:#E8E8E4;margin-bottom:1rem;display:block}
+        .empty h3{font-family:'Playfair Display',serif;font-size:20px;color:#0F1A14;margin-bottom:.5rem}
+        .empty p{font-size:14px;line-height:1.6;margin-bottom:1.5rem}
+        .btn-ghost{background:transparent;color:#1D7A4F;border:1px solid #1D7A4F;padding:10px 24px;border-radius:2px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block;transition:all .2s}
+        .btn-ghost:hover{background:#1D7A4F;color:white}
+        .other-cats{background:#0F1A14;padding:3rem 2rem}
+        .other-cats-inner{max-width:1100px;margin:0 auto}
+        .other-cats h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#C8D8C0;margin-bottom:1.5rem}
+        .other-cats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem}
+        .other-cat-btn{background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;text-decoration:none;display:block}
+        .other-cat-btn:hover{border-color:#1D7A4F}
+        .other-cat-btn i{font-size:22px;color:#1D7A4F;display:block;margin-bottom:.5rem}
+        .other-cat-btn span{font-size:12px;font-weight:500;color:#C8D8C0}
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer}
+        .footer-social i:hover{color:#1D7A4F}
+        .toast{position:fixed;bottom:2rem;right:2rem;background:#0F1A14;color:#C8D8C0;padding:.75rem 1.2rem;border-radius:2px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.ok{border-left:3px solid #1D7A4F}
+        .toast.err{border-left:3px solid #DC2626}
+        @media(max-width:768px){.nav-links{display:none}.prod-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:480px){.prod-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="categorias.html" class="active">Cocina</a>
+        <a href="index.html">Sets</a>
+        <a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+<div class="breadcrumb">
+    <a href="index.html">Inicio</a><span class="sep">›</span>
+    <a href="categorias.html">Categorías</a><span class="sep">›</span>
+    <span class="current" id="breadcrumb-cat">Cargando...</span>
+</div>
+<div class="cat-header">
+    <div class="cat-header-inner">
+        <div class="cat-header-icon"><i id="cat-icon" class="ti ti-tools-kitchen-2"></i></div>
+        <div>
+            <p class="cat-eyebrow">Colección Velonox</p>
+            <h1 class="cat-title" id="cat-title">Cargando...</h1>
+            <p class="cat-desc" id="cat-desc"></p>
+        </div>
+    </div>
+</div>
+<div class="toolbar">
+    <div class="toolbar-left">
+        <button class="filter-btn active" onclick="filterProducts('all',this)">Todos</button>
+        <button class="filter-btn" onclick="filterProducts('in-stock',this)">En stock</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+        <span class="results-count" id="results-count"></span>
+        <select class="sort-select" onchange="sortProducts(this.value)">
+            <option value="default">Ordenar por</option>
+            <option value="price-asc">Menor precio</option>
+            <option value="price-desc">Mayor precio</option>
+            <option value="name">Nombre A-Z</option>
+        </select>
+    </div>
+</div>
+<div class="products-section">
+    <div class="prod-grid" id="prod-grid">
+        <div class="empty"><i class="ti ti-loader"></i><p>Cargando productos...</p></div>
+    </div>
+</div>
+<div class="other-cats" id="other-cats-section" style="display:none">
+    <div class="other-cats-inner">
+        <h3>Explorar otras categorías</h3>
+        <div class="other-cats-grid" id="other-cats-grid"></div>
+    </div>
+</div>
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="categorias.html">Categorías</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+const CAT_ICONS = {ollas:"ti ti-soup",sartenes:"ti ti-eggs",utensilios:"ti ti-tools-kitchen-2",accesorios:"ti ti-slice"};
+let allProducts = [];
+let currentFilter = 'all';
+
+function showToast(msg, type="ok") {
+    const t = document.getElementById("toast");
+    t.textContent = msg; t.className = `toast show ${type}`;
+    setTimeout(() => t.className = "toast", 3000);
+}
+
+function getCatSlug() {
+    return new URLSearchParams(window.location.search).get("cat") || "";
+}
+
+async function init() {
+    if (isLoggedIn()) {
+        document.getElementById("nav-login").style.display = "none";
+        document.getElementById("nav-logout").style.display = "block";
+        try {
+            const me = await getMe();
+            document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+            if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+        } catch(e) {}
+    }
+    const slug = getCatSlug();
+    if (!slug) { window.location.href = "categorias.html"; return; }
+    await loadCategory(slug);
+    await loadProducts(slug);
+    loadOtherCats(slug);
+}
+
+async function loadCategory(slug) {
+    try {
+        const res = await fetch(`${API}/categories/${slug}`);
+        if (!res.ok) throw new Error();
+        const cat = await res.json();
+        document.title = `${cat.name} — Velonox`;
+        document.getElementById("breadcrumb-cat").textContent = cat.name;
+        document.getElementById("cat-title").textContent = cat.name;
+        document.getElementById("cat-desc").textContent = cat.description || "";
+        const icon = cat.icon || CAT_ICONS[slug] || "ti ti-tools-kitchen-2";
+        document.getElementById("cat-icon").className = icon;
+    } catch(e) { document.getElementById("cat-title").textContent = "Categoría"; }
+}
+
+async function loadProducts(slug) {
+    const grid = document.getElementById("prod-grid");
+    try {
+        const res = await fetch(`${API}/categories/${slug}/products`);
+        allProducts = await res.json();
+        renderProducts(allProducts);
+    } catch(e) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="ti ti-alert-circle"></i><h3>Error cargando productos</h3></div>`;
+    }
+}
+
+function renderProducts(products) {
+    const grid = document.getElementById("prod-grid");
+    document.getElementById("results-count").textContent = `${products.length} producto${products.length !== 1 ? 's' : ''}`;
+    if (!products.length) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="ti ti-mood-empty"></i><h3>Sin productos aún</h3><p>Pronto añadiremos productos a esta categoría.</p><a href="categorias.html" class="btn-ghost">Ver otras categorías</a></div>`;
+        return;
+    }
+    const badges = ["MÁS VENDIDO","NUEVO"];
+    grid.innerHTML = products.map((p,i) => {
+        const badge = i < 2 ? `<span class="prod-badge">${badges[i]}</span>` : "";
+        const img = p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : `<i class="ti ti-tools-kitchen-2 no-img"></i>`;
+        return `
+        <div class="prod-card" onclick="window.location.href='product.html?id=${p.id}'">
+            <div class="prod-img">${img}${badge}</div>
+            <div class="prod-info">
+                <div class="stars">★★★★★</div>
+                <div class="prod-name">${p.name}</div>
+                <div class="prod-sub">Acero 304 · ${p.stock > 0 ? 'En stock' : 'Sin stock'}</div>
+                <div class="prod-row">
+                    <span class="prod-price">$${p.price.toFixed(2)} USD</span>
+                    <button class="prod-btn" onclick="event.stopPropagation();handleAdd('${p.id}','${p.name}',${p.stock})">Agregar</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterProducts(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    let filtered = [...allProducts];
+    if (type === 'in-stock') filtered = filtered.filter(p => p.stock > 0);
+    renderProducts(filtered);
+}
+
+function sortProducts(order) {
+    let sorted = [...allProducts];
+    if (order === 'price-asc') sorted.sort((a,b) => a.price - b.price);
+    else if (order === 'price-desc') sorted.sort((a,b) => b.price - a.price);
+    else if (order === 'name') sorted.sort((a,b) => a.name.localeCompare(b.name));
+    if (currentFilter === 'in-stock') sorted = sorted.filter(p => p.stock > 0);
+    renderProducts(sorted);
+}
+
+async function loadOtherCats(currentSlug) {
+    try {
+        const res = await fetch(`${API}/categories/`);
+        const cats = await res.json();
+        const others = cats.filter(c => c.slug !== currentSlug);
+        if (!others.length) return;
+        document.getElementById("other-cats-section").style.display = "block";
+        document.getElementById("other-cats-grid").innerHTML = others.map(cat => {
+            const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
+            return `<a href="catalogo.html?cat=${cat.slug}" class="other-cat-btn"><i class="${icon}"></i><span>${cat.name}</span></a>`;
+        }).join('');
+    } catch(e) {}
+}
+
+async function handleAdd(id, name, stock) {
+    if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    if (stock <= 0) { showToast("Producto sin stock", "err"); return; }
+    try {
+        await addToCart(id, 1);
+        showToast(`"${name}" agregado al carrito ✅`);
+    } catch(e) { showToast(e.message, "err"); }
+}
+
+init();
+</script>
+</body>
+</html>

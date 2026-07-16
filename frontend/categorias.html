@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover,.nav-links a.active{opacity:1;color:#1D7A4F}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;text-decoration:none;transition:opacity .2s}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+        .hero{background:#0F1A14;padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(29,122,79,.07) 0%,transparent 70%)}
+        .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem}
+        .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,60px);font-weight:900;color:#C8D8C0;line-height:1.1;letter-spacing:-2px;margin-bottom:1rem}
+        .hero h1 em{color:#1D7A4F;font-style:normal}
+        .hero p{font-size:15px;color:#6B8A7A;max-width:500px;margin:0 auto;line-height:1.7}
+        .cats-section{padding:4rem 2rem;max-width:1100px;margin:0 auto}
+        .cats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:2rem}
+        .cat-card{background:white;border:1px solid #E8E8E4;border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;text-decoration:none;display:block}
+        .cat-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(15,26,20,.1);border-color:#1D7A4F}
+        .cat-card-img{height:200px;background:#0F1A14;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+        .cat-card-img img{width:100%;height:100%;object-fit:cover}
+        .cat-card-img .cat-icon-bg{display:flex;flex-direction:column;align-items:center;gap:1rem}
+        .cat-card-img i{font-size:48px;color:#1D7A4F}
+        .cat-card-img .cat-num{font-size:11px;font-weight:500;color:#2A4A38;letter-spacing:.12em;text-transform:uppercase}
+        .cat-card-body{padding:1.25rem}
+        .cat-card-body h3{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#0F1A14;margin-bottom:.4rem}
+        .cat-card-body p{font-size:13px;color:#6B8A7A;line-height:1.6;margin-bottom:1rem}
+        .cat-card-link{display:flex;align-items:center;gap:.4rem;font-size:13px;font-weight:500;color:#1D7A4F}
+        .cat-card-link i{font-size:14px;transition:transform .2s}
+        .cat-card:hover .cat-card-link i{transform:translateX(4px)}
+        .strip{background:#0F1A14;padding:3rem 2rem}
+        .strip-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:#1A2820}
+        .strip-item{background:#0F1A14;padding:1.5rem;text-align:center}
+        .strip-item i{font-size:24px;color:#1D7A4F;margin-bottom:.75rem;display:block}
+        .strip-item strong{font-size:14px;color:#C8D8C0;display:block;margin-bottom:.3rem;font-family:'Playfair Display',serif}
+        .strip-item span{font-size:12px;color:#4A6A5A;line-height:1.5}
+        .cta{padding:4rem 2rem;text-align:center;background:#F5F5F3}
+        .cta-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem}
+        .cta h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:.75rem}
+        .cta p{font-size:14px;color:#6B8A7A;max-width:400px;margin:0 auto 1.5rem;line-height:1.6}
+        .btn-primary{background:#1D7A4F;color:#F5F5F3;font-size:14px;font-weight:500;padding:12px 28px;border-radius:2px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+        .btn-primary:hover{background:#22904F}
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px;transition:color .2s}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer;transition:color .2s}
+        .footer-social i:hover{color:#1D7A4F}
+        .loading{text-align:center;padding:3rem;color:#6B8A7A;font-size:14px}
+        @media(max-width:768px){.nav-links{display:none}.cats-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:480px){.cats-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="categorias.html" class="active">Cocina</a>
+        <a href="index.html">Sets</a>
+        <a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+<section class="hero">
+    <p class="hero-eyebrow">Acero inoxidable · Grado 304</p>
+    <h1>Todo para tu <em>cocina.</em></h1>
+    <p>Explora nuestra colección organizada por categoría. Sin teflón, sin tóxicos, sin excusas.</p>
+</section>
+<section class="cats-section">
+    <p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.4rem">Colección</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14">¿Qué estás buscando?</h2>
+    <div class="cats-grid" id="cats-grid">
+        <div class="loading">Cargando categorías...</div>
+    </div>
+</section>
+<div class="strip">
+    <div class="strip-inner">
+        <div class="strip-item"><i class="ti ti-certificate"></i><strong>Acero 304 certificado</strong><span>Grado alimentario en cada producto</span></div>
+        <div class="strip-item"><i class="ti ti-truck"></i><strong>Envío gratis</strong><span>En compras desde $80.000 COP</span></div>
+        <div class="strip-item"><i class="ti ti-shield-check"></i><strong>Garantía 2 años</strong><span>Contra defectos de fabricación</span></div>
+        <div class="strip-item"><i class="ti ti-refresh"></i><strong>30 días devolución</strong><span>Sin preguntas, sin complicaciones</span></div>
+    </div>
+</div>
+<section class="cta">
+    <p class="cta-eyebrow">¿No sabes por dónde empezar?</p>
+    <h2>Habla con nosotros</h2>
+    <p>Te ayudamos a elegir el set ideal para tu cocina y tu presupuesto.</p>
+    <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20productos" target="_blank" class="btn-primary">
+        <i class="ti ti-brand-whatsapp"></i> Asesoría por WhatsApp
+    </a>
+</section>
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="categorias.html">Categorías</a><a href="index.html">Inicio</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a><a href="politicas.html#devoluciones">Devoluciones</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+const CAT_ICONS = {ollas:"ti ti-soup",sartenes:"ti ti-eggs",utensilios:"ti ti-tools-kitchen-2",accesorios:"ti ti-slice"};
+
+async function init() {
+    if (isLoggedIn()) {
+        document.getElementById("nav-login").style.display = "none";
+        document.getElementById("nav-logout").style.display = "block";
+        try {
+            const me = await getMe();
+            document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+            if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+        } catch(e) {}
+    }
+    loadCategories();
+}
+
+async function loadCategories() {
+    const grid = document.getElementById("cats-grid");
+    try {
+        const [catsRes, prodsRes] = await Promise.all([
+            fetch(`${API}/categories/`),
+            fetch(`${API}/products/`)
+        ]);
+        const cats = await catsRes.json();
+        const allProducts = await prodsRes.json();
+
+        if (!cats.length) {
+            grid.innerHTML = `<p class="loading">No hay categorías disponibles.</p>`;
+            return;
+        }
+
+        grid.innerHTML = cats.map(cat => {
+            const count = allProducts.filter(p => p.category === cat.slug).length;
+            const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
+            return `
+            <a href="catalogo.html?cat=${cat.slug}" class="cat-card">
+                <div class="cat-card-img">
+                    ${cat.image_url
+                        ? `<img src="${cat.image_url}" alt="${cat.name}">`
+                        : `<div class="cat-icon-bg">
+                            <i class="${icon}"></i>
+                            <span class="cat-num">${count} producto${count !== 1 ? 's' : ''}</span>
+                           </div>`
+                    }
+                </div>
+                <div class="cat-card-body">
+                    <h3>${cat.name}</h3>
+                    <p>${cat.description || 'Explora nuestra colección de ' + cat.name.toLowerCase() + ' en acero inoxidable.'}</p>
+                    <div class="cat-card-link">Ver productos <i class="ti ti-arrow-right"></i></div>
+                </div>
+            </a>`;
+        }).join('');
+    } catch(e) {
+        grid.innerHTML = `<p class="loading">Error cargando categorías.</p>`;
+    }
+}
+init();
+</script>
+</body>
+</html>

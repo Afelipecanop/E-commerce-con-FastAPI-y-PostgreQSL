@@ -242,6 +242,7 @@
         <button class="tab active" onclick="switchTab('editor')"><i class="ti ti-layout-2"></i>Editor</button>
         <button class="tab" onclick="switchTab('products')"><i class="ti ti-package"></i>Productos</button>
         <button class="tab" onclick="switchTab('metrics')"><i class="ti ti-chart-bar"></i>Métricas</button>
+        <button class="tab" onclick="switchTab('categories')"><i class="ti ti-cat"></i>Categorías</button>
         <button class="tab" onclick="switchTab('settings')"><i class="ti ti-settings"></i>Ajustes</button>
     </div>
     <div class="spacer"></div>
@@ -312,6 +313,8 @@
                 <option value="terminos">Términos (edición en vivo)</option>
                 <option value="cart.html">Carrito (solo vista previa)</option>
                 <option value="login.html">Login (solo vista previa)</option>
+                <option value="categorias.html">🏷️ Categorías</option>
+                <option value="catalogo.html?cat=ollas">📋 Catálogo (Ollas)</option>
                 <option value="product.html">Producto (solo vista previa)</option>
                 <option value="checkout.html">Checkout (solo vista previa)</option>
             </select>
@@ -430,6 +433,65 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+
+<!-- Tab Categorías -->
+<div id="categories-tab" style="display:none;padding:2rem;overflow-y:auto;flex:1">
+    <div style="max-width:900px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+            <h2>Gestión de categorías</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+
+            <!-- Formulario de edición -->
+            <div class="panel-card">
+                <h3><i class="ti ti-edit"></i> Editar categoría</h3>
+                <div id="cat-form-alert"></div>
+                <div class="form-group">
+                    <label>Categoría a editar</label>
+                    <select id="cat-select" onchange="loadCatToEdit(this.value)">
+                        <option value="">Selecciona una categoría</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="cat-name" placeholder="Nombre de la categoría">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="cat-desc" rows="3" placeholder="Descripción breve"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>URL de imagen (opcional)</label>
+                    <input type="text" id="cat-image" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Ícono</label>
+                    <select id="cat-icon">
+                        <option value="ti ti-soup">🍲 Ollas y cacerolas</option>
+                        <option value="ti ti-eggs">🍳 Sartenes</option>
+                        <option value="ti ti-tools-kitchen-2">🔧 Utensilios</option>
+                        <option value="ti ti-slice">🔪 Accesorios</option>
+                        <option value="ti ti-gift">🎁 Sets de regalo</option>
+                        <option value="ti ti-flame">🔥 Especiales</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="handleSaveCat()" style="width:100%">
+                    💾 Guardar cambios
+                </button>
+            </div>
+
+            <!-- Lista de categorías -->
+            <div>
+                <h3 style="display:flex;align-items:center;gap:.5rem;font-size:15px;margin:0 0 1.2rem">
+                    <i class="ti ti-list" style="color:var(--green)"></i> Categorías activas
+                </h3>
+                <div id="cats-list"></div>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -1221,10 +1283,13 @@ function switchTab(tab) {
     document.getElementById("editor-tab").style.display = tab === "editor" ? "flex" : "none";
     document.getElementById("products-tab").style.display = tab === "products" ? "block" : "none";
     document.getElementById("metrics-tab").style.display = tab === "metrics" ? "block" : "none";
+    document.getElementById("categories-tab").style.display = tab === "categories" ? "block" : "none";
     document.getElementById("settings-tab").style.display = tab === "settings" ? "block" : "none";
     document.querySelectorAll(".topbar .tab").forEach((btn, i) => {
-        btn.classList.toggle("active", ["editor","products","metrics","settings"][i] === tab);
+        btn.classList.toggle("active", ["editor","products","metrics","categories","settings"][i] === tab);
     });
+    if (tab === "metrics") loadMetrics();
+    if (tab === "categories") loadCategoriesPanel();
     if (tab === "metrics") {
         loadMetrics();
         // Refresca cada 5 minutos mientras estás en el tab
@@ -1423,6 +1488,92 @@ function showToast(msg, type = "success") {
     toast.innerHTML = `<i class="ti ${icon}"></i>${msg}`;
     toast.className = "toast show " + type;
     setTimeout(() => { toast.className = "toast " + type; }, 3000);
+}
+
+// ── CATEGORÍAS ────────────────────────────────────────────────────────────────
+
+async function loadCategoriesPanel() {
+    try {
+        const res = await fetch(`${API}/categories/`);
+        const cats = await res.json();
+
+        // Llenar el select
+        const sel = document.getElementById("cat-select");
+        sel.innerHTML = `<option value="">Selecciona una categoría</option>` +
+            cats.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+
+        // Pintar la lista
+        renderCatsList(cats);
+    } catch(e) {
+        showToast("Error cargando categorías", "error");
+    }
+}
+
+function renderCatsList(cats) {
+    const container = document.getElementById("cats-list");
+    if (!cats.length) {
+        container.innerHTML = `<p style="font-size:13px;color:#94a3b8">No hay categorías.</p>`;
+        return;
+    }
+    container.innerHTML = cats.map(cat => `
+        <div style="background:white;border:2px solid #e2e8f0;border-radius:8px;padding:.8rem 1rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:border-color .2s"
+            onclick="loadCatToEdit('${cat.slug}')"
+            onmouseover="this.style.borderColor='var(--green)'"
+            onmouseout="this.style.borderColor='#e2e8f0'">
+            <i class="${cat.icon || 'ti ti-tag'}" style="font-size:20px;color:var(--green);width:24px;text-align:center"></i>
+            <div style="flex:1">
+                <p style="font-size:13px;font-weight:600;color:#1e293b">${cat.name}</p>
+                <p style="font-size:11px;color:#94a3b8;margin-top:1px">${cat.slug}</p>
+            </div>
+            <i class="ti ti-pencil" style="font-size:14px;color:#cbd5e1"></i>
+        </div>
+    `).join('');
+}
+
+async function loadCatToEdit(slug) {
+    if (!slug) return;
+    try {
+        const res = await fetch(`${API}/categories/${slug}`);
+        const cat = await res.json();
+
+        document.getElementById("cat-select").value = slug;
+        document.getElementById("cat-name").value = cat.name || "";
+        document.getElementById("cat-desc").value = cat.description || "";
+        document.getElementById("cat-image").value = cat.image_url || "";
+        document.getElementById("cat-icon").value = cat.icon || "ti ti-tools-kitchen-2";
+    } catch(e) {
+        showToast("Error cargando categoría", "error");
+    }
+}
+
+async function handleSaveCat() {
+    const slug = document.getElementById("cat-select").value;
+    if (!slug) {
+        document.getElementById("cat-form-alert").innerHTML =
+            `<div class="alert alert-error">Selecciona una categoría primero</div>`;
+        return;
+    }
+
+    const data = {
+        name: document.getElementById("cat-name").value,
+        description: document.getElementById("cat-desc").value,
+        image_url: document.getElementById("cat-image").value || null,
+        icon: document.getElementById("cat-icon").value
+    };
+
+    try {
+        await apiFetch(`/categories/${slug}`, {
+            method: "PUT",
+            body: JSON.stringify(data)
+        });
+        document.getElementById("cat-form-alert").innerHTML =
+            `<div class="alert alert-success">✅ Categoría actualizada</div>`;
+        loadCategoriesPanel();
+        showToast("Categoría guardada ✅", "success");
+    } catch(e) {
+        document.getElementById("cat-form-alert").innerHTML =
+            `<div class="alert alert-error">${e.message}</div>`;
+    }
 }
 
 // ── MÉTRICAS ──────────────────────────────────────────────────────────────────
