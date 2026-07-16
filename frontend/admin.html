@@ -342,7 +342,7 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
             <div class="panel-card">
-                <h3><i class="ti ti-plus"></i>Nuevo producto</h3>
+                <h3 id="product-form-title"><i class="ti ti-plus"></i>Nuevo producto</h3>
                 <div id="product-form-alert"></div>
                 <div class="form-group"><label>Nombre</label><input type="text" id="p-name" placeholder="Nombre del producto"></div>
                 <div class="form-group"><label>Descripción</label><textarea id="p-desc" rows="3" placeholder="Descripción opcional"></textarea></div>
@@ -361,7 +361,10 @@
                         <option value="accesorios">Accesorios</option>
                     </select>
                 </div>
-                <button class="btn-primary" onclick="handleCreateProduct()" style="width:100%">Crear producto</button>
+                <div style="display:flex;gap:.6rem">
+                    <button class="btn-primary" id="product-form-btn" onclick="handleSaveProduct()" style="flex:1">Crear producto</button>
+                    <button class="btn-del" id="product-form-cancel" onclick="resetProductForm()" style="display:none">Cancelar</button>
+                </div>
             </div>
             <div>
                 <h3 style="display:flex;align-items:center;gap:.5rem;font-size:15px;margin:0 0 1.2rem"><i class="ti ti-list" style="color:var(--green)"></i>Productos activos</h3>
@@ -614,6 +617,7 @@ let selectedBlockId = null;
 let currentDevice = 'desktop';
 let previewProducts = [];   // productos reales para el preview en vivo
 let currentPage = '__live__';
+let editingProductId = null;   // id del producto en edición, null = modo crear
 
 // ── Páginas editables con bloques (slug de backend + archivo real) ────────────
 const EDITABLE_PAGES = {
@@ -1022,6 +1026,28 @@ function updateConfigJSON(blockId, key, el) {
     }
 }
 
+// ── Sincronizar el selector cuando el iframe navega internamente (ej. un link
+// dentro de la vista previa lleva de contacto.html a nosotros.html) ───────────
+document.getElementById("preview-frame").addEventListener("load", function() {
+    let href;
+    try {
+        href = this.contentWindow.location.href;
+    } catch (e) {
+        return; // navegación cross-origin, no podemos leer la URL
+    }
+    if (!href || href.indexOf("about:") === 0) return; // srcdoc, no es navegación real
+
+    const filename = href.split("/").pop().split("?")[0].split("#")[0];
+    if (!filename) return;
+
+    const editableKey = Object.keys(EDITABLE_PAGES).find(key => EDITABLE_PAGES[key].file === filename);
+    const value = editableKey || filename;
+
+    const selector = document.getElementById("page-selector");
+    const hasOption = Array.from(selector.options).some(opt => opt.value === value);
+    if (hasOption) selector.value = value;
+});
+
 // ── Preview en vivo (mismo estilo que la tienda real) ─────────────────────────
 async function renderPreview() {
     const frame = document.getElementById("preview-frame");
@@ -1412,14 +1438,17 @@ async function loadProducts() {
                         <td>${p.name}</td>
                         <td>$${Number(p.price).toFixed(2)}</td>
                         <td>${p.stock}</td>
-                        <td><button class="btn-del" onclick="handleDeleteProduct('${p.id}','${p.name}')"><i class="ti ti-trash"></i>Eliminar</button></td>
+                        <td style="white-space:nowrap">
+                            <button class="btn-del" style="color:var(--green,#1D7A4F);border-color:#c8e2d2" onclick="handleEditProduct('${p.id}')"><i class="ti ti-pencil"></i>Editar</button>
+                            <button class="btn-del" onclick="handleDeleteProduct('${p.id}','${p.name}')"><i class="ti ti-trash"></i>Eliminar</button>
+                        </td>
                     </tr>`).join("")}
                 </tbody>
             </table>`;
     } catch(e) {}
 }
 
-async function handleCreateProduct() {
+async function handleSaveProduct() {
     const data = {
         name: document.getElementById("p-name").value,
         description: document.getElementById("p-desc").value,
@@ -1434,10 +1463,16 @@ async function handleCreateProduct() {
         return;
     }
     try {
-        await createProduct(data);
-        document.getElementById("product-form-alert").innerHTML =
-            `<div class="alert alert-success">Producto creado correctamente</div>`;
-        ["p-name","p-desc","p-price","p-stock","p-image"].forEach(id => document.getElementById(id).value = "");
+        if (editingProductId) {
+            await updateProduct(editingProductId, data);
+            document.getElementById("product-form-alert").innerHTML =
+                `<div class="alert alert-success">Producto actualizado correctamente</div>`;
+        } else {
+            await createProduct(data);
+            document.getElementById("product-form-alert").innerHTML =
+                `<div class="alert alert-success">Producto creado correctamente</div>`;
+        }
+        resetProductForm();
         previewProducts = await getProducts();
         loadProducts();
         loadMiniProducts();
@@ -1448,10 +1483,36 @@ async function handleCreateProduct() {
     }
 }
 
+function handleEditProduct(id) {
+    const product = previewProducts.find(p => p.id === id);
+    if (!product) return;
+    editingProductId = id;
+    document.getElementById("p-name").value = product.name || "";
+    document.getElementById("p-desc").value = product.description || "";
+    document.getElementById("p-price").value = product.price;
+    document.getElementById("p-stock").value = product.stock;
+    document.getElementById("p-image").value = product.image_url || "";
+    document.getElementById("p-category").value = product.category || "";
+    document.getElementById("product-form-title").innerHTML = `<i class="ti ti-pencil"></i>Editar producto`;
+    document.getElementById("product-form-btn").textContent = "Guardar cambios";
+    document.getElementById("product-form-cancel").style.display = "";
+    document.getElementById("product-form-alert").innerHTML = "";
+    document.querySelector("#products-tab .panel-card").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetProductForm() {
+    editingProductId = null;
+    ["p-name","p-desc","p-price","p-stock","p-image","p-category"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("product-form-title").innerHTML = `<i class="ti ti-plus"></i>Nuevo producto`;
+    document.getElementById("product-form-btn").textContent = "Crear producto";
+    document.getElementById("product-form-cancel").style.display = "none";
+}
+
 async function handleDeleteProduct(id, name) {
     if (!confirm(`¿Eliminar "${name}"?`)) return;
     try {
         await deleteProduct(id);
+        if (editingProductId === id) resetProductForm();
         previewProducts = await getProducts();
         loadProducts();
         loadMiniProducts();
