@@ -11,11 +11,19 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     status = Column(String, nullable=False, default="pending")
     total_amount = Column(Float, nullable=False)
     stripe_payment_id = Column(String, nullable=True)
+    payment_method = Column(String, nullable=True, default="anticipado")
+
+    # Campos para invitados
+    guest_email = Column(String, nullable=True)
+    guest_name = Column(String, nullable=True)
+    shipping_address = Column(Text, nullable=True) 
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
 
     # Relaciones
     user = relationship("User", back_populates="orders")

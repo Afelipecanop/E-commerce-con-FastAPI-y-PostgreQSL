@@ -145,3 +145,67 @@ async function checkout() {
 async function getOrders() {
     return apiFetch("/payments/orders");
 }
+
+// ─── CARRITO DE INVITADO (localStorage) ──────────────────────────────────────
+
+function getGuestCart() {
+    try {
+        return JSON.parse(localStorage.getItem("velonox_cart") || "[]");
+    } catch(e) { return []; }
+}
+
+function saveGuestCart(items) {
+    localStorage.setItem("velonox_cart", JSON.stringify(items));
+}
+
+function addToGuestCart(product) {
+    const cart = getGuestCart();
+    const existing = cart.find(i => i.id === product.id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image_url: product.image_url,
+            stock: product.stock,
+            quantity: 1
+        });
+    }
+    saveGuestCart(cart);
+}
+
+function removeFromGuestCart(productId) {
+    const cart = getGuestCart().filter(i => i.id !== productId);
+    saveGuestCart(cart);
+}
+
+function updateGuestCartItem(productId, quantity) {
+    const cart = getGuestCart();
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        if (quantity <= 0) {
+            removeFromGuestCart(productId);
+        } else {
+            item.quantity = quantity;
+            saveGuestCart(cart);
+        }
+    }
+}
+
+function clearGuestCart() {
+    localStorage.removeItem("velonox_cart");
+}
+
+function getGuestCartTotal() {
+    return getGuestCart().reduce((sum, i) => sum + i.price * i.quantity, 0);
+}
+
+// Checkout de invitado
+async function guestCheckout(data) {
+    return apiFetch("/guest/checkout", {
+        method: "POST",
+        body: JSON.stringify(data)
+    });
+}
