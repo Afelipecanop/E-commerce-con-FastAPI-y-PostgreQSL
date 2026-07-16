@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sets de cocina — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover,.nav-links a.active{opacity:1;color:#1D7A4F}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;text-decoration:none;transition:opacity .2s}
+        .nav-icon:hover{opacity:1}
+        .nav-user{font-size:12px;color:#6B8A7A}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px}
+
+        /* HERO */
+        .hero{background:#0F1A14;padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(29,122,79,.08) 0%,transparent 70%)}
+        .hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1.2rem}
+        .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,64px);font-weight:900;color:#C8D8C0;line-height:1.05;letter-spacing:-2px;margin-bottom:1rem}
+        .hero h1 em{color:#1D7A4F;font-style:normal}
+        .hero-cut{width:80px;height:2px;background:#1D7A4F;margin:0 auto 1.5rem}
+        .hero p{font-size:15px;color:#6B8A7A;max-width:520px;margin:0 auto;line-height:1.7}
+
+        /* WHY SETS */
+        .why-sets{background:#1A2820;padding:2.5rem 2rem;border-top:1px solid #243B2C;border-bottom:1px solid #243B2C}
+        .why-sets-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
+        .why-item{display:flex;align-items:flex-start;gap:.875rem}
+        .why-icon{width:40px;height:40px;background:#0F1A14;border:1px solid #2A4A38;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .why-icon i{font-size:18px;color:#1D7A4F}
+        .why-text h4{font-size:13px;font-weight:600;color:#C8D8C0;margin-bottom:.2rem}
+        .why-text p{font-size:12px;color:#4A6A5A;line-height:1.5}
+
+        /* SETS GRID */
+        .sets-section{padding:4rem 2rem;max-width:1100px;margin:0 auto}
+        .sets-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.5rem}
+        .sets-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:2.5rem}
+        .sets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+
+        .set-card{background:white;border:1px solid #E8E8E4;border-radius:4px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer}
+        .set-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(15,26,20,.12)}
+        .set-img{height:240px;background:#0F1A14;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+        .set-img img{width:100%;height:100%;object-fit:cover}
+        .set-img .no-img{display:flex;flex-direction:column;align-items:center;gap:1rem}
+        .set-img .no-img i{font-size:52px;color:#1D7A4F}
+        .set-img .no-img span{font-size:10px;letter-spacing:.18em;color:#2A4A38;text-transform:uppercase}
+        .set-badge{position:absolute;top:12px;left:12px;background:#D6C5A0;color:#3A2E14;font-size:10px;font-weight:600;padding:3px 9px;letter-spacing:.04em;text-transform:uppercase}
+        .set-badge.green{background:#1D7A4F;color:white}
+        .set-body{padding:1.5rem}
+        .set-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#0F1A14;margin-bottom:.4rem;line-height:1.2}
+        .set-desc{font-size:13px;color:#6B8A7A;line-height:1.6;margin-bottom:1rem}
+        .set-includes{margin-bottom:1.25rem}
+        .set-includes p{font-size:11px;font-weight:500;letter-spacing:.1em;color:#B0BEB8;text-transform:uppercase;margin-bottom:.5rem}
+        .set-includes ul{list-style:none;display:flex;flex-wrap:wrap;gap:.3rem}
+        .set-includes ul li{background:#F5F5F3;border:1px solid #E8E8E4;font-size:11px;color:#4A6A5A;padding:2px 8px;border-radius:2px}
+        .set-footer{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid #E8E8E4}
+        .set-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#0F1A14}
+        .set-price span{font-size:12px;font-weight:400;color:#B0BEB8;font-family:'DM Sans',sans-serif}
+        .set-btn{background:#1D7A4F;color:#F5F5F3;font-size:12px;font-weight:500;padding:8px 16px;border:none;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.4rem;transition:background .2s}
+        .set-btn:hover{background:#22904F}
+
+        /* EMPTY */
+        .empty{text-align:center;padding:4rem 2rem;color:#6B8A7A;grid-column:1/-1}
+        .empty i{font-size:48px;color:#E8E8E4;margin-bottom:1rem;display:block}
+        .empty h3{font-family:'Playfair Display',serif;font-size:20px;color:#0F1A14;margin-bottom:.5rem}
+        .empty p{font-size:14px;line-height:1.6;margin-bottom:1.5rem}
+        .btn-wa{display:inline-flex;align-items:center;gap:.5rem;background:#1D7A4F;color:#F5F5F3;padding:.75rem 1.5rem;border-radius:2px;text-decoration:none;font-weight:500;font-size:14px;transition:background .2s}
+        .btn-wa:hover{background:#22904F}
+
+        /* CUSTOM SET */
+        .custom{background:#0F1A14;padding:4rem 2rem;text-align:center}
+        .custom-inner{max-width:600px;margin:0 auto}
+        .custom-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:1rem}
+        .custom h2{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#C8D8C0;margin-bottom:1rem;line-height:1.2}
+        .custom h2 em{color:#1D7A4F;font-style:normal}
+        .custom p{font-size:14px;color:#6B8A7A;line-height:1.7;margin-bottom:2rem}
+        .custom-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+        .custom-item{background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1.25rem;text-align:center}
+        .custom-item i{font-size:24px;color:#1D7A4F;margin-bottom:.6rem;display:block}
+        .custom-item p{font-size:12px;color:#C8D8C0;line-height:1.4}
+
+        /* FOOTER */
+        footer{background:#0F1A14;padding:2rem;border-top:1px solid #1A2820}
+        .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem;max-width:1100px;margin-left:auto;margin-right:auto}
+        .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+        .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
+        .footer-tagline{font-size:12px;color:#4A6A5A;margin-top:4px;font-style:italic}
+        .footer-col p{font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+        .footer-col a{display:block;font-size:13px;color:#4A6A5A;text-decoration:none;margin-bottom:5px;transition:color .2s}
+        .footer-col a:hover{color:#C8D8C0}
+        .footer-bottom{border-top:1px solid #1A2820;padding-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;max-width:1100px;margin:0 auto}
+        .footer-copy{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer;transition:color .2s}
+        .footer-social i:hover{color:#1D7A4F}
+
+        .toast{position:fixed;bottom:2rem;right:2rem;background:#0F1A14;color:#C8D8C0;padding:.75rem 1.2rem;border-radius:2px;font-size:13px;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.ok{border-left:3px solid #1D7A4F}
+        .toast.err{border-left:3px solid #DC2626}
+        @media(max-width:768px){.nav-links{display:none}.sets-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="categorias.html">Cocina</a>
+        <a href="tienda.html">Catálogo</a>
+        <a href="sets.html" class="active">Sets</a>
+        <a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
+    </div>
+</nav>
+
+<section class="hero">
+    <p class="hero-eyebrow">Colecciones completas · Acero 304</p>
+    <h1>Equipa tu cocina<br>de una <em>sola vez.</em></h1>
+    <div class="hero-cut"></div>
+    <p>Sets diseñados para que no te falte nada. Cada pieza en acero inoxidable grado 304, pensada para durar décadas en la cocina latinoamericana.</p>
+</section>
+
+<div class="why-sets">
+    <div class="why-sets-inner">
+        <div class="why-item">
+            <div class="why-icon"><i class="ti ti-coin"></i></div>
+            <div class="why-text">
+                <h4>Mejor precio en set</h4>
+                <p>Comprar el set siempre sale más económico que cada pieza por separado.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <div class="why-icon"><i class="ti ti-certificate"></i></div>
+            <div class="why-text">
+                <h4>Piezas compatibles</h4>
+                <p>Todas las piezas de un set están diseñadas para trabajar juntas.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <div class="why-icon"><i class="ti ti-truck"></i></div>
+            <div class="why-text">
+                <h4>Un solo envío</h4>
+                <p>Todo llega junto, empacado y listo para usar desde el primer día.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <div class="why-icon"><i class="ti ti-shield-check"></i></div>
+            <div class="why-text">
+                <h4>Garantía 2 años</h4>
+                <p>Cada pieza del set cubre nuestra garantía completa contra defectos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="sets-section">
+    <p class="sets-eyebrow">Colección</p>
+    <h2 class="sets-title">Nuestros sets disponibles</h2>
+    <div class="sets-grid" id="sets-grid">
+        <div class="empty">
+            <i class="ti ti-loader"></i>
+            <p>Cargando sets...</p>
+        </div>
+    </div>
+</section>
+
+<section class="custom">
+    <div class="custom-inner">
+        <p class="custom-eyebrow">¿No encuentras lo que buscas?</p>
+        <h2>Armamos tu set <em>a medida.</em></h2>
+        <p>Cuéntanos qué necesitas y diseñamos un set personalizado para tu cocina, tu presupuesto y tu forma de cocinar.</p>
+        <div class="custom-grid">
+            <div class="custom-item">
+                <i class="ti ti-message-circle"></i>
+                <p>Escríbenos por WhatsApp con lo que necesitas</p>
+            </div>
+            <div class="custom-item">
+                <i class="ti ti-tools-kitchen-2"></i>
+                <p>Te sugerimos las piezas ideales para tu cocina</p>
+            </div>
+            <div class="custom-item">
+                <i class="ti ti-package"></i>
+                <p>Lo enviamos todo junto en un solo pedido</p>
+            </div>
+        </div>
+        <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20quiero%20armar%20un%20set%20personalizado%20para%20mi%20cocina" target="_blank" class="btn-wa">
+            <i class="ti ti-brand-whatsapp"></i>
+            Armar mi set personalizado
+        </a>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="tienda.html">Todos los productos</a><a href="categorias.html">Categorías</a><a href="sets.html">Sets</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a><a href="politicas.html#devoluciones">Devoluciones</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <div style="display:flex;align-items:center;background:#1A2820;border:1px solid #2A4A38;border-radius:2px;overflow:hidden">
+                <button id="vx-btn-usd" onclick="setCurrency('USD')" style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:#1D7A4F;color:white;font-family:'DM Sans',sans-serif">USD</button>
+                <button id="vx-btn-cop" onclick="setCurrency('COP')" style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4A6A5A;font-family:'DM Sans',sans-serif">COP</button>
+            </div>
+            <div class="footer-social">
+                <i class="ti ti-brand-instagram"></i>
+                <i class="ti ti-brand-tiktok"></i>
+                <i class="ti ti-brand-facebook"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+
+function showToast(msg, type) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show " + (type || "ok");
+    setTimeout(function() { t.className = "toast"; }, 3000);
+}
+
+async function init() {
+    if (isLoggedIn()) {
+        document.getElementById("nav-login").style.display = "none";
+        document.getElementById("nav-logout").style.display = "block";
+        try {
+            const me = await getMe();
+            document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+            if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+        } catch(e) {}
+    }
+    await loadTRM();
+    updateCurrencyToggle();
+    loadSets();
+}
+
+async function loadSets() {
+    const grid = document.getElementById("sets-grid");
+    try {
+        const res = await fetch(API + "/categories/sets/products");
+        const sets = await res.json();
+
+        if (!sets.length) {
+            grid.innerHTML = '<div class="empty">' +
+                '<i class="ti ti-tools-kitchen-2"></i>' +
+                '<h3>Próximamente</h3>' +
+                '<p>Estamos preparando nuestros sets. Mientras tanto puedes armar el tuyo con nosotros.</p>' +
+                '<a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20quiero%20armar%20un%20set" target="_blank" class="btn-wa"><i class="ti ti-brand-whatsapp"></i> Armar mi set</a>' +
+                '</div>';
+            return;
+        }
+
+        const badges = ["MÁS VENDIDO", "NUEVO", "ESPECIAL"];
+        grid.innerHTML = sets.map(function(s, i) {
+            var badge = i < 2 ? '<span class="set-badge ' + (i===0?'green':'') + '">' + badges[i] + '</span>' : '';
+            var img = s.image_url
+                ? '<img src="' + s.image_url + '" alt="' + s.name + '">'
+                : '<div class="no-img"><i class="ti ti-gift"></i><span>Set Velonox</span></div>';
+
+            return '<div class="set-card" onclick="window.location.href=\'product.html?id=' + s.id + '\'">' +
+                '<div class="set-img">' + img + badge + '</div>' +
+                '<div class="set-body">' +
+                '<h3 class="set-name">' + s.name + '</h3>' +
+                '<p class="set-desc">' + (s.description || 'Set completo en acero inoxidable 304. Compatible con inducción, gas y vitrocerámica.') + '</p>' +
+                '<div class="set-footer">' +
+                '<div class="set-price">' + vxPrice(s.price) + '</div>' +
+                '<button class="set-btn" onclick="event.stopPropagation();handleAdd(\'' + s.id + '\',\'' + s.name.replace(/'/g,"\\'") + '\',' + s.stock + ')">' +
+                '<i class="ti ti-shopping-bag"></i> Agregar' +
+                '</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+    } catch(e) {
+        grid.innerHTML = '<div class="empty"><i class="ti ti-alert-circle"></i><h3>Error cargando sets</h3><p>Intenta de nuevo más tarde.</p></div>';
+    }
+}
+
+async function handleAdd(id, name, stock) {
+    if (stock <= 0) { showToast("Set sin stock disponible", "err"); return; }
+    if (isLoggedIn()) {
+        try {
+            await addToCart(id, 1);
+            showToast('"' + name + '" agregado al carrito ✅');
+        } catch(e) { showToast(e.message, "err"); }
+    } else {
+        var cart = getGuestCart();
+        var existing = cart.find(function(i) { return i.id === id; });
+        if (existing) { existing.quantity += 1; }
+        else { cart.push({ id: id, name: name, price: 0, stock: stock, quantity: 1 }); }
+        saveGuestCart(cart);
+        showToast('"' + name + '" agregado al carrito ✅');
+    }
+}
+
+window.addEventListener("currencyChanged", function() { loadSets(); });
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#0F1A14;color:#0F1A14;min-height:100vh;display:flex;flex-direction:column}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1A2820}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7}
+        .nav-links a:hover{opacity:1;color:#1D7A4F}
+        .nav-right{display:flex;gap:12px}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+
+        .main{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 2rem;text-align:center}
+        .inner{max-width:560px;width:100%}
+
+        .num{font-family:'Playfair Display',serif;font-size:clamp(100px,20vw,160px);font-weight:900;line-height:1;color:#1A2820;position:relative;display:inline-block;margin-bottom:-.5rem}
+        .num::after{content:'404';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#1D7A4F;opacity:.15;font-size:inherit}
+
+        .icon-wrap{width:80px;height:80px;background:#1A2820;border:1px solid #2A4A38;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+        .icon-wrap i{font-size:32px;color:#1D7A4F}
+
+        h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#C8D8C0;margin-bottom:.75rem;line-height:1.2}
+        h1 em{color:#1D7A4F;font-style:normal}
+        p.sub{font-size:14px;color:#4A6A5A;line-height:1.7;margin-bottom:2.5rem;max-width:400px;margin-left:auto;margin-right:auto}
+
+        .actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+        .btn-primary{background:#1D7A4F;color:#F5F5F3;font-size:14px;font-weight:500;padding:12px 24px;border-radius:2px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:background .2s}
+        .btn-primary:hover{background:#22904F}
+        .btn-ghost{background:transparent;color:#C8D8C0;border:1px solid #2A4A38;font-size:14px;padding:10px 24px;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+        .btn-ghost:hover{border-color:#1D7A4F;color:#1D7A4F}
+
+        .links-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;max-width:480px;margin:0 auto}
+        .link-card{background:#1A2820;border:1px solid #243B2C;border-radius:4px;padding:1rem;text-align:center;text-decoration:none;transition:border-color .2s}
+        .link-card:hover{border-color:#1D7A4F}
+        .link-card i{font-size:20px;color:#1D7A4F;display:block;margin-bottom:.4rem}
+        .link-card span{font-size:12px;font-weight:500;color:#C8D8C0}
+
+        footer{background:#0F1A14;border-top:1px solid #1A2820;padding:1.25rem 2rem;text-align:center}
+        footer p{font-size:11px;color:#2A4A38}
+
+        @media(max-width:768px){.nav-links{display:none}.actions{flex-direction:column;align-items:center}}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="tienda.html">Catálogo</a>
+        <a href="nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="login.html" class="nav-icon"><i class="ti ti-user"></i></a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="inner">
+
+        <div class="icon-wrap">
+            <i class="ti ti-tools-kitchen-2"></i>
+        </div>
+
+        <h1>Esta página se<br><em>quemó.</em></h1>
+        <p class="sub">La página que buscas no existe o fue movida. Pero tu cocina merece lo mejor — volvamos a donde sí hay cosas buenas.</p>
+
+        <div class="actions">
+            <a href="index.html" class="btn-primary">
+                <i class="ti ti-home"></i>
+                Volver al inicio
+            </a>
+            <a href="tienda.html" class="btn-ghost">
+                <i class="ti ti-shopping-bag"></i>
+                Ver catálogo
+            </a>
+        </div>
+
+        <p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#4A6A5A;text-transform:uppercase;margin-bottom:1rem">O explora</p>
+        <div class="links-grid">
+            <a href="categorias.html" class="link-card">
+                <i class="ti ti-category"></i>
+                <span>Categorías</span>
+            </a>
+            <a href="sets.html" class="link-card">
+                <i class="ti ti-package"></i>
+                <span>Sets</span>
+            </a>
+            <a href="regalos.html" class="link-card">
+                <i class="ti ti-gift"></i>
+                <span>Regalos</span>
+            </a>
+            <a href="contacto.html" class="link-card">
+                <i class="ti ti-brand-whatsapp"></i>
+                <span>Contáctanos</span>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Velonox · Cocina de por vida.</p>
+</footer>
+
+</body>
+</html>
