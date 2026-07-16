@@ -3,58 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago — Velonox</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Checkout — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
-        .result-box {
-            max-width: 500px;
-            margin: 6rem auto;
-            text-align: center;
-            background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .result-box .icon { font-size: 4rem; margin-bottom: 1rem; }
-        .result-box h2 { margin-bottom: 1rem; }
-        .result-box p { color: var(--gray-500); margin-bottom: 2rem; }
-        @media (max-width: 560px) {
-            .result-box { margin: 3rem 1rem; padding: 2rem 1.5rem; }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+        nav{background:#0F1A14;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.5px;text-decoration:none}
+        .nav-logo .a{color:#C8D8C0}.nav-logo .b{color:#1D7A4F}
+        .nav-back{font-size:13px;color:#6B8A7A;text-decoration:none;display:flex;align-items:center;gap:.4rem}
+        .nav-back:hover{color:#C8D8C0}
+        .nav-secure{font-size:12px;color:#4A6A5A;display:flex;align-items:center;gap:.4rem}
+
+        /* LAYOUT */
+        .checkout-wrap{max-width:1000px;margin:0 auto;padding:2.5rem 2rem;display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start}
+
+        /* PANEL IZQUIERDO */
+        .checkout-left{display:flex;flex-direction:column;gap:1.5rem}
+
+        .panel{background:white;border:1px solid #E8E8E4;border-radius:4px;overflow:hidden}
+        .panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4;display:flex;align-items:center;gap:.75rem}
+        .panel-num{width:24px;height:24px;background:#1D7A4F;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0}
+        .panel-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#0F1A14}
+        .panel-body{padding:1.5rem}
+
+        /* MÉTODO DE PAGO */
+        .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+        .pay-method{border:2px solid #E8E8E4;border-radius:4px;padding:1.25rem;cursor:pointer;transition:all .2s;text-align:center}
+        .pay-method:hover{border-color:#1D7A4F}
+        .pay-method.selected{border-color:#1D7A4F;background:#F0FAF5}
+        .pay-method i{font-size:28px;color:#B0BEB8;display:block;margin-bottom:.6rem;transition:color .2s}
+        .pay-method.selected i{color:#1D7A4F}
+        .pay-method h4{font-size:14px;font-weight:600;color:#0F1A14;margin-bottom:.25rem}
+        .pay-method p{font-size:12px;color:#6B8A7A;line-height:1.4}
+        .pay-method .badge{display:inline-block;background:#D6C5A0;color:#3A2E14;font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;margin-top:.4rem}
+        .pay-method.selected .badge-green{background:#1D7A4F;color:white}
+
+        /* FORMULARIO */
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .form-group{margin-bottom:1rem}
+        .form-group label{display:block;font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:.65rem .9rem;border:1px solid #E8E8E4;border-radius:2px;font-size:14px;color:#0F1A14;font-family:'DM Sans',sans-serif;transition:border-color .2s;background:white}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#1D7A4F}
+        .form-group input::placeholder,.form-group textarea::placeholder{color:#B0BEB8}
+        .form-group textarea{resize:vertical;min-height:80px}
+
+        /* SECCIÓN DE PAGO ANTICIPADO */
+        .stripe-info{background:#F0FAF5;border:1px solid #A8D8BC;border-radius:4px;padding:1rem 1.25rem;display:flex;gap:.75rem;align-items:flex-start;margin-top:1rem}
+        .stripe-info i{color:#1D7A4F;font-size:18px;flex-shrink:0;margin-top:1px}
+        .stripe-info p{font-size:13px;color:#1D5A3A;line-height:1.6;margin:0}
+
+        /* BOTÓN SUBMIT */
+        .btn-submit{width:100%;padding:1rem;background:#1D7A4F;color:#F5F5F3;border:none;border-radius:2px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:background .2s;margin-top:.5rem}
+        .btn-submit:hover{background:#22904F}
+        .btn-submit:disabled{background:#B0BEB8;cursor:not-allowed}
+
+        /* PANEL DERECHO — RESUMEN */
+        .summary{background:white;border:1px solid #E8E8E4;border-radius:4px;position:sticky;top:72px}
+        .summary-header{padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4}
+        .summary-header h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#0F1A14}
+        .summary-items{padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4;max-height:320px;overflow-y:auto}
+        .summary-item{display:flex;gap:.75rem;align-items:center;margin-bottom:.875rem}
+        .summary-item:last-child{margin-bottom:0}
+        .summary-img{width:52px;height:52px;background:#E8ECE6;border-radius:2px;object-fit:cover;flex-shrink:0}
+        .summary-item-info{flex:1}
+        .summary-item-name{font-size:13px;font-weight:500;color:#0F1A14;line-height:1.3;margin-bottom:2px}
+        .summary-item-qty{font-size:12px;color:#B0BEB8}
+        .summary-item-price{font-size:13px;font-weight:600;color:#0F1A14;white-space:nowrap}
+        .summary-totals{padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4}
+        .summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+        .summary-row span{font-size:13px;color:#6B8A7A}
+        .summary-row strong{font-size:13px;color:#0F1A14}
+        .summary-total{display:flex;justify-content:space-between;align-items:center;padding-top:.75rem;border-top:1px solid #E8E8E4}
+        .summary-total span{font-size:15px;font-weight:600;color:#0F1A14}
+        .summary-total strong{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#1D7A4F}
+        .summary-footer{padding:1rem 1.5rem}
+        .trust-row{display:flex;align-items:center;gap:.5rem;font-size:12px;color:#6B8A7A;margin-bottom:.4rem}
+        .trust-row i{color:#1D7A4F;font-size:14px}
+
+        /* ALERT */
+        .alert{padding:.75rem 1rem;border-radius:2px;margin-bottom:1rem;font-size:13px;font-weight:500;display:none}
+        .alert.show{display:block}
+        .alert-err{background:#FEF2F2;border:1px solid #FBBFBF;color:#DC2626}
+        .alert-ok{background:#F0FAF5;border:1px solid #A8D8BC;color:#1D7A4F}
+
+        /* ÉXITO */
+        .success-screen{display:none;text-align:center;padding:4rem 2rem;max-width:560px;margin:0 auto}
+        .success-icon{width:72px;height:72px;background:#F0FAF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+        .success-icon i{font-size:32px;color:#1D7A4F}
+        .success-screen h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:.75rem}
+        .success-screen p{font-size:14px;color:#6B8A7A;line-height:1.7;margin-bottom:1.5rem}
+        .success-card{background:white;border:1px solid #E8E8E4;border-radius:4px;padding:1.25rem;margin-bottom:1.5rem;text-align:left}
+        .success-card p{font-size:13px;color:#4A6A5A;margin-bottom:.4rem}
+        .success-card strong{color:#0F1A14}
+        .success-account{background:#F0FAF5;border:1px solid #A8D8BC;border-radius:4px;padding:1.25rem;margin-bottom:1.5rem;text-align:left}
+        .success-account p{font-size:13px;color:#1D5A3A;line-height:1.6}
+        .btn-primary{background:#1D7A4F;color:#F5F5F3;font-size:14px;font-weight:500;padding:12px 28px;border-radius:2px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block;transition:background .2s}
+        .btn-primary:hover{background:#22904F}
+        .btn-ghost{background:transparent;color:#1D7A4F;border:1px solid #1D7A4F;font-size:14px;padding:10px 24px;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block;transition:all .2s;margin-left:.5rem}
+        .btn-ghost:hover{background:#1D7A4F;color:white}
+
+        /* EMPTY CART */
+        .empty-cart{text-align:center;padding:4rem 2rem}
+        .empty-cart i{font-size:48px;color:#E8E8E4;display:block;margin-bottom:1rem}
+        .empty-cart h3{font-family:'Playfair Display',serif;font-size:22px;color:#0F1A14;margin-bottom:.5rem}
+        .empty-cart p{font-size:14px;color:#6B8A7A;margin-bottom:1.5rem}
+
+        .toast{position:fixed;bottom:2rem;right:2rem;background:#0F1A14;color:#C8D8C0;padding:.75rem 1.2rem;border-radius:2px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.ok{border-left:3px solid #1D7A4F}
+        .toast.err{border-left:3px solid #DC2626}
+
+        @media(max-width:768px){
+            .checkout-wrap{grid-template-columns:1fr;padding:1rem}
+            .summary{position:static}
+            .pay-methods{grid-template-columns:1fr 1fr}
+            .form-row{grid-template-columns:1fr}
         }
     </style>
 </head>
-
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0bb04015632048a0b04508aaa5b93945"}'></script><!-- End Cloudflare Web Analytics -->
-
 <body>
-    <div class="result-box" id="result">
-        <div class="loading">Procesando...</div>
+
+<nav>
+    <a href="tienda.html" class="nav-back"><i class="ti ti-arrow-left"></i> Seguir comprando</a>
+    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-secure"><i class="ti ti-lock" style="color:#1D7A4F"></i> Pago seguro</div>
+</nav>
+
+<!-- PANTALLA DE ÉXITO -->
+<div class="success-screen" id="success-screen">
+    <div class="success-icon"><i class="ti ti-circle-check"></i></div>
+    <h2 id="success-title">¡Pedido confirmado!</h2>
+    <p id="success-desc">Revisa tu email — te enviamos la confirmación con el detalle de tu pedido.</p>
+
+    <div class="success-card" id="success-order-info"></div>
+    <div class="success-account" id="success-account-info" style="display:none"></div>
+
+    <a href="index.html" class="btn-primary">Volver a la tienda</a>
+    <a href="login.html" class="btn-ghost" id="success-login-btn" style="display:none">Ingresar a mi cuenta</a>
+</div>
+
+<!-- PANTALLA DE CARRITO VACÍO -->
+<div class="empty-cart" id="empty-cart" style="display:none">
+    <i class="ti ti-shopping-bag"></i>
+    <h3>Tu carrito está vacío</h3>
+    <p>Agrega productos antes de proceder al pago.</p>
+    <a href="tienda.html" class="btn-primary">Ver productos</a>
+</div>
+
+<!-- CHECKOUT PRINCIPAL -->
+<div class="checkout-wrap" id="checkout-main">
+
+    <!-- IZQUIERDA -->
+    <div class="checkout-left">
+
+        <!-- PASO 1: Método de pago -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-num">1</div>
+                <h2 class="panel-title">¿Cómo quieres pagar?</h2>
+            </div>
+            <div class="panel-body">
+                <div class="pay-methods">
+                    <div class="pay-method selected" id="method-anticipado" onclick="selectMethod('anticipado')">
+                        <i class="ti ti-credit-card"></i>
+                        <h4>Pago anticipado</h4>
+                        <p>Tarjeta débito, crédito o PSE</p>
+                        <span class="badge badge-green" style="background:#1D7A4F;color:white">Más rápido</span>
+                    </div>
+                    <div class="pay-method" id="method-contraentrega" onclick="selectMethod('contraentrega')">
+                        <i class="ti ti-package"></i>
+                        <h4>Contraentrega</h4>
+                        <p>Paga cuando recibas tu pedido</p>
+                        <span class="badge">Solo Colombia</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 2: Datos personales -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-num">2</div>
+                <h2 class="panel-title">Tus datos</h2>
+            </div>
+            <div class="panel-body">
+                <div id="form-alert" class="alert"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo *</label>
+                        <input type="text" id="f-nombre" placeholder="Tu nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="f-email" placeholder="tu@email.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono *</label>
+                    <input type="tel" id="f-telefono" placeholder="+57 300 000 0000">
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 3: Dirección de envío -->
+        <div class="panel" id="panel-direccion">
+            <div class="panel-header">
+                <div class="panel-num">3</div>
+                <h2 class="panel-title" id="panel-direccion-title">Dirección de envío</h2>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label>Dirección *</label>
+                    <input type="text" id="f-direccion" placeholder="Calle, carrera, número, apto">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <input type="text" id="f-ciudad" placeholder="Ciudad">
+                    </div>
+                    <div class="form-group">
+                        <label>Departamento *</label>
+                        <select id="f-departamento">
+                            <option value="">Selecciona</option>
+                            <option>Antioquia</option>
+                            <option>Atlántico</option>
+                            <option>Bogotá D.C.</option>
+                            <option>Bolívar</option>
+                            <option>Boyacá</option>
+                            <option>Caldas</option>
+                            <option>Caquetá</option>
+                            <option>Casanare</option>
+                            <option>Cauca</option>
+                            <option>Cesar</option>
+                            <option>Chocó</option>
+                            <option>Córdoba</option>
+                            <option>Cundinamarca</option>
+                            <option>Huila</option>
+                            <option>La Guajira</option>
+                            <option>Magdalena</option>
+                            <option>Meta</option>
+                            <option>Nariño</option>
+                            <option>Norte de Santander</option>
+                            <option>Putumayo</option>
+                            <option>Quindío</option>
+                            <option>Risaralda</option>
+                            <option>Santander</option>
+                            <option>Sucre</option>
+                            <option>Tolima</option>
+                            <option>Valle del Cauca</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Extra para contraentrega -->
+                <div id="extra-contraentrega" style="display:none">
+                    <div class="form-group">
+                        <label>Código postal</label>
+                        <input type="text" id="f-postal" placeholder="Opcional">
+                    </div>
+                    <div class="form-group">
+                        <label>Indicaciones adicionales</label>
+                        <textarea id="f-indicaciones" placeholder="Color de la puerta, nombre del edificio, instrucciones para el mensajero..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Info pago anticipado -->
+                <div class="stripe-info" id="info-anticipado">
+                    <i class="ti ti-info-circle"></i>
+                    <p>Al confirmar serás redirigido a nuestra pasarela de pago segura para completar el pago con tarjeta, PSE o Nequi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÓN FINAL -->
+        <button class="btn-submit" id="btn-submit" onclick="handleCheckout()">
+            <i class="ti ti-lock"></i>
+            <span id="btn-text">Confirmar pedido</span>
+        </button>
+
+        <p style="font-size:11px;color:#B0BEB8;text-align:center;margin-top:.75rem;line-height:1.5">
+            Al confirmar aceptas nuestros <a href="terminos.html" style="color:#1D7A4F">Términos y condiciones</a> y
+            <a href="politicas.html#privacidad" style="color:#1D7A4F">Política de privacidad</a>
+        </p>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/cart.js"></script>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const box = document.getElementById("result");
+    <!-- DERECHA: RESUMEN -->
+    <div class="summary">
+        <div class="summary-header">
+            <h3>Resumen del pedido</h3>
+        </div>
+        <div class="summary-items" id="summary-items"></div>
+        <div class="summary-totals">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong id="summary-subtotal">$0.00</strong>
+            </div>
+            <div class="summary-row">
+                <span>Envío</span>
+                <strong id="summary-envio" style="color:#1D7A4F">Gratis</strong>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <strong id="summary-total">$0.00</strong>
+            </div>
+        </div>
+        <div class="summary-footer">
+            <div class="trust-row"><i class="ti ti-shield-check"></i> Compra 100% segura</div>
+            <div class="trust-row"><i class="ti ti-truck"></i> Envío gratis desde $80.000 COP</div>
+            <div class="trust-row"><i class="ti ti-refresh"></i> 30 días para devoluciones</div>
+        </div>
+    </div>
 
-        if (params.get("success")) {
-            clearLocalCart();   // el pago se confirmó: vaciamos el carrito local
-            box.innerHTML = `
-                <div class="icon">🎉</div>
-                <h2>¡Pago exitoso!</h2>
-                <p>Tu pedido ha sido confirmado y está siendo procesado.</p>
-                <a href="index.html" class="btn btn-primary">Seguir comprando</a>
-            `;
-        } else if (params.get("cancelled")) {
-            box.innerHTML = `
-                <div class="icon">😕</div>
-                <h2>Pago cancelado</h2>
-                <p>No se realizó ningún cobro. Tu carrito sigue intacto.</p>
-                <a href="cart.html" class="btn btn-outline">Volver al carrito</a>
-            `;
-        } else {
-            window.location.href = "index.html";
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
+let currentMethod = 'anticipado';
+let cartItems = [];
+
+function showToast(msg, type) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show " + (type || "ok");
+    setTimeout(function() { t.className = "toast"; }, 3000);
+}
+
+function showAlert(msg, type) {
+    const el = document.getElementById("form-alert");
+    el.textContent = msg;
+    el.className = "alert show alert-" + (type || "err");
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Método de pago ────────────────────────────────────────────────────────────
+function selectMethod(method) {
+    currentMethod = method;
+    document.getElementById("method-anticipado").classList.toggle("selected", method === "anticipado");
+    document.getElementById("method-contraentrega").classList.toggle("selected", method === "contraentrega");
+    document.getElementById("extra-contraentrega").style.display = method === "contraentrega" ? "block" : "none";
+    document.getElementById("info-anticipado").style.display = method === "anticipado" ? "flex" : "none";
+    document.getElementById("panel-direccion-title").textContent = method === "contraentrega"
+        ? "Dirección de entrega" : "Dirección de envío";
+    document.getElementById("btn-text").textContent = method === "anticipado"
+        ? "Proceder al pago" : "Confirmar pedido";
+}
+
+// ── Cargar carrito ────────────────────────────────────────────────────────────
+async function loadCart() {
+    // Leer método preseleccionado desde product.html
+    const savedMethod = localStorage.getItem("velonox_checkout_method");
+    if (savedMethod) {
+        selectMethod(savedMethod);
+        localStorage.removeItem("velonox_checkout_method");
+    }
+    if (isLoggedIn()) {
+        // Usuario con sesión → cargar desde la DB
+        try {
+            const cart = await getCart();
+            cartItems = cart.items.map(function(item) {
+                return {
+                    id: item.product.id,
+                    name: item.product.name,
+                    price: item.product.price,
+                    image_url: item.product.image_url,
+                    quantity: item.quantity,
+                    cart_item_id: item.id
+                };
+            });
+        } catch(e) { cartItems = []; }
+    } else {
+        // Invitado → cargar desde localStorage
+        cartItems = getGuestCart();
+    }
+
+    if (!cartItems.length) {
+        document.getElementById("checkout-main").style.display = "none";
+        document.getElementById("empty-cart").style.display = "block";
+        return;
+    }
+
+    renderSummary();
+
+    // Pre-llenar email si está logueado
+    if (isLoggedIn()) {
+        try {
+            const me = await getMe();
+            document.getElementById("f-nombre").value = me.full_name || "";
+            document.getElementById("f-email").value = me.email || "";
+        } catch(e) {}
+    }
+}
+
+function renderSummary() {
+    const container = document.getElementById("summary-items");
+    let total = 0;
+    let html = '';
+
+    cartItems.forEach(function(item) {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        html += '<div class="summary-item">' +
+            (item.image_url
+                ? '<img class="summary-img" src="' + item.image_url + '" alt="' + item.name + '">'
+                : '<div class="summary-img" style="display:flex;align-items:center;justify-content:center"><i class="ti ti-tools-kitchen-2" style="color:#B0BEB8;font-size:20px"></i></div>') +
+            '<div class="summary-item-info">' +
+            '<div class="summary-item-name">' + item.name + '</div>' +
+            '<div class="summary-item-qty">Cantidad: ' + item.quantity + '</div>' +
+            '</div>' +
+            '<div class="summary-item-price">$' + subtotal.toFixed(2) + '</div>' +
+            '</div>';
+    });
+
+    container.innerHTML = html;
+    document.getElementById("summary-subtotal").textContent = "$" + total.toFixed(2);
+    document.getElementById("summary-total").textContent = "$" + total.toFixed(2);
+    document.getElementById("summary-envio").textContent = total >= 28 ? "Gratis" : "$5.00";
+}
+
+// ── Validación ────────────────────────────────────────────────────────────────
+function validate() {
+    const nombre = document.getElementById("f-nombre").value.trim();
+    const email = document.getElementById("f-email").value.trim();
+    const telefono = document.getElementById("f-telefono").value.trim();
+    const direccion = document.getElementById("f-direccion").value.trim();
+    const ciudad = document.getElementById("f-ciudad").value.trim();
+    const depto = document.getElementById("f-departamento").value;
+
+    if (!nombre) { showAlert("Ingresa tu nombre completo"); return false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert("Ingresa un email válido"); return false; }
+    if (!telefono) { showAlert("Ingresa tu teléfono de contacto"); return false; }
+    if (!direccion) { showAlert("Ingresa tu dirección de envío"); return false; }
+    if (!ciudad) { showAlert("Ingresa tu ciudad"); return false; }
+    if (!depto) { showAlert("Selecciona tu departamento"); return false; }
+    return true;
+}
+
+// ── Checkout ──────────────────────────────────────────────────────────────────
+async function handleCheckout() {
+    if (!validate()) return;
+
+    const btn = document.getElementById("btn-submit");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Procesando...';
+
+    const nombre = document.getElementById("f-nombre").value.trim();
+    const email = document.getElementById("f-email").value.trim();
+    const telefono = document.getElementById("f-telefono").value.trim();
+    const direccion = document.getElementById("f-direccion").value.trim();
+    const ciudad = document.getElementById("f-ciudad").value.trim();
+    const depto = document.getElementById("f-departamento").value;
+    const postal = document.getElementById("f-postal").value.trim();
+    const indicaciones = document.getElementById("f-indicaciones").value.trim();
+
+    const items = cartItems.map(function(item) {
+        return { product_id: item.id, quantity: item.quantity };
+    });
+
+    try {
+        if (isLoggedIn() && currentMethod === 'anticipado') {
+            // Usuario logueado con pago anticipado → Stripe
+            const data = await checkout();
+            window.location.href = data.checkout_url;
+            return;
         }
-    </script>
+
+        // Invitado o contraentrega → endpoint guest
+        const payload = {
+            email: email,
+            nombre: nombre,
+            payment_method: currentMethod,
+            shipping_address: {
+                direccion: direccion,
+                ciudad: ciudad,
+                departamento: depto,
+                telefono: telefono,
+                codigo_postal: postal || null,
+                indicaciones: indicaciones || null
+            },
+            items: items
+        };
+
+        const result = await fetch(API + "/guest/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!result.ok) {
+            const err = await result.json();
+            throw new Error(err.detail || "Error procesando el pedido");
+        }
+
+        const data = await result.json();
+
+        // Limpiar carrito
+        if (isLoggedIn()) {
+            // limpiar DB cart si existía
+        } else {
+            clearGuestCart();
+        }
+
+        showSuccess(data, nombre, email);
+
+    } catch(e) {
+        showAlert(e.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-lock"></i> <span id="btn-text">' +
+            (currentMethod === 'anticipado' ? 'Proceder al pago' : 'Confirmar pedido') + '</span>';
+    }
+}
+
+// ── Pantalla de éxito ─────────────────────────────────────────────────────────
+function showSuccess(data, nombre, email) {
+    document.getElementById("checkout-main").style.display = "none";
+    const screen = document.getElementById("success-screen");
+    screen.style.display = "block";
+
+    const nombreCorto = nombre.split(" ")[0];
+
+    if (data.payment_method === "contraentrega") {
+        document.getElementById("success-title").textContent = "¡Pedido confirmado, " + nombreCorto + "!";
+        document.getElementById("success-desc").textContent =
+            "Tu pedido fue registrado. El mensajero te contactará para coordinar la entrega. Revisa tu email para ver el detalle.";
+    } else {
+        document.getElementById("success-title").textContent = "¡Gracias por tu compra!";
+        document.getElementById("success-desc").textContent =
+            "Tu pedido fue procesado exitosamente. Revisa tu email para ver la confirmación.";
+    }
+
+    document.getElementById("success-order-info").innerHTML =
+        '<p style="font-size:12px;font-weight:500;letter-spacing:2px;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem">Detalle del pedido</p>' +
+        '<p style="font-size:13px;color:#4A6A5A;margin-bottom:.3rem">Pedido: <strong style="color:#0F1A14">#' + data.order_id.substring(0,8).toUpperCase() + '</strong></p>' +
+        '<p style="font-size:13px;color:#4A6A5A;margin-bottom:.3rem">Email: <strong style="color:#0F1A14">' + email + '</strong></p>' +
+        '<p style="font-size:13px;color:#4A6A5A">Total: <strong style="color:#1D7A4F">$' + data.total.toFixed(2) + ' USD</strong></p>';
+
+    if (data.cuenta_creada) {
+        const accountInfo = document.getElementById("success-account-info");
+        accountInfo.style.display = "block";
+        accountInfo.innerHTML =
+            '<p style="font-size:12px;font-weight:500;letter-spacing:2px;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem">Tu cuenta fue creada</p>' +
+            '<p style="font-size:13px;color:#1D5A3A;line-height:1.6">Creamos una cuenta Velonox con tu email <strong>' + email + '</strong>. ' +
+            'Revisa tu bandeja de entrada — te enviamos tus credenciales para que puedas ingresar y ver el historial de tus pedidos.</p>';
+        document.getElementById("success-login-btn").style.display = "inline-block";
+    }
+}
+
+// ── Iniciar ───────────────────────────────────────────────────────────────────
+loadCart();
+</script>
 </body>
 </html>

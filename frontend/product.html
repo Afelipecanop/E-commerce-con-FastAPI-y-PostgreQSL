@@ -206,6 +206,81 @@
     </div>
 </nav>
 
+<!-- MODAL DE COMPRA -->
+<div id="buy-modal" style="display:none;position:fixed;inset:0;background:rgba(15,26,20,.7);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:white;border-radius:4px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)">
+
+        <!-- Header -->
+        <div style="background:#0F1A14;padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <p style="font-size:10px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.2rem">Compra rápida</p>
+                <h3 id="modal-product-name" style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#C8D8C0"></h3>
+            </div>
+            <button onclick="closeBuyModal()" style="background:none;border:none;color:#6B8A7A;cursor:pointer;font-size:20px;line-height:1">✕</button>
+        </div>
+
+        <!-- Cantidad -->
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4;display:flex;align-items:center;justify-content:space-between">
+            <div>
+                <p style="font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem">Cantidad</p>
+                <div style="display:flex;align-items:center;gap:.75rem">
+                    <button onclick="changeModalQty(-1)"
+                        style="width:32px;height:32px;border:1px solid #E8E8E4;background:white;border-radius:2px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0F1A14;transition:all .2s"
+                        onmouseover="this.style.borderColor='#1D7A4F'" onmouseout="this.style.borderColor='#E8E8E4'">−</button>
+                    <span id="modal-qty" style="font-size:16px;font-weight:600;min-width:2rem;text-align:center">1</span>
+                    <button onclick="changeModalQty(1)"
+                        style="width:32px;height:32px;border:1px solid #E8E8E4;background:white;border-radius:2px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0F1A14;transition:all .2s"
+                        onmouseover="this.style.borderColor='#1D7A4F'" onmouseout="this.style.borderColor='#E8E8E4'">+</button>
+                </div>
+            </div>
+            <div style="text-align:right">
+                <p style="font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Total</p>
+                <p id="modal-total" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1D7A4F"></p>
+            </div>
+        </div>
+
+        <!-- Método de pago -->
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E8E8E4">
+            <p style="font-size:11px;font-weight:500;color:#6B8A7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Método de pago</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+
+                <div id="modal-method-anticipado" onclick="selectModalMethod('anticipado')"
+                    style="border:2px solid #1D7A4F;border-radius:4px;padding:1rem;cursor:pointer;background:#F0FAF5;text-align:center;transition:all .2s">
+                    <i class="ti ti-credit-card" style="font-size:22px;color:#1D7A4F;display:block;margin-bottom:.5rem"></i>
+                    <p style="font-size:13px;font-weight:600;color:#0F1A14;margin-bottom:.2rem">Pago anticipado</p>
+                    <p style="font-size:11px;color:#6B8A7A">Tarjeta · PSE · Nequi</p>
+                    <span style="background:#1D7A4F;color:white;font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;display:inline-block;margin-top:.4rem">Más rápido</span>
+                </div>
+
+                <div id="modal-method-contraentrega" onclick="selectModalMethod('contraentrega')"
+                    style="border:2px solid #E8E8E4;border-radius:4px;padding:1rem;cursor:pointer;text-align:center;transition:all .2s"
+                    onmouseover="this.style.borderColor='#1D7A4F'" onmouseout="if(modalMethod!=='contraentrega')this.style.borderColor='#E8E8E4'">
+                    <i class="ti ti-package" style="font-size:22px;color:#B0BEB8;display:block;margin-bottom:.5rem"></i>
+                    <p style="font-size:13px;font-weight:600;color:#0F1A14;margin-bottom:.2rem">Contraentrega</p>
+                    <p style="font-size:11px;color:#6B8A7A">Paga al recibir</p>
+                    <span style="background:#E8E8E4;color:#6B8A7A;font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;display:inline-block;margin-top:.4rem">Solo Colombia</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Botón de acción -->
+        <div style="padding:1.25rem 1.5rem">
+            <button id="modal-btn" onclick="handleModalCheckout()"
+                style="width:100%;padding:.875rem;background:#1D7A4F;color:#F5F5F3;border:none;border-radius:2px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:background .2s"
+                onmouseover="this.style.background='#22904F'" onmouseout="this.style.background='#1D7A4F'">
+                <i class="ti ti-bolt"></i>
+                <span id="modal-btn-text">Ir al pago</span>
+            </button>
+            <p style="font-size:11px;color:#B0BEB8;text-align:center;margin-top:.6rem">
+                <i class="ti ti-lock" style="font-size:11px;color:#1D7A4F"></i>
+                Transacción 100% segura · SSL
+            </p>
+        </div>
+
+    </div>
+</div>
+
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
     <a href="index.html">Inicio</a>
@@ -372,9 +447,16 @@ function renderProduct(product, page) {
 
                 <button class="btn-add" id="btn-add"
                     ${!inStock ? 'disabled' : ''}
-                    onclick="handleAddToCart()">
+                    onclick="handleBuyNow()">
+                    <i class="ti ti-bolt"></i>
+                    ${inStock ? 'Comprar ahora' : 'Sin stock'}
+                </button>
+                <button class="btn-add" id="btn-cart"
+                    ${!inStock ? 'disabled' : ''}
+                    onclick="handleAddToCart()"
+                    style="background:#1A2820;border:1px solid #2A4A38;margin-top:.5rem">
                     <i class="ti ti-shopping-bag"></i>
-                    ${inStock ? 'Agregar al carrito' : 'Sin stock'}
+                    Agregar al carrito
                 </button>
 
                 <button class="btn-back" onclick="window.location.href='index.html'">
@@ -577,6 +659,129 @@ async function handleAddToCart() {
         showToast(e.message, "err");
     }
 }
+
+// ── MODAL DE COMPRA RÁPIDA ────────────────────────────────────────────────────
+let modalQty = 1;
+let modalMethod = 'anticipado';
+
+function handleBuyNow() {
+    if (!currentProduct) return;
+    if (!isLoggedIn() && false) { // permitir sin login
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Resetear modal
+    modalQty = 1;
+    modalMethod = 'anticipado';
+    document.getElementById("modal-qty").textContent = "1";
+    document.getElementById("modal-product-name").textContent = currentProduct.name;
+    updateModalTotal();
+    selectModalMethod('anticipado');
+
+    // Mostrar modal
+    const modal = document.getElementById("buy-modal");
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+
+function closeBuyModal() {
+    document.getElementById("buy-modal").style.display = "none";
+    document.body.style.overflow = "";
+}
+
+function changeModalQty(delta) {
+    const maxStock = currentProduct ? currentProduct.stock : 1;
+    modalQty = Math.max(1, Math.min(modalQty + delta, maxStock));
+    document.getElementById("modal-qty").textContent = modalQty;
+    updateModalTotal();
+}
+
+function updateModalTotal() {
+    if (!currentProduct) return;
+    const total = (currentProduct.price * modalQty).toFixed(2);
+    document.getElementById("modal-total").textContent = "$" + total + " USD";
+}
+
+function selectModalMethod(method) {
+    modalMethod = method;
+    const anticipado = document.getElementById("modal-method-anticipado");
+    const contra = document.getElementById("modal-method-contraentrega");
+    const icon = contra.querySelector("i");
+
+    if (method === 'anticipado') {
+        anticipado.style.border = "2px solid #1D7A4F";
+        anticipado.style.background = "#F0FAF5";
+        contra.style.border = "2px solid #E8E8E4";
+        contra.style.background = "white";
+        icon.style.color = "#B0BEB8";
+        document.getElementById("modal-btn-text").textContent = "Ir al pago";
+    } else {
+        contra.style.border = "2px solid #1D7A4F";
+        contra.style.background = "#F0FAF5";
+        contra.querySelector("i").style.color = "#1D7A4F";
+        anticipado.style.border = "2px solid #E8E8E4";
+        anticipado.style.background = "white";
+        document.getElementById("modal-btn-text").textContent = "Continuar con datos";
+    }
+}
+
+async function handleModalCheckout() {
+    if (!currentProduct) return;
+
+    const btn = document.getElementById("modal-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Procesando...';
+
+    try {
+        if (modalMethod === 'anticipado') {
+            // Pago anticipado → agregar al carrito de la DB o localStorage y redirigir
+            if (isLoggedIn()) {
+                await addToCart(currentProduct.id, modalQty);
+                const data = await checkout();
+                window.location.href = data.checkout_url;
+            } else {
+                // Guardar en localStorage y llevar al checkout
+                const cart = [];
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    image_url: currentProduct.image_url,
+                    stock: currentProduct.stock,
+                    quantity: modalQty
+                });
+                localStorage.setItem("velonox_cart", JSON.stringify(cart));
+                localStorage.setItem("velonox_checkout_method", "anticipado");
+                window.location.href = "checkout.html";
+            }
+        } else {
+            // Contraentrega → guardar carrito y llevar al checkout
+            const cart = [{
+                id: currentProduct.id,
+                name: currentProduct.name,
+                price: currentProduct.price,
+                image_url: currentProduct.image_url,
+                stock: currentProduct.stock,
+                quantity: modalQty
+            }];
+            localStorage.setItem("velonox_cart", JSON.stringify(cart));
+            localStorage.setItem("velonox_checkout_method", "contraentrega");
+            closeBuyModal();
+            window.location.href = "checkout.html";
+        }
+    } catch(e) {
+        showToast(e.message, "err");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-bolt"></i><span id="modal-btn-text">' +
+            (modalMethod === 'anticipado' ? 'Ir al pago' : 'Continuar con datos') + '</span>';
+    }
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById("buy-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeBuyModal();
+});
 
 function showError(msg) {
     document.getElementById("page-content").innerHTML = `
