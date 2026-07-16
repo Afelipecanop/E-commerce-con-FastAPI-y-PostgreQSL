@@ -651,13 +651,13 @@ async function handleAddToCart() {
     if (isLoggedIn()) {
         try {
             await addToCart(currentProduct.id, quantity);
-            showToast(`"${currentProduct.name}" agregado al carrito ✅`, "ok");
+            showToast(`"${currentProduct.name}" agregado al carrito `, "ok");
         } catch(e) {
             showToast(e.message, "err");
         }
     } else {
         for (let i = 0; i < quantity; i++) addToGuestCart(currentProduct);
-        showToast(`"${currentProduct.name}" agregado al carrito ✅`, "ok");
+        showToast(`"${currentProduct.name}" agregado al carrito `, "ok");
     }
 }
 

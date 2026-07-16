@@ -39,18 +39,37 @@
     </div>
 
     <script src="js/api.js"></script>
-    <script src="js/cart.js"></script>
     <script>
         // Mostrar "Salir" solo si hay sesión iniciada (no obligamos a loguearse)
         if (isLoggedIn()) document.getElementById("nav-logout").style.display = "";
 
-        let productMap = {};   // product_id -> producto
+        let cartItems = [];   // {id, name, price, image_url, stock, quantity, cart_item_id?}
 
         async function loadCart() {
             const container = document.getElementById("cart-content");
-            const cart = getLocalCart();
 
-            if (cart.length === 0) {
+            if (isLoggedIn()) {
+                // Usuario con sesión → cargar desde la DB
+                try {
+                    const cart = await getCart();
+                    cartItems = cart.items.map(item => ({
+                        id: item.product.id,
+                        name: item.product.name,
+                        price: item.product.price,
+                        image_url: item.product.image_url,
+                        stock: item.product.stock,
+                        quantity: item.quantity,
+                        cart_item_id: item.id
+                    }));
+                } catch (e) {
+                    cartItems = [];
+                }
+            } else {
+                // Invitado → cargar desde localStorage
+                cartItems = getGuestCart();
+            }
+
+            if (cartItems.length === 0) {
                 container.innerHTML = `
                     <div class="cart-empty">
                         <p>Tu carrito está vacío.</p>
@@ -59,42 +78,26 @@
                 return;
             }
 
-            // Traer productos reales para precios/imágenes actualizados
-            try {
-                const products = await getProducts();
-                productMap = {};
-                products.forEach(p => productMap[p.id] = p);
-            } catch (e) {
-                container.innerHTML = `<div class="alert alert-error">No se pudieron cargar los productos. Intenta de nuevo.</div>`;
-                return;
-            }
-
-            // Filtrar items cuyo producto ya no existe
-            const validItems = cart.filter(i => productMap[i.product_id]);
-            if (validItems.length !== cart.length) saveLocalCart(validItems);
-            if (validItems.length === 0) { loadCart(); return; }
-
             let total = 0;
-            const itemsHTML = validItems.map(item => {
-                const p = productMap[item.product_id];
-                const lineTotal = p.price * item.quantity;
+            const itemsHTML = cartItems.map(item => {
+                const lineTotal = item.price * item.quantity;
                 total += lineTotal;
                 return `
                     <div class="cart-item">
-                        <img src="${p.image_url || 'https://via.placeholder.com/80'}" alt="${p.name}">
+                        <img src="${item.image_url || 'https://via.placeholder.com/80'}" alt="${item.name}">
                         <div class="item-info">
-                            <div class="item-name">${p.name}</div>
-                            <div class="item-price">$${p.price.toFixed(2)} c/u</div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price.toFixed(2)} c/u</div>
                         </div>
                         <div style="display:flex; align-items:center; gap:0.5rem">
-                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${p.id}', ${item.quantity - 1})">−</button>
+                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${item.id}', ${item.quantity - 1})">−</button>
                             <span style="min-width:2rem; text-align:center; font-weight:600">${item.quantity}</span>
-                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${p.id}', ${item.quantity + 1})">+</button>
+                            <button class="btn btn-outline cart-qty-btn" onclick="changeQty('${item.id}', ${item.quantity + 1})">+</button>
                         </div>
                         <div class="item-line-total" style="font-weight:700; min-width:80px; text-align:right">
                             $${lineTotal.toFixed(2)}
                         </div>
-                        <button class="btn btn-danger cart-qty-btn" onclick="removeItem('${p.id}')">✕</button>
+                        <button class="btn btn-danger cart-qty-btn" onclick="removeItem('${item.id}')">✕</button>
                     </div>`;
             }).join("");
 
@@ -108,56 +111,50 @@
                 </div>`;
         }
 
-        function changeQty(productId, newQty) {
-            const p = productMap[productId];
-            if (p && newQty > p.stock) {
-                alert(`Solo hay ${p.stock} unidades disponibles.`);
+        async function changeQty(productId, newQty) {
+            const item = cartItems.find(i => i.id === productId);
+            if (item && newQty > item.stock) {
+                alert(`Solo hay ${item.stock} unidades disponibles.`);
                 return;
             }
-            setLocalQty(productId, newQty);
+            if (isLoggedIn()) {
+                try {
+                    if (newQty <= 0) {
+                        await removeFromCart(item.cart_item_id);
+                    } else {
+                        await updateCartItem(item.cart_item_id, newQty);
+                    }
+                } catch (e) {
+                    alert(e.message);
+                    return;
+                }
+            } else {
+                updateGuestCartItem(productId, newQty);
+            }
             loadCart();
         }
 
-        function removeItem(productId) {
-            removeLocalItem(productId);
+        async function removeItem(productId) {
+            const item = cartItems.find(i => i.id === productId);
+            if (isLoggedIn()) {
+                try {
+                    await removeFromCart(item.cart_item_id);
+                } catch (e) {
+                    alert(e.message);
+                    return;
+                }
+            } else {
+                removeFromGuestCart(productId);
+            }
             loadCart();
         }
 
-        async function handleCheckout() {
-            if (getLocalCart().length === 0) return;
-
-            // El pago SÍ requiere sesión. Si no hay, guardamos la intención y
-            // enviamos a login; al volver, el pago continúa automáticamente.
-            if (!isLoggedIn()) {
-                localStorage.setItem("velonox_checkout_intent", "1");
-                window.location.href = "login.html?redirect=cart.html";
-                return;
-            }
-
-            const btn = document.getElementById("pay-btn");
-            if (btn) { btn.disabled = true; btn.textContent = "Procesando..."; }
-            try {
-                await syncLocalCartToBackend();
-                const data = await checkout();
-                // No vaciamos el carrito local aquí: solo al confirmarse el pago
-                // (checkout.html), para no perderlo si el usuario cancela en Stripe.
-                window.location.href = data.checkout_url;
-            } catch (e) {
-                alert(e.message);
-                if (btn) { btn.disabled = false; btn.textContent = "Proceder al pago"; }
-            }
+        function handleCheckout() {
+            if (cartItems.length === 0) return;
+            window.location.href = "checkout.html";
         }
 
-        // Al cargar: si el usuario acaba de iniciar sesión para pagar, continuar solo.
-        (async function init() {
-            if (isLoggedIn() && localStorage.getItem("velonox_checkout_intent")) {
-                localStorage.removeItem("velonox_checkout_intent");
-                await loadCart();
-                handleCheckout();
-                return;
-            }
-            loadCart();
-        })();
+        loadCart();
     </script>
 </body>
 </html>
