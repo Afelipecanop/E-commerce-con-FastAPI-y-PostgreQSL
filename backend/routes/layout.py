@@ -800,6 +800,120 @@ CONTENT_PAGE_BLOCKS = {
             }
         }
     ],
+    "categorias": [
+        {
+            "block_type": "content_hero",
+            "config": {
+                "eyebrow": "Acero inoxidable · Grado 304",
+                "title_html": "Todo para tu <em>cocina.</em>",
+                "text": "Explora nuestra colección organizada por categoría. Sin teflón, sin tóxicos, sin excusas."
+            }
+        },
+        {
+            "block_type": "custom_html",
+            "config": {
+                "css": "",
+                "html": """<section class="cats-section">
+    <p style="font-size:11px;font-weight:500;letter-spacing:.18em;color:#1D7A4F;text-transform:uppercase;margin-bottom:.4rem">Colección</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14">¿Qué estás buscando?</h2>
+    <div class="cats-grid" id="cats-grid">
+        <div class="loading">Cargando categorías...</div>
+    </div>
+</section>
+<div class="strip">
+    <div class="strip-inner">
+        <div class="strip-item"><i class="ti ti-certificate"></i><strong>Acero 304 certificado</strong><span>Grado alimentario en cada producto</span></div>
+        <div class="strip-item"><i class="ti ti-truck"></i><strong>Envío gratis</strong><span>En compras desde $80.000 COP</span></div>
+        <div class="strip-item"><i class="ti ti-shield-check"></i><strong>Garantía 2 años</strong><span>Contra defectos de fabricación</span></div>
+        <div class="strip-item"><i class="ti ti-refresh"></i><strong>30 días devolución</strong><span>Sin preguntas, sin complicaciones</span></div>
+    </div>
+</div>
+<section class="cta">
+    <p class="cta-eyebrow">¿No sabes por dónde empezar?</p>
+    <h2>Habla con nosotros</h2>
+    <p>Te ayudamos a elegir el set ideal para tu cocina y tu presupuesto.</p>
+    <a href="https://wa.me/573108887296?text=Hola%20Velonox%2C%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20productos" target="_blank" class="btn-primary">
+        <i class="ti ti-brand-whatsapp"></i> Asesoría por WhatsApp
+    </a>
+</section>
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="categorias.html">Categorías</a><a href="index.html">Inicio</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a><a href="politicas.html#devoluciones">Devoluciones</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>"""
+            }
+        }
+    ],
+    "catalogo": [
+        {
+            "block_type": "custom_html",
+            "config": {
+                "css": "",
+                "html": """<div class="breadcrumb">
+    <a href="index.html">Inicio</a><span class="sep">›</span>
+    <a href="categorias.html">Categorías</a><span class="sep">›</span>
+    <span class="current" id="breadcrumb-cat">Cargando...</span>
+</div>
+<div class="cat-header">
+    <div class="cat-header-inner">
+        <div class="cat-header-icon"><i id="cat-icon" class="ti ti-tools-kitchen-2"></i></div>
+        <div>
+            <p class="cat-eyebrow">Colección Velonox</p>
+            <h1 class="cat-title" id="cat-title">Cargando...</h1>
+            <p class="cat-desc" id="cat-desc"></p>
+        </div>
+    </div>
+</div>
+<div class="toolbar">
+    <div class="toolbar-left">
+        <button class="filter-btn active" onclick="filterProducts('all',this)">Todos</button>
+        <button class="filter-btn" onclick="filterProducts('in-stock',this)">En stock</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+        <span class="results-count" id="results-count"></span>
+        <select class="sort-select" onchange="sortProducts(this.value)">
+            <option value="default">Ordenar por</option>
+            <option value="price-asc">Menor precio</option>
+            <option value="price-desc">Mayor precio</option>
+            <option value="name">Nombre A-Z</option>
+        </select>
+    </div>
+</div>
+<div class="products-section">
+    <div class="prod-grid" id="prod-grid">
+        <div class="empty"><i class="ti ti-loader"></i><p>Cargando productos...</p></div>
+    </div>
+</div>
+<div class="other-cats" id="other-cats-section" style="display:none">
+    <div class="other-cats-inner">
+        <h3>Explorar otras categorías</h3>
+        <div class="other-cats-grid" id="other-cats-grid"></div>
+    </div>
+</div>
+<footer>
+    <div class="footer-top">
+        <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
+        <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="categorias.html">Categorías</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a></div>
+        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
+        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+    </div>
+</footer>"""
+            }
+        }
+    ],
 }
 
 

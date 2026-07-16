@@ -311,10 +311,10 @@
                 <option value="nosotros">Nosotros (edición en vivo)</option>
                 <option value="politicas">Políticas (edición en vivo)</option>
                 <option value="terminos">Términos (edición en vivo)</option>
+                <option value="categorias">Categorías (edición en vivo)</option>
+                <option value="catalogo">Catálogo (edición en vivo)</option>
                 <option value="cart.html">Carrito (solo vista previa)</option>
                 <option value="login.html">Login (solo vista previa)</option>
-                <option value="categorias.html">Categorías (Solo vista previa)</option>
-                <option value="catalogo.html?cat=ollas">Catálogo (Ollas)(Solo vista previa)</option>
                 <option value="product.html">Producto (solo vista previa)</option>
                 <option value="checkout.html">Checkout (solo vista previa)</option>
             </select>
@@ -597,11 +597,13 @@ let currentPage = '__live__';
 
 // ── Páginas editables con bloques (slug de backend + archivo real) ────────────
 const EDITABLE_PAGES = {
-    __live__:  { slug: "home",      file: "index.html" },
-    contacto:  { slug: "contacto",  file: "contacto.html" },
-    nosotros:  { slug: "nosotros",  file: "nosotros.html" },
-    politicas: { slug: "politicas", file: "politicas.html" },
-    terminos:  { slug: "terminos",  file: "terminos.html" }
+    __live__:   { slug: "home",       file: "index.html" },
+    contacto:   { slug: "contacto",   file: "contacto.html" },
+    nosotros:   { slug: "nosotros",   file: "nosotros.html" },
+    politicas:  { slug: "politicas",  file: "politicas.html" },
+    terminos:   { slug: "terminos",   file: "terminos.html" },
+    categorias: { slug: "categorias", file: "categorias.html" },
+    catalogo:   { slug: "catalogo",   file: "catalogo.html" }
 };
 
 // ── Nombres e iconos de bloques (Tabler, sin emojis) ──────────────────────────
@@ -982,7 +984,12 @@ async function renderPreview() {
     // dentro de su contenedor, para que el preview sea idéntico a producción.
     try {
         const res = await fetch(page.file);
-        const raw = await res.text();
+        let raw = await res.text();
+        // El catálogo necesita una categoría para no redirigir a categorias.html;
+        // en el preview (srcdoc, sin URL real) se la damos por una variable global.
+        if (currentPage === 'catalogo') {
+            raw = raw.replace('<body>', `<body><script>window.__PREVIEW_CAT__='ollas';<\/script>`);
+        }
         const blocksHTML = layout.filter(b => b.is_visible).map(b => renderBlock(b)).join("\n");
         const html = raw.replace(
             '<div id="layout-container"></div>',
