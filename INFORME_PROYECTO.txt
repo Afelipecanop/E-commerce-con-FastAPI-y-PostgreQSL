@@ -1,6 +1,6 @@
 ﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 14, 2026
+Fecha de Actualización: Julio 16, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
@@ -8,38 +8,43 @@ Fecha de Actualización: Julio 14, 2026
 
 Proyecto e-commerce en desarrollo activo, con backend desarrollado en FastAPI,
 PostgreSQL como motor de base de datos y un frontend en HTML, CSS y JavaScript
-vanilla. La plataforma permite gestionar usuarios, catálogo de productos, carrito,
-pagos, contenido visual de la tienda, páginas de producto personalizadas y una
-experiencia de compra más completa para clientes y administradores.
+vanilla. La plataforma permite gestionar usuarios, catálogo de productos, categorías,
+carrito, pagos, checkout invitado, contenido visual de la tienda, páginas de producto
+personalizadas, ajustes de configuración y una experiencia de compra más completa
+para clientes y administradores.
 
-Estado actual: aproximadamente 97% del MVP funcional.
+Estado actual: aproximadamente 98% del MVP funcional.
 - Backend: ~97% funcional
-- Frontend público: ~95% funcional
-- Panel de administración: ~90% funcional
+- Frontend público: ~96% funcional
+- Panel de administración: ~95% funcional
 - Integraciones externas: activas y en uso
 - Testing automatizado: 0% (sin suite implementada aún)
 
 El proyecto se encuentra en una etapa madura de desarrollo, con módulos principales
-operativos y con una base sólida para seguir escalando con nuevas mejoras.
+operativos y con una base sólida para seguir escalando con nuevas mejoras y una
+implementación más robusta en producción.
 
 
 2. PROPÓSITO Y ALCANCE
 ================================================================================
 
 OBJETIVOS PRINCIPALES:
-[OK] Plataforma e-commerce con catálogo, carrito y pagos
+[OK] Plataforma e-commerce con catálogo, carrito, checkout y pagos
 [OK] Registro e inicio de sesión con autenticación JWT
-[OK] Gestión de productos y contenido visual desde un panel admin
-[OK] Editor de layout con bloques dinámicos
-[OK] Integración con IA para generar contenido visual
+[OK] Gestión de productos, categorías y contenido visual desde un panel admin
+[OK] Editor de layout con bloques dinámicos y generación asistida por IA
+[OK] Integración con Stripe para pagos y webhooks de confirmación
 [OK] Flujo completo de compra y confirmación de órdenes
-[OK] Gestión de páginas de producto y métricas de negocio
+[OK] Gestión de páginas de producto, métricas de negocio y ajustes de tienda
+[OK] Checkout invitado para pedidos sin registro previo
 
 CASO DE USO:
 Tienda online B2C donde:
-- CLIENTES: exploran productos, agregan artículos al carrito y completan compras.
+- CLIENTES: exploran productos, agregan artículos al carrito, completan compras y
+  pueden hacer pedidos como invitados.
 - ADMINS: gestionan productos, editan la experiencia visual de la tienda,
-  generan nuevas secciones de contenido y revisan métricas del negocio.
+  generan nuevas secciones de contenido, revisan métricas del negocio y ajustan
+  configuración general de la marca.
 
 
 3. ARQUITECTURA TÉCNICA
@@ -54,28 +59,33 @@ esquemas, middleware y servicios.
 BASE DE DATOS:
 - users: usuarios, autenticación y roles
 - products: catálogo de productos
+- categories: categorías de productos y navegación comercial
 - carts y cart_items: carrito de compras por usuario
 - orders y order_items: órdenes y detalle de compra
 - store_layout: bloques dinámicos del layout de la tienda
 - product_pages: configuraciones adicionales del contenido de páginas de producto
-- settings: configuraciones generales de la tienda
+- store_settings: configuraciones generales de la tienda y parámetros comerciales
 
 PRINCIPALES FUNCIONALIDADES BACKEND:
 - Rutas de autenticación y perfil de usuario
 - CRUD de productos con control de acceso para administradores
+- Gestión de categorías y productos por categoría
 - Gestión de carrito con validación de stock
 - Creación de órdenes y flujo de checkout
-- Confirmación de pagos y actualización del estado de órdenes
+- Checkout invitado con creación automática de cuenta y envío de correos
+- Confirmación de pagos y actualización del estado de órdenes vía webhooks
 - Gestión de bloques del layout con persistencia en base de datos
 - Endpoints para generación de contenido con IA
 - Endpoints dinámicos para personalizar páginas de producto
 - Endpoints de métricas para seguimiento del negocio
+- Endpoints de configuración de la tienda, colores y TRM
 
 SERVICIOS Y CAPAS:
-- Auth service: registro, login y generación de tokens
+- Auth service: registro, login y generación de tokens JWT
 - Middleware: protección de rutas por usuario y por administrador
 - Schemas: validación y serialización de datos
 - Models: estructura relacional del negocio
+- Services: envío de correos y lógica de negocio asociada
 
 3.2 FRONTEND - HTML/CSS/JavaScript
 ------------------------------------
@@ -84,7 +94,7 @@ El frontend está implementado con HTML semántico, estilos propios y JavaScript
 vanilla para interactuar con la API.
 
 PÁGINAS IMPLEMENTADAS:
-- index.html: catálogo principal
+- index.html: catálogo principal y home de la tienda
 - login.html: registro e inicio de sesión
 - cart.html: visualización y gestión del carrito
 - checkout.html: flujo de compra y confirmación de pago
@@ -94,13 +104,14 @@ PÁGINAS IMPLEMENTADAS:
 - nosotros.html: página institucional con información de marca y propuesta de valor
 - contacto.html: formulario de contacto y canal de comunicación
 - politicas.html y terminos.html: información legal y condiciones de uso
+- regalos.html y sets.html: páginas temáticas de contenido comercial
 
 COMPONENTES DESTACADOS:
 - Diseño responsive
 - Integración con la API para carga dinámica de datos
 - Persistencia de sesión con token de acceso
-- Menú administrativo con vistas de productos y layout
-- Experiencia visual más refinada en la página de producto
+- Menú administrativo con vistas de productos, categorías, layout y métricas
+- Experiencia visual más refinada en la página de producto y el editor de layout
 
 
 4. FUNCIONALIDADES IMPLEMENTADAS HASTA EL MOMENTO
@@ -110,10 +121,12 @@ COMPONENTES DESTACADOS:
 - Registro e inicio de sesión de usuarios
 - Autenticación basada en JWT
 - Catálogo de productos público
+- Gestión de categorías y navegación comercial
 - Carrito de compras persistente en base de datos
 - Flujos de compra y checkout
+- Checkout invitado con confirmación por correo
 - Órdenes con detalle de productos
-- Panel administrativo para gestionar el catálogo y el diseño visual
+- Panel administrativo para gestionar el catálogo, el diseño visual y la configuración
 
 4.2 FUNCIONALIDADES AVANZADAS
 - Editor visual del layout de la tienda
@@ -128,12 +141,15 @@ COMPONENTES DESTACADOS:
   - productos relacionados
 - Página institucional de la marca con enfoque comercial y emocional
 - Módulo de métricas para seguimiento de indicadores del negocio
+- Ajustes de tienda con colores, logo, banner, slogan y TRM
 
 4.3 INTEGRACIONES
 - Pagos con Stripe
 - Confirmación de pagos vía webhook
 - Manejo de stock al procesar órdenes
 - Integración con IA para generación de contenido visual
+- Envío de correos transaccionales
+- Analítica web con Cloudflare
 - Endpoints de salud y verificación de base de datos
 
 
@@ -182,6 +198,7 @@ eventos. Entre las más importantes se encuentran:
 - STRIPE_WEBHOOK_SECRET: verificación de eventos webhook
 - FRONTEND_URL: URL base del frontend para redirecciones y CORS
 - ANTHROPIC_API_KEY: acceso a la integración de IA
+- SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD y SMTP_FROM: envío de correos
 
 Estas variables deben configurarse de forma segura y no deben exponerse en el código
 ni en archivos compartidos públicamente.
@@ -195,6 +212,7 @@ La infraestructura actual contempla:
 - CORS habilitado para orígenes permitidos
 - Gestión de secretos vía variables de entorno
 - Integración con webhooks para confirmación de pagos de forma asíncrona
+- Separación de roles entre usuarios y administradores
 
 5.5 ESTADO DE LA INFRAESTRUCTURA
 ------------------------------------
@@ -217,7 +235,8 @@ PUNTOS FUERTES:
 - El backend expone rutas funcionales para el flujo comercial principal
 - El frontend ya cubre las experiencias clave para clientes y administradores
 - El proyecto demuestra un avance sólido en la implementación del MVP
-- La integración de layout, páginas de producto y métricas aporta valor real al negocio
+- La integración de layout, páginas de producto, métricas y checkout invitado aporta
+  valor real al negocio
 
 MEJORAS PENDIENTES:
 - Añadir más pruebas automatizadas
@@ -233,7 +252,206 @@ ESTADO GENERAL:
 - Preparado para seguir evolucionando con nuevas funcionalidades
 
 
-7. NOTA DE SEGURIDAD Y DOCUMENTACIÓN
+7. MAPA ESTRUCTURAL DEL PROYECTO PARA IA Y MANTENIMIENTO
+================================================================================
+
+Este proyecto está organizado como una aplicación web full-stack con una separación
+clara entre frontend, backend, base de datos y documentación. La idea general es que
+el frontend entregue una experiencia comercial y visual al usuario, mientras el
+backend centraliza la lógica de negocio, seguridad, autenticación, pagos y persistencia.
+
+7.1 ESTRUCTURA GENERAL DEL REPOSITORIO
+------------------------------------
+
+- backend/: corazón del sistema. Aquí viven los modelos de datos, rutas API,
+  esquemas, servicios, middleware y la entrada principal de la aplicación.
+- frontend/: sitio estático que representa la experiencia visible del cliente y del
+  administrador. Aquí se encuentra el catálogo, carrito, checkout, páginas
+  institucionales y el panel admin.
+- docs/: documentación técnica y de negocio. Aquí se concentran notas de proyecto,
+  arquitectura y referencias operativas.
+- alembic/: migraciones de base de datos para mantener el esquema SQLAlchemy
+  alineado con PostgreSQL.
+- package.json: configuración mínima de dependencias frontend y soporte de scripts
+  de utilidad.
+
+7.2 MAPA DEL BACKEND
+------------------------------------
+
+El backend está construido sobre FastAPI y SQLAlchemy, con una organización modular:
+
+- backend/main.py
+  Punto de entrada de la aplicación. Aquí se crea la instancia de FastAPI, se
+  configuran los middlewares de CORS, se registran los routers principales y se
+  exponen endpoints de salud como /health y /db-check.
+
+- backend/database.py
+  Define la conexión a PostgreSQL, la sesión de base de datos y el patrón de
+  inyección de dependencias que usan las rutas.
+
+- backend/models/
+  Contiene los modelos ORM que representan las tablas del negocio. Los modelos más
+  importantes son:
+  - user.py: usuarios, autenticación y rol de administrador
+  - product.py: catálogo de productos y stock
+  - category.py: categorías de productos
+  - cart.py: carritos y items del carrito
+  - order.py: órdenes y detalle de compra
+  - layout.py: bloques del editor visual de la tienda
+  - product_page.py: contenido enriquecido de páginas de producto
+  - settings.py: parámetros de configuración de la tienda
+
+- backend/schemas/
+  Define los modelos Pydantic usados para validar y serializar los datos de entrada
+  y salida de la API. Cada dominio tiene su propio esquema: user.py, product.py,
+  cart.py, order.py, layout.py, category.py, product_page.py.
+
+- backend/routes/
+  Agrupa los endpoints HTTP del sistema. Cada archivo representa un dominio
+  funcional:
+  - auth.py: registro, login y datos del usuario autenticado
+  - products.py: CRUD de productos
+  - categories.py: categorías y productos por categoría
+  - cart.py: agregar, actualizar y eliminar productos del carrito
+  - payments.py: checkout con Stripe y webhook de confirmación
+  - guest_checkout.py: flujo de compra para usuarios no registrados
+  - layout.py: editor visual del layout y generación de bloques con IA
+  - product_pages.py: páginas de producto personalizadas
+  - metrics.py: métricas de negocio para el panel admin
+  - settings.py: ajustes de tienda, colores, banner, slogan y TRM
+
+- backend/services/
+  Contiene lógica de negocio transversal que no pertenece directamente a una ruta:
+  - auth.py: hash de contraseñas, autenticación y generación de tokens JWT
+  - email.py: envío de correos transaccionales y confirmaciones
+
+- backend/middleware/
+  - auth.py: middleware y dependencias para verificar JWT y roles de usuario/admin
+
+- backend/alembic/
+  Mantiene las migraciones SQL para crear y modificar tablas en PostgreSQL. Es
+  fundamental para despliegues y para mantener el estado del esquema alineado.
+
+7.3 MAPA DEL FRONTEND
+------------------------------------
+
+El frontend es estático y está compuesto por archivos HTML, CSS y JavaScript vanilla.
+La idea es que el navegador consuma la API del backend directamente, sin depender de
+un framework complejo.
+
+- frontend/index.html
+  Página de inicio y catálogo principal.
+
+- frontend/product.html
+  Pantalla de detalle del producto con descripción, características y productos
+  relacionados.
+
+- frontend/cart.html
+  Carrito de compras con interacción para modificar cantidades y eliminar ítems.
+
+- frontend/checkout.html
+  Flujo de compra y visualización del estado del pedido.
+
+- frontend/login.html
+  Registro e inicio de sesión para clientes y administradores.
+
+- frontend/admin.html
+  Panel administrativo principal. Aquí se concentra la edición visual del layout,
+  la administración de productos, métricas y ajustes del negocio.
+
+- frontend/categorias.html, regalos.html, sets.html, nosotros.html,
+  contacto.html, politicas.html, terminos.html
+  Páginas informativas y temáticas que complementan la experiencia comercial.
+
+- frontend/css/styles.css
+  Estilos globales de la tienda.
+
+- frontend/js/api.js
+  Centraliza la comunicación con la API. Aquí se define el manejo base de peticiones,
+  headers, autenticación y endpoints.
+
+- frontend/js/auth.js
+  Lógica de sesión, registro, login y protección de vistas.
+
+- frontend/js/cart.js
+  Interacción con el carrito desde la interfaz.
+
+- frontend/js/page-blocks.js
+  Lógica del editor visual del layout, bloques dinámicos y administración de
+  contenido visual.
+
+- frontend/js/motion.js
+  Animaciones y mejoras de experiencia visual.
+
+7.4 FUNCIONES Y FLUJOS IMPORTANTES DEL NEGOCIO
+------------------------------------
+
+El proyecto sigue un patrón claro de flujo de negocio que una IA debe entender para
+realizar cambios seguros:
+
+1. Autenticación
+   - El frontend envía email y contraseña a /auth/login.
+   - El backend valida las credenciales, genera un token JWT y lo devuelve.
+   - El token se guarda en el cliente y se usa en rutas protegidas.
+
+2. Catálogo y productos
+   - /products/ lista productos activos.
+   - /products/{id} devuelve detalle de un producto.
+   - /categories/ organiza productos por categoría.
+
+3. Carrito
+   - /cart/ devuelve el carrito del usuario autenticado.
+   - /cart/items permite agregar, actualizar o eliminar productos.
+   - La lógica valida stock antes de registrar cambios.
+
+4. Checkout y pagos
+   - /payments/checkout crea una orden y una sesión de Stripe.
+   - /payments/webhook confirma el pago recibido y actualiza el estado de la orden.
+   - Al confirmar, se descuenta stock y se limpia el carrito.
+
+5. Checkout invitado
+   - /guest/checkout permite crear un pedido sin crear una cuenta previa.
+   - El flujo crea automáticamente un usuario temporal, genera la orden y envía
+     correos de bienvenida y confirmación.
+
+6. Layout y edición visual
+   - /layout/generate-block genera bloques de contenido con IA.
+   - /layout/ y /product_pages/ permiten persistir bloques y contenido personalizado.
+   - El frontend admin usa estos endpoints para previsualizar cambios en tiempo real.
+
+7. Ajustes y métricas
+   - /settings/ administra branding, colores, banner y configuración comercial.
+   - /metrics/dashboard devuelve KPIs para el panel administrativo.
+
+7.5 PUNTOS DE EXTENSIÓN RECOMENDADOS
+------------------------------------
+
+Para futuras mejoras o para que una IA trabaje sobre el proyecto sin romperlo, los
+puntos más sensibles y recomendables para modificar con cuidado son:
+
+- backend/models/: si se agregan nuevas tablas o columnas, deben reflejarse también
+  en Alembic y en los schemas correspondientes.
+- backend/routes/: cualquier cambio en endpoints debe ir acompañado de su consumo
+  en frontend/js/api.js y en las vistas HTML correspondientes.
+- backend/middleware/auth.py: si se cambian permisos o roles, deben revisarse todas
+  las rutas protegidas.
+- frontend/js/page-blocks.js: el editor visual depende de este archivo para renderizar
+  bloques y manejar la experiencia de administración.
+- frontend/js/api.js: cualquier cambio en la forma de llamar a la API debe integrarse
+  aquí para evitar inconsistencias.
+
+7.6 CONVENCIÓN DE DESARROLLO RELEVANTE
+------------------------------------
+
+- El proyecto usa SQLAlchemy en modo síncrono, no async ORM.
+- Se prefieren cambios pequeños y explícitos sobre archivos existentes.
+- Los secretos y credenciales deben mantenerse en variables de entorno y nunca
+  hardcodeadas.
+- La separación entre rutas, modelos, esquemas y servicios debe mantenerse para
+  facilitar el mantenimiento y la comprensión por parte de herramientas de IA.
+
+
+8. NOTA DE SEGURIDAD Y DOCUMENTACIÓN
 ================================================================================
 
 Este documento no incluye credenciales, tokens ni secretos del proyecto.

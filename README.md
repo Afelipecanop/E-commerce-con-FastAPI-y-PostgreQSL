@@ -1,37 +1,38 @@
 # Velonox Store
 
-Proyecto e-commerce en desarrollo activo, construido con FastAPI en el backend, PostgreSQL como base de datos y un frontend en HTML, CSS y JavaScript vanilla.
+Proyecto e-commerce en desarrollo activo, construido con FastAPI en el backend, PostgreSQL como base de datos y un frontend estático en HTML, CSS y JavaScript vanilla.
 
-Este repositorio reúne la lógica de negocio de una tienda online, incluyendo autenticación de usuarios, catálogo de productos, carrito de compras, checkout, pagos, panel administrativo, edición visual del layout, páginas de producto personalizadas y métricas de negocio.
+Este repositorio reúne la lógica de negocio de una tienda online con un enfoque comercial completo: autenticación de usuarios, catálogo de productos, categorías, carrito de compras, checkout, pagos, checkout invitado, panel administrativo, edición visual del layout, páginas de producto personalizadas, ajustes de tienda y métricas de negocio.
 
 ## Estado actual
 
-El proyecto sigue en etapa de desarrollo, pero ya cuenta con una base funcional y varios módulos operativos.
+El proyecto ya cuenta con una base funcional sólida y varios módulos operativos.
 
-- Backend funcionando con rutas para autenticación, productos, carrito, pagos, layout, páginas de producto y métricas.
-- Frontend público con catálogo, detalle de producto, carrito, checkout, página institucional y contacto.
-- Panel administrativo para gestionar productos y bloques visuales de la tienda.
-- Integración con pagos y generación de contenido visual asistida por IA.
-- Se siguen incorporando mejoras de experiencia, estabilidad, diseño y documentación.
+- Backend con rutas para autenticación, productos, categorías, carrito, pagos, checkout invitado, layout, páginas de producto, métricas y ajustes de tienda.
+- Frontend público con home, catálogo, categorías, detalle de producto, carrito, checkout, páginas institucionales, contacto, regalos, sets y políticas legales.
+- Panel administrativo para gestionar productos, categorías, bloques visuales, ajustes de tienda y métricas del negocio.
+- Integraciones con Stripe, IA para generación de bloques visuales y analítica web.
+- Se siguen incorporando mejoras de experiencia, estabilidad, diseño, documentación y despliegue.
 
 ## Características implementadas
 
 ### Frontend
-- Página de inicio con catálogo de productos.
+- Página de inicio con catálogo destacado y contenido visual de la tienda.
 - Página de detalle de producto con descripción, especificaciones, características, reseñas de referencia y productos relacionados.
 - Carrito de compras con actualización de cantidades y eliminación de elementos.
 - Flujo de checkout y página de resultado de pago.
-- Panel administrativo para edición visual del layout y gestión de productos.
-- Páginas institucionales y de contacto para complementar la experiencia de marca.
+- Checkout invitado para pedidos sin registro previo.
+- Panel administrativo para edición visual del layout, gestión de productos, categorías, ajustes de marca y métricas.
+- Páginas institucionales, de contacto, políticas y contenido temático como regalos y sets.
 
 ### Backend
 - API REST con FastAPI.
 - Autenticación y autorización basada en JWT.
-- Gestión de usuarios, productos, carritos, órdenes y páginas de producto.
+- Gestión de usuarios, productos, categorías, carritos, órdenes y páginas de producto.
 - Integración con pagos y webhooks de Stripe.
-- Gestión dinámica del layout de la tienda.
-- Endpoints para métricas y generación de contenido visual con IA.
-- Estructura preparada para extender la plataforma con nuevas funcionalidades.
+- Gestión dinámica del layout de la tienda con bloques configurables y generación asistida por IA.
+- Endpoints para métricas de negocio, checkout invitado y ajustes de configuración de la tienda.
+- Estructura preparada para extender la plataforma con nuevas funcionalidades y servicios adicionales.
 
 ## Stack técnico
 
@@ -43,13 +44,15 @@ El proyecto sigue en etapa de desarrollo, pero ya cuenta con una base funcional 
 - Alembic
 - HTML / CSS / JavaScript vanilla
 - Stripe
-- IA para generación de contenido visual
+- API de IA para generación de contenido visual
+- Cloudflare Web Analytics
 
 ## Estructura del proyecto
 
-- backend/: lógica del servidor, rutas, modelos, esquemas, servicios y configuración.
+- backend/: lógica del servidor, rutas, modelos, esquemas, servicios, middleware y configuración.
 - frontend/: páginas HTML, estilos y scripts del lado del cliente.
 - alembic/: migraciones de base de datos.
+- docs/: documentación técnica y de negocio del proyecto.
 - INFORME_PROYECTO.txt: documento de seguimiento del proyecto.
 
 ## Requisitos
@@ -64,8 +67,9 @@ El proyecto sigue en etapa de desarrollo, pero ya cuenta con una base funcional 
 1. Crear y activar un entorno virtual.
 2. Instalar dependencias del backend con pip install -r backend/requirements.txt.
 3. Configurar las variables de entorno necesarias.
-4. Ejecutar la API localmente desde la carpeta backend con uvicorn main:app --reload.
-5. Abrir el frontend desde un servidor estático o desde el navegador.
+4. Ejecutar las migraciones de base de datos con alembic upgrade head.
+5. Levantar la API localmente desde la carpeta backend con uvicorn main:app --reload.
+6. Abrir el frontend desde un servidor estático o desde el navegador.
 
 ## Variables de entorno
 
@@ -77,6 +81,11 @@ Se recomienda configurar variables como:
 - STRIPE_WEBHOOK_SECRET
 - FRONTEND_URL
 - ANTHROPIC_API_KEY
+- SMTP_HOST
+- SMTP_PORT
+- SMTP_USER
+- SMTP_PASSWORD
+- SMTP_FROM
 
 No se incluyen credenciales ni secretos en este archivo.
 
@@ -85,20 +94,21 @@ No se incluyen credenciales ni secretos en este archivo.
 Una vez levantado el proyecto, se puede:
 
 - Registrarse o iniciar sesión.
-- Explorar productos.
+- Explorar productos y categorías.
 - Agregar productos al carrito.
 - Completar el proceso de compra.
+- Usar el checkout invitado para pedidos sin crear cuenta.
 - Acceder al panel administrativo para gestionar la tienda.
-- Revisar métricas y contenido visual asociado a la experiencia comercial.
+- Revisar métricas, ajustes visuales y contenido asociado a la experiencia comercial.
 
 ## Roadmap
 
 - Mejorar la experiencia del panel administrativo.
 - Añadir más validaciones y manejo de errores.
-- Ampliar pruebas y cobertura.
-- Mejorar la documentación de la API.
+- Ampliar pruebas automatizadas y cobertura.
+- Mejorar la documentación técnica y de uso.
 - Seguir refinando la experiencia visual y la usabilidad.
-- Fortalecer el despliegue y la observabilidad del sistema.
+- Fortalecer el despliegue, la observabilidad y la infraestructura del sistema.
 
 ## Nota
 
