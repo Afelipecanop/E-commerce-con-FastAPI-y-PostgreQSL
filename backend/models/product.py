@@ -19,6 +19,7 @@ class Product(Base):
     category = Column(String, nullable=True, index=True) 
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    dropi_product_id = Column(String, nullable=True)
 
     # Relaciones
     order_items = relationship("OrderItem", back_populates="product")

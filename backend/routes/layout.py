@@ -538,7 +538,7 @@ CONTENT_PAGE_BLOCKS = {
             <ul>
                 <li><strong>Datos de cuenta:</strong> nombre, email y contraseña (almacenada de forma encriptada, nunca en texto plano).</li>
                 <li><strong>Datos de compra:</strong> dirección de envío, historial de pedidos y preferencias de producto.</li>
-                <li><strong>Datos de pago:</strong> procesados exclusivamente por Stripe. Velonox nunca almacena datos de tarjetas.</li>
+                <li><strong>Datos de pago:</strong> procesados exclusivamente por Bold. Velonox nunca almacena datos de tarjetas.</li>
                 <li><strong>Datos de navegación:</strong> páginas visitadas y productos vistos, para mejorar tu experiencia.</li>
             </ul>
             <h4>¿Para qué usamos tu información?</h4>
@@ -551,7 +551,7 @@ CONTENT_PAGE_BLOCKS = {
             <h4>¿Compartimos tu información?</h4>
             <ul>
                 <li>Con transportistas, exclusivamente los datos necesarios para la entrega.</li>
-                <li>Con Stripe para procesar pagos de forma segura.</li>
+                <li>Con Bold para procesar pagos de forma segura.</li>
                 <li>Nunca vendemos ni compartimos tu información con terceros para fines publicitarios.</li>
             </ul>
             <div class="highlight"><i class="ti ti-user-check"></i><p>Tienes derecho a solicitar la eliminación de tu cuenta y datos en cualquier momento. Escríbenos por WhatsApp o formulario de contacto y lo procesamos en menos de 72 horas.</p></div>
@@ -564,19 +564,18 @@ CONTENT_PAGE_BLOCKS = {
             <div><p class="section-eyebrow">Política de pagos</p><h2 class="section-title">Medios de pago y seguridad</h2></div>
         </div>
         <div class="policy-text">
-            <div class="highlight"><i class="ti ti-shield"></i><p>Todos los pagos en Velonox son procesados por <strong>Stripe</strong>, uno de los procesadores de pago más seguros del mundo. Tu información financiera nunca pasa por nuestros servidores.</p></div>
+            <div class="highlight"><i class="ti ti-shield"></i><p>Todos los pagos en Velonox son procesados por <strong>Bold</strong>, pasarela de pagos colombiana. Tu información financiera nunca pasa por nuestros servidores.</p></div>
             <h4>Métodos de pago aceptados</h4>
             <ul>
                 <li>Tarjetas de crédito y débito Visa, Mastercard y American Express.</li>
-                <li>Tarjetas internacionales habilitadas para compras en línea.</li>
-                <li>Próximamente: PSE (Colombia), OXXO (México) y otros métodos locales.</li>
+                <li>PSE y otros métodos de pago locales en Colombia.</li>
+                <li>Pago contraentrega disponible para pedidos dentro de Colombia.</li>
             </ul>
             <h4>Seguridad de tus pagos</h4>
             <ul>
                 <li>Conexión cifrada SSL en todas las páginas de checkout.</li>
-                <li>Procesamiento 3D Secure para verificación adicional cuando aplica.</li>
+                <li>Verificación de integridad de cada transacción antes de confirmar el pago.</li>
                 <li>Velonox nunca almacena datos de tarjetas de crédito o débito.</li>
-                <li>Stripe cumple con el estándar PCI DSS nivel 1, el más alto de la industria.</li>
             </ul>
             <h4>¿Qué pasa si mi pago falla?</h4>
             <ul>
@@ -585,7 +584,7 @@ CONTENT_PAGE_BLOCKS = {
                 <li>Si el problema persiste, escríbenos por WhatsApp y te ayudamos a resolverlo.</li>
             </ul>
             <h4>Moneda y precios</h4>
-            <p>Todos los precios en Velonox están expresados en <strong>dólares estadounidenses (USD)</strong>. Tu banco o procesador de tarjeta aplicará la tasa de cambio vigente al momento de la transacción.</p>
+            <p>Todos los precios en Velonox están expresados en <strong>dólares estadounidenses (USD)</strong>. Como Bold procesa los pagos en pesos colombianos (COP), el monto se convierte automáticamente a la tasa de cambio vigente al momento de tu compra.</p>
         </div>
     </div>
 
@@ -689,9 +688,9 @@ CONTENT_PAGE_BLOCKS = {
             <p>Al realizar un pedido, recibirás un email de confirmación. Este email no constituye la aceptación definitiva del pedido — la venta se confirma cuando el pago es procesado exitosamente.</p>
             <h4>Procesamiento de pagos</h4>
             <ul>
-                <li>Los pagos son procesados por Stripe, plataforma certificada PCI DSS nivel 1.</li>
+                <li>Los pagos son procesados por Bold, pasarela de pagos colombiana.</li>
                 <li>Velonox nunca almacena datos de tarjetas de crédito o débito.</li>
-                <li>Aceptamos tarjetas Visa, Mastercard y American Express habilitadas para compras internacionales.</li>
+                <li>Aceptamos tarjetas Visa, Mastercard, American Express, PSE y pago contraentrega en Colombia.</li>
                 <li>El cargo se realiza en el momento de confirmar el pedido.</li>
             </ul>
             <h4>Cancelación de pedidos</h4>

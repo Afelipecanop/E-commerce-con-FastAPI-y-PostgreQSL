@@ -17,6 +17,19 @@ class Order(Base):
     stripe_payment_id = Column(String, nullable=True)
     payment_method = Column(String, nullable=True, default="anticipado")
 
+    # Nuevo: para Bold y Dropi
+    customer_phone = Column(String, nullable=True)
+    document_type = Column(String, nullable=True)
+    document_number = Column(String, nullable=True)
+    shipping_notes = Column(String, nullable=True)
+    department_name = Column(String, nullable=True)
+    city_name = Column(String, nullable=True)
+    city_dane_code = Column(String, nullable=True)
+
+    bold_order_id = Column(String, unique=True, nullable=True, index=True)
+    dropi_order_id = Column(String, nullable=True)
+    dropi_status = Column(String, default="not_sent")
+
     # Campos para invitados
     guest_email = Column(String, nullable=True)
     guest_name = Column(String, nullable=True)

@@ -1,35 +1,40 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from typing import List
-import stripe
 import os
+import logging
 from dotenv import load_dotenv
 
 from database import get_db
 from models.cart import Cart, CartItem
 from models.order import Order, OrderItem
 from models.product import Product
-from schemas.order import OrderResponse, CheckoutResponse
+from schemas.order import OrderResponse, CheckoutRequest
 from middleware.auth import get_current_user
+from services.bold import generate_integrity_signature, verify_webhook_signature, usd_to_cop
+from services.email import email_confirmacion_orden
+from services.dropi import create_dropi_order
+from services.settings import get_current_trm
 
 load_dotenv()
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+BOLD_API_KEY = os.getenv("BOLD_API_KEY")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5500")
 
 router = APIRouter(prefix="/payments", tags=["Pagos"])
+logger = logging.getLogger("velonox.payments")
 
 
-@router.post("/checkout", response_model=CheckoutResponse)
+@router.post("/checkout")
 def create_checkout(
+    data: CheckoutRequest,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Convierte el carrito en una sesión de pago de Stripe.
-    Crea la orden en la DB con status 'pending' y devuelve
-    la URL de pago de Stripe.
+    Convierte el carrito en una orden. Según payment_method:
+    - 'anticipado': crea la orden pending y devuelve los datos para el botón Bold.
+    - 'contraentrega': confirma la orden de una vez y la envía a Dropi.
     """
 
     # 1. Obtener el carrito del usuario
@@ -56,7 +61,15 @@ def create_checkout(
     order = Order(
         user_id=current_user.id,
         status="pending",
-        total_amount=total
+        total_amount=total,
+        customer_phone=data.customer_phone,
+        document_type=data.document_type,
+        document_number=data.document_number,
+        shipping_address=data.shipping_address,
+        shipping_notes=data.shipping_notes,
+        department_name=data.department_name,
+        city_name=data.city_name,
+        payment_method=data.payment_method.value,
     )
     db.add(order)
     db.flush()
@@ -67,107 +80,126 @@ def create_checkout(
             order_id=order.id,
             product_id=item.product_id,
             quantity=item.quantity,
-            unit_price=item.product.price  # Precio al momento de la compra
+            unit_price=item.product.price
         )
         db.add(order_item)
 
     db.commit()
     db.refresh(order)
 
-    # 6. Crear sesión de pago en Stripe
-    try:
-        line_items = [
-            {
-                "price_data": {
-                    "currency": "usd",
-                    "product_data": {
-                        "name": item.product.name,
-                        "description": item.product.description or "",
-                    },
-                    "unit_amount": int(item.product.price * 100),  # Stripe usa centavos
-                },
-                "quantity": item.quantity,
-            }
-            for item in cart.items
-        ]
-
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=line_items,
-            mode="payment",
-            success_url=f"{FRONTEND_URL}/checkout.html?success=true&order_id={order.id}",
-            cancel_url=f"{FRONTEND_URL}/checkout.html?cancelled=true",
-            metadata={"order_id": str(order.id)}  # Guardamos el ID para el webhook
-        )
-
-    except stripe.StripeError:
-        order.status = "cancelled"
+    # 6a. Flujo Bold (pago anticipado)
+    if data.payment_method == "anticipado":
+        order.bold_order_id = f"VLX-{str(order.id)[:8]}-{int(order.total_amount)}"
         db.commit()
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Error al procesar el pago. Intenta de nuevo."
-        )
 
-    # 7. Guardar el ID de la sesión Stripe en la orden
-    order.stripe_payment_id = checkout_session.id
-    db.commit()
+        trm = get_current_trm(db)
+        amount = usd_to_cop(order.total_amount, trm)
+        signature = generate_integrity_signature(order.bold_order_id, amount, "COP")
 
-    return CheckoutResponse(
-        checkout_url=checkout_session.url,
-        order_id=str(order.id)
-    )
+        return {
+            "flow": "bold",
+            "order_id": str(order.id),
+            "bold_order_id": order.bold_order_id,
+            "amount": amount,
+            "currency": "COP",
+            "api_key": BOLD_API_KEY,
+            "signature": signature,
+            "redirection_url": f"{FRONTEND_URL}/pedido-confirmado.html?order_id={order.id}",
+        }
 
+    # 6b. Flujo contraentrega: confirma ya mismo y descuenta stock
+    order.status = "cod_confirmed"
+    for item in cart.items:
+        product = db.query(Product).filter(Product.id == item.product_id).first()
+        product.stock = max(0, product.stock - item.quantity)
 
-@router.post("/webhook")
-async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    """
-    Stripe llama a este endpoint cuando ocurre un evento de pago.
-    Aquí confirmamos el pago y actualizamos el stock y la orden.
-    """
-    payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
+    for cart_item in cart.items:
+        db.delete(cart_item)
 
-    # Verificar que el webhook realmente viene de Stripe
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Payload inválido")
-    except stripe.errors.SignatureVerificationError:
+        dropi_response = create_dropi_order(order, order.items, is_cod=True)
+        order.dropi_order_id = dropi_response.get("id")
+        order.dropi_status = "created"
+    except Exception as e:
+        logger.error(f"Dropi falló para orden {order.id}: {e}")
+        order.dropi_status = "pending_manual"
+
+    db.commit()
+    return {"flow": "cod", "order_id": str(order.id), "status": "confirmado"}
+
+
+@router.post("/bold/webhook")
+async def bold_webhook(request: Request, db: Session = Depends(get_db)):
+    """
+    Bold llama a este endpoint cuando confirma un pago.
+    Verifica la firma, marca la orden como pagada, descuenta stock,
+    vacía el carrito y crea la orden en Dropi.
+    """
+    raw_body = await request.body()
+    signature = request.headers.get("x-bold-signature", "")
+
+    if not verify_webhook_signature(raw_body, signature):
         raise HTTPException(status_code=400, detail="Firma inválida")
 
-    # Procesar el evento de pago exitoso
-    if event["type"] == "checkout.session.completed":
-        from uuid import UUID as PyUUID
+    payload = await request.json()
+    # TODO: confirmar la forma exacta del payload con un evento de prueba real
+    payment_data = payload.get("data", {}).get("payment", {})
+    bold_order_id = payment_data.get("order_id")
+    tx_status = payment_data.get("status")
 
-        session = event["data"]["object"]
-        metadata = session.get("metadata") if isinstance(session, dict) else session.metadata
-        order_id = metadata.get("order_id") if isinstance(metadata, dict) else metadata["order_id"]
+    if not bold_order_id:
+        return {"status": "ignored"}
 
-        if order_id:
-            try:
-                order_uuid = PyUUID(order_id)
-            except ValueError:
-                return {"status": "invalid order_id"}
+    order = db.query(Order).filter(Order.bold_order_id == bold_order_id).first()
+    if not order:
+        return {"status": "order not found"}
 
-            order = db.query(Order).filter(Order.id == order_uuid).first()
-            if order and order.status == "pending":
-                order.status = "paid"
-                db.commit()
+    if tx_status == "approved" and order.status == "pending":
+        order.status = "paid"
+        db.commit()
 
-                for item in order.items:
-                    product = db.query(Product).filter(
-                        Product.id == item.product_id
-                    ).first()
-                    if product:
-                        product.stock = max(0, product.stock - item.quantity)
+        for item in order.items:
+            product = db.query(Product).filter(Product.id == item.product_id).first()
+            if product:
+                product.stock = max(0, product.stock - item.quantity)
+        db.commit()
 
-                db.commit()
+        cart = db.query(Cart).filter(Cart.user_id == order.user_id).first()
+        if cart:
+            for cart_item in cart.items:
+                db.delete(cart_item)
+            db.commit()
 
-                cart = db.query(Cart).filter(Cart.user_id == order.user_id).first()
-                if cart:
-                    for cart_item in cart.items:
-                        db.delete(cart_item)
-                    db.commit()
+        try:
+            dropi_response = create_dropi_order(order, order.items, is_cod=False)
+            order.dropi_order_id = dropi_response.get("id")
+            order.dropi_status = "created"
+        except Exception as e:
+            logger.error(f"Dropi falló para orden {order.id}: {e}")
+            order.dropi_status = "pending_manual"
+        db.commit()
+
+        # Enviar email de confirmación (funciona igual para usuario logueado o invitado)
+        try:
+            recipient_email = order.guest_email or (order.user.email if order.user else None)
+            recipient_name = order.guest_name or (order.user.full_name if order.user else "Cliente")
+            if recipient_email:
+                email_confirmacion_orden(
+                    to=recipient_email,
+                    nombre=recipient_name.split()[0],
+                    order_id=str(order.id),
+                    items=[{"product": i.product, "quantity": i.quantity,
+                            "unit_price": i.unit_price, "name": i.product.name}
+                            for i in order.items],
+                    total=order.total_amount,
+                    metodo="anticipado"
+                )
+        except Exception as e:
+            logger.error(f"Email de confirmación falló para orden {order.id}: {e}")
+
+    elif tx_status in ("rejected", "failed") and order.status == "pending":
+        order.status = "cancelled"
+        db.commit()
 
     return {"status": "ok"}
 
