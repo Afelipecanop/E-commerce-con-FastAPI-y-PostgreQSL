@@ -247,7 +247,7 @@ CONTENT_PAGE_BLOCKS = {
             <div class="faq-a">Sí. Todos los productos Velonox son compatibles con inducción, vitrocerámica, gas y horno convencional. El fondo difusor de triple capa garantiza rendimiento óptimo en cualquier fuente de calor.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">¿Qué cubre la garantía de 2 años?<i class="ti ti-plus"></i></div>
+            <div class="faq-q" onclick="toggleFaq(this)">¿Qué cubre la garantía de 1 año?<i class="ti ti-plus"></i></div>
             <div class="faq-a">Nuestra garantía cubre cualquier defecto de fabricación: deformaciones, problemas con el fondo, soldaduras o acabados defectuosos. No cubre daños por mal uso, caídas o rayones por utensilios inadecuados.</div>
         </div>
         <div class="faq-item">
@@ -382,7 +382,7 @@ CONTENT_PAGE_BLOCKS = {
     <p>Cada vez que compras Velonox, no solo estás comprando una olla o una sartén. Estás eligiendo una postura sobre cómo quieres vivir y alimentar a los tuyos.</p>
     <div class="compromiso-grid">
         <div class="compromiso-item"><i class="ti ti-certificate"></i><strong>Acero 304 certificado</strong><span>Grado alimentario verificado en cada producto</span></div>
-        <div class="compromiso-item"><i class="ti ti-shield-check"></i><strong>Garantía 2 años</strong><span>Cubrimos defectos de fabricación sin preguntas</span></div>
+        <div class="compromiso-item"><i class="ti ti-shield-check"></i><strong>Garantía 1 año</strong><span>Cubrimos defectos de fabricación sin preguntas</span></div>
         <div class="compromiso-item"><i class="ti ti-truck"></i><strong>Envío a toda LATAM</strong><span>Colombia, México, Perú, Chile y más</span></div>
         <div class="compromiso-item"><i class="ti ti-refresh"></i><strong>30 días de devolución</strong><span>Si no estás satisfecho, te devolvemos tu dinero</span></div>
         <div class="compromiso-item"><i class="ti ti-headset"></i><strong>Soporte real</strong><span>Personas reales respondiendo tus preguntas</span></div>
@@ -498,10 +498,10 @@ CONTENT_PAGE_BLOCKS = {
     <div class="policy-section" id="garantia">
         <div class="section-header">
             <div class="section-icon"><i class="ti ti-shield-check"></i></div>
-            <div><p class="section-eyebrow">Política de garantía</p><h2 class="section-title">Garantía de 2 años</h2></div>
+            <div><p class="section-eyebrow">Política de garantía</p><h2 class="section-title">Garantía de 1 año</h2></div>
         </div>
         <div class="policy-text">
-            <div class="highlight"><i class="ti ti-certificate"></i><p>Todos los productos Velonox cuentan con <strong>garantía de 2 años contra defectos de fabricación</strong> desde la fecha de compra. Si algo falla por nuestra parte, lo resolvemos sin costo.</p></div>
+            <div class="highlight"><i class="ti ti-certificate"></i><p>Todos los productos Velonox cuentan con <strong>garantía de 1 año contra defectos de fabricación</strong> desde la fecha de compra. Si algo falla por nuestra parte, lo resolvemos sin costo.</p></div>
             <h4>¿Qué cubre la garantía?</h4>
             <ul>
                 <li>Deformaciones o alabeos del fondo difusor sin causa de mal uso.</li>
@@ -732,7 +732,7 @@ CONTENT_PAGE_BLOCKS = {
         <div class="tc-num">07</div>
         <h2 class="tc-title">Garantía</h2>
         <div class="tc-text">
-            <p>Todos los productos Velonox cuentan con garantía de 2 años contra defectos de fabricación desde la fecha de compra. La garantía no cubre daños por mal uso, caídas o desgaste normal.</p>
+            <p>Todos los productos Velonox cuentan con garantía de 1 año contra defectos de fabricación desde la fecha de compra. La garantía no cubre daños por mal uso, caídas o desgaste normal.</p>
             <p>Para hacer válida la garantía, contacta a nuestro equipo por WhatsApp con fotos del defecto y tu número de pedido. Evaluamos cada caso en 24 a 48 horas hábiles.</p>
             <p>Para más detalles, consulta nuestra <a href="politicas.html#garantia" style="color:#1D7A4F">Política de Garantía</a> completa.</p>
         </div>
@@ -823,7 +823,7 @@ CONTENT_PAGE_BLOCKS = {
     <div class="strip-inner">
         <div class="strip-item"><i class="ti ti-certificate"></i><strong>Acero 304 certificado</strong><span>Grado alimentario en cada producto</span></div>
         <div class="strip-item"><i class="ti ti-truck"></i><strong>Envío gratis</strong><span>En compras desde $80.000 COP</span></div>
-        <div class="strip-item"><i class="ti ti-shield-check"></i><strong>Garantía 2 años</strong><span>Contra defectos de fabricación</span></div>
+        <div class="strip-item"><i class="ti ti-shield-check"></i><strong>Garantía 1 año</strong><span>Contra defectos de fabricación</span></div>
         <div class="strip-item"><i class="ti ti-refresh"></i><strong>30 días devolución</strong><span>Sin preguntas, sin complicaciones</span></div>
     </div>
 </div>

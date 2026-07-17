@@ -17,7 +17,7 @@ DEFAULT_SPECS = [
     {"key": "Compatible inducción", "value": "Sí"},
     {"key": "Apto horno", "value": "Hasta 220°C"},
     {"key": "Apto lavavajillas", "value": "Sí"},
-    {"key": "Garantía", "value": "2 años"},
+    {"key": "Garantía", "value": "1 año"},
 ]
 
 DEFAULT_FEATURES = [

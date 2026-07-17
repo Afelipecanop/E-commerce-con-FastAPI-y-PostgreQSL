@@ -6,6 +6,7 @@
     <title>Checkout — Velonox</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <script src="https://checkout.bold.co/library/boldPaymentButton.js" onerror="window.__boldScriptFailed = true"></script>
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
@@ -131,19 +132,6 @@
     <div class="nav-secure"><i class="ti ti-lock" style="color:#1D7A4F"></i> Pago seguro</div>
 </nav>
 
-<!-- PANTALLA DE ÉXITO -->
-<div class="success-screen" id="success-screen">
-    <div class="success-icon"><i class="ti ti-circle-check"></i></div>
-    <h2 id="success-title">¡Pedido confirmado!</h2>
-    <p id="success-desc">Revisa tu email — te enviamos la confirmación con el detalle de tu pedido.</p>
-
-    <div class="success-card" id="success-order-info"></div>
-    <div class="success-account" id="success-account-info" style="display:none"></div>
-
-    <a href="index.html" class="btn-primary">Volver a la tienda</a>
-    <a href="login.html" class="btn-ghost" id="success-login-btn" style="display:none">Ingresar a mi cuenta</a>
-</div>
-
 <!-- PANTALLA DE CARRITO VACÍO -->
 <div class="empty-cart" id="empty-cart" style="display:none">
     <i class="ti ti-shopping-bag"></i>
@@ -156,7 +144,7 @@
 <div class="checkout-wrap" id="checkout-main">
 
     <!-- IZQUIERDA -->
-    <div class="checkout-left">
+    <form id="checkout-form" class="checkout-left">
 
         <!-- PASO 1: Método de pago -->
         <div class="panel">
@@ -167,12 +155,14 @@
             <div class="panel-body">
                 <div class="pay-methods">
                     <div class="pay-method selected" id="method-anticipado" onclick="selectMethod('anticipado')">
+                        <input type="radio" name="payment_method" value="anticipado" checked style="display:none">
                         <i class="ti ti-credit-card"></i>
                         <h4>Pago anticipado</h4>
                         <p>Tarjeta débito, crédito o PSE</p>
                         <span class="badge badge-green" style="background:#1D7A4F;color:white">Más rápido</span>
                     </div>
                     <div class="pay-method" id="method-contraentrega" onclick="selectMethod('contraentrega')">
+                        <input type="radio" name="payment_method" value="contraentrega" style="display:none">
                         <i class="ti ti-package"></i>
                         <h4>Contraentrega</h4>
                         <p>Paga cuando recibas tu pedido</p>
@@ -190,19 +180,38 @@
             </div>
             <div class="panel-body">
                 <div id="form-alert" class="alert"></div>
+                <div id="guest-fields" style="display:none">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre completo *</label>
+                            <input type="text" id="guest_nombre" placeholder="Tu nombre completo">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="guest_email" placeholder="tu@email.com">
+                        </div>
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nombre completo *</label>
-                        <input type="text" id="f-nombre" placeholder="Tu nombre completo">
+                        <label>Teléfono *</label>
+                        <input type="tel" id="customer_phone" placeholder="+57 300 000 0000" required>
                     </div>
                     <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" id="f-email" placeholder="tu@email.com">
+                        <label>Documento (opcional)</label>
+                        <select id="document_type">
+                            <option value="">Selecciona...</option>
+                            <option value="CC">Cédula de ciudadanía</option>
+                            <option value="CE">Cédula extranjera</option>
+                            <option value="PA">Pasaporte</option>
+                            <option value="NIT">NIT</option>
+                            <option value="TI">Tarjeta de identidad</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Teléfono *</label>
-                    <input type="tel" id="f-telefono" placeholder="+57 300 000 0000">
+                    <label>Número de documento</label>
+                    <input type="text" id="document_number" placeholder="Opcional, agiliza tu pago">
                 </div>
             </div>
         </div>
@@ -216,16 +225,16 @@
             <div class="panel-body">
                 <div class="form-group">
                     <label>Dirección *</label>
-                    <input type="text" id="f-direccion" placeholder="Calle, carrera, número, apto">
+                    <input type="text" id="shipping_address" placeholder="Calle, carrera, número, apto" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Ciudad *</label>
-                        <input type="text" id="f-ciudad" placeholder="Ciudad">
+                        <input type="text" id="city_name" placeholder="Ciudad" required>
                     </div>
                     <div class="form-group">
                         <label>Departamento *</label>
-                        <select id="f-departamento">
+                        <select id="department_name" required>
                             <option value="">Selecciona</option>
                             <option>Antioquia</option>
                             <option>Atlántico</option>
@@ -259,25 +268,21 @@
                 <!-- Extra para contraentrega -->
                 <div id="extra-contraentrega" style="display:none">
                     <div class="form-group">
-                        <label>Código postal</label>
-                        <input type="text" id="f-postal" placeholder="Opcional">
-                    </div>
-                    <div class="form-group">
                         <label>Indicaciones adicionales</label>
-                        <textarea id="f-indicaciones" placeholder="Color de la puerta, nombre del edificio, instrucciones para el mensajero..."></textarea>
+                        <textarea id="shipping_notes" placeholder="Color de la puerta, nombre del edificio, instrucciones para el mensajero..."></textarea>
                     </div>
                 </div>
 
                 <!-- Info pago anticipado -->
                 <div class="stripe-info" id="info-anticipado">
                     <i class="ti ti-info-circle"></i>
-                    <p>Al confirmar serás redirigido a nuestra pasarela de pago segura para completar el pago con tarjeta, PSE o Nequi.</p>
+                    <p>Al confirmar se mostrará el botón de pago seguro de Bold para completar el pago con tarjeta o PSE.</p>
                 </div>
             </div>
         </div>
 
         <!-- BOTÓN FINAL -->
-        <button class="btn-submit" id="btn-submit" onclick="handleCheckout()">
+        <button type="submit" class="btn-submit" id="submit-order-btn">
             <i class="ti ti-lock"></i>
             <span id="btn-text">Confirmar pedido</span>
         </button>
@@ -286,7 +291,7 @@
             Al confirmar aceptas nuestros <a href="terminos.html" style="color:#1D7A4F">Términos y condiciones</a> y
             <a href="politicas.html#privacidad" style="color:#1D7A4F">Política de privacidad</a>
         </p>
-    </div>
+    </form>
 
     <!-- DERECHA: RESUMEN -->
     <div class="summary">
@@ -317,33 +322,18 @@
 
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script src="js/api.js"></script>
+<script src="js/checkout.js"></script>
 <script>
-const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 let currentMethod = 'anticipado';
 let cartItems = [];
-
-function showToast(msg, type) {
-    const t = document.getElementById("toast");
-    t.textContent = msg;
-    t.className = "toast show " + (type || "ok");
-    setTimeout(function() { t.className = "toast"; }, 3000);
-}
-
-function showAlert(msg, type) {
-    const el = document.getElementById("form-alert");
-    el.textContent = msg;
-    el.className = "alert show alert-" + (type || "err");
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
 
 // ── Método de pago ────────────────────────────────────────────────────────────
 function selectMethod(method) {
     currentMethod = method;
     document.getElementById("method-anticipado").classList.toggle("selected", method === "anticipado");
     document.getElementById("method-contraentrega").classList.toggle("selected", method === "contraentrega");
+    document.querySelector('input[name="payment_method"][value="' + method + '"]').checked = true;
     document.getElementById("extra-contraentrega").style.display = method === "contraentrega" ? "block" : "none";
     document.getElementById("info-anticipado").style.display = method === "anticipado" ? "flex" : "none";
     document.getElementById("panel-direccion-title").textContent = method === "contraentrega"
@@ -356,38 +346,6 @@ function selectMethod(method) {
 async function loadCart() {
     await loadTRM();
     updateCurrencyToggle();
-    // ── TRM ───────────────────────────────────────────────────────────────────────
-    async function loadTRMAdmin() {
-        try {
-            const data = await apiFetch("/settings/trm");
-            document.getElementById("trm-info").innerHTML =
-                `TRM actual: <strong>1 USD = $${data.trm.toLocaleString("es-CO")} COP</strong> · Fuente: ${data.source === "auto" ? "Automática (exchangerate-api)" : "Manual"}`;
-            document.getElementById("trm-value").value = data.manual;
-            document.getElementById("trm-auto").checked = data.source === "auto";
-            document.getElementById("trm-manual-group").style.display =
-                data.source === "auto" ? "none" : "block";
-        } catch(e) {}
-    }
-
-    function toggleTRMAuto(checked) {
-        document.getElementById("trm-manual-group").style.display = checked ? "none" : "block";
-    }
-
-    async function saveTRM() {
-        const auto = document.getElementById("trm-auto").checked;
-        const trm = parseFloat(document.getElementById("trm-value").value);
-        try {
-            await apiFetch("/settings/trm", {
-                method: "PUT",
-                body: JSON.stringify({ trm: trm || 4200, auto: auto })
-            });
-            showToast("TRM guardada ✅", "success");
-            loadTRMAdmin();
-        } catch(e) { showToast(e.message, "error"); }
-    }
-
-    // Cargar TRM cuando se abre el tab de ajustes
-    // Agrega loadTRMAdmin() al final del switchTab cuando tab === 'settings'
 
     // Leer método preseleccionado desde product.html
     const savedMethod = localStorage.getItem("velonox_checkout_method");
@@ -395,6 +353,7 @@ async function loadCart() {
         selectMethod(savedMethod);
         localStorage.removeItem("velonox_checkout_method");
     }
+
     if (isLoggedIn()) {
         // Usuario con sesión → cargar desde la DB
         try {
@@ -422,15 +381,6 @@ async function loadCart() {
     }
 
     renderSummary();
-
-    // Pre-llenar email si está logueado
-    if (isLoggedIn()) {
-        try {
-            const me = await getMe();
-            document.getElementById("f-nombre").value = me.full_name || "";
-            document.getElementById("f-email").value = me.email || "";
-        } catch(e) {}
-    }
 }
 
 function renderSummary() {
@@ -457,134 +407,6 @@ function renderSummary() {
     document.getElementById("summary-subtotal").textContent = vxPrice(total);
     document.getElementById("summary-total").textContent = vxPrice(total);
     document.getElementById("summary-envio").textContent = total >= 28 ? "Gratis" : vxPrice(5);
-}
-
-// ── Validación ────────────────────────────────────────────────────────────────
-function validate() {
-    const nombre = document.getElementById("f-nombre").value.trim();
-    const email = document.getElementById("f-email").value.trim();
-    const telefono = document.getElementById("f-telefono").value.trim();
-    const direccion = document.getElementById("f-direccion").value.trim();
-    const ciudad = document.getElementById("f-ciudad").value.trim();
-    const depto = document.getElementById("f-departamento").value;
-
-    if (!nombre) { showAlert("Ingresa tu nombre completo"); return false; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert("Ingresa un email válido"); return false; }
-    if (!telefono) { showAlert("Ingresa tu teléfono de contacto"); return false; }
-    if (!direccion) { showAlert("Ingresa tu dirección de envío"); return false; }
-    if (!ciudad) { showAlert("Ingresa tu ciudad"); return false; }
-    if (!depto) { showAlert("Selecciona tu departamento"); return false; }
-    return true;
-}
-
-// ── Checkout ──────────────────────────────────────────────────────────────────
-async function handleCheckout() {
-    if (!validate()) return;
-
-    const btn = document.getElementById("btn-submit");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="ti ti-loader"></i> Procesando...';
-
-    const nombre = document.getElementById("f-nombre").value.trim();
-    const email = document.getElementById("f-email").value.trim();
-    const telefono = document.getElementById("f-telefono").value.trim();
-    const direccion = document.getElementById("f-direccion").value.trim();
-    const ciudad = document.getElementById("f-ciudad").value.trim();
-    const depto = document.getElementById("f-departamento").value;
-    const postal = document.getElementById("f-postal").value.trim();
-    const indicaciones = document.getElementById("f-indicaciones").value.trim();
-
-    const items = cartItems.map(function(item) {
-        return { product_id: item.id, quantity: item.quantity };
-    });
-
-    try {
-        if (isLoggedIn() && currentMethod === 'anticipado') {
-            // Usuario logueado con pago anticipado → Stripe
-            const data = await checkout();
-            window.location.href = data.checkout_url;
-            return;
-        }
-
-        // Invitado o contraentrega → endpoint guest
-        const payload = {
-            email: email,
-            nombre: nombre,
-            payment_method: currentMethod,
-            shipping_address: {
-                direccion: direccion,
-                ciudad: ciudad,
-                departamento: depto,
-                telefono: telefono,
-                codigo_postal: postal || null,
-                indicaciones: indicaciones || null
-            },
-            items: items
-        };
-
-        const result = await fetch(API + "/guest/checkout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        if (!result.ok) {
-            const err = await result.json();
-            throw new Error(err.detail || "Error procesando el pedido");
-        }
-
-        const data = await result.json();
-
-        // Limpiar carrito
-        if (isLoggedIn()) {
-            // limpiar DB cart si existía
-        } else {
-            clearGuestCart();
-        }
-
-        showSuccess(data, nombre, email);
-
-    } catch(e) {
-        showAlert(e.message);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ti ti-lock"></i> <span id="btn-text">' +
-            (currentMethod === 'anticipado' ? 'Proceder al pago' : 'Confirmar pedido') + '</span>';
-    }
-}
-
-// ── Pantalla de éxito ─────────────────────────────────────────────────────────
-function showSuccess(data, nombre, email) {
-    document.getElementById("checkout-main").style.display = "none";
-    const screen = document.getElementById("success-screen");
-    screen.style.display = "block";
-
-    const nombreCorto = nombre.split(" ")[0];
-
-    if (data.payment_method === "contraentrega") {
-        document.getElementById("success-title").textContent = "¡Pedido confirmado, " + nombreCorto + "!";
-        document.getElementById("success-desc").textContent =
-            "Tu pedido fue registrado. El mensajero te contactará para coordinar la entrega. Revisa tu email para ver el detalle.";
-    } else {
-        document.getElementById("success-title").textContent = "¡Gracias por tu compra!";
-        document.getElementById("success-desc").textContent =
-            "Tu pedido fue procesado exitosamente. Revisa tu email para ver la confirmación.";
-    }
-
-    document.getElementById("success-order-info").innerHTML =
-        '<p style="font-size:12px;font-weight:500;letter-spacing:2px;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem">Detalle del pedido</p>' +
-        '<p style="font-size:13px;color:#4A6A5A;margin-bottom:.3rem">Pedido: <strong style="color:#0F1A14">#' + data.order_id.substring(0,8).toUpperCase() + '</strong></p>' +
-        '<p style="font-size:13px;color:#4A6A5A;margin-bottom:.3rem">Email: <strong style="color:#0F1A14">' + email + '</strong></p>' +
-        '<p style="font-size:13px;color:#4A6A5A">Total: <strong style="color:#1D7A4F">' + vxPrice(data.total) + '</strong></p>';
-
-    if (data.cuenta_creada) {
-        const accountInfo = document.getElementById("success-account-info");
-        accountInfo.style.display = "block";
-        accountInfo.innerHTML =
-            '<p style="font-size:12px;font-weight:500;letter-spacing:2px;color:#1D7A4F;text-transform:uppercase;margin-bottom:.75rem">Tu cuenta fue creada</p>' +
-            '<p style="font-size:13px;color:#1D5A3A;line-height:1.6">Creamos una cuenta Velonox con tu email <strong>' + email + '</strong>. ' +
-            'Revisa tu bandeja de entrada — te enviamos tus credenciales para que puedas ingresar y ver el historial de tus pedidos.</p>';
-        document.getElementById("success-login-btn").style.display = "inline-block";
-    }
 }
 
 // ── Iniciar ───────────────────────────────────────────────────────────────────

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido confirmado — Velonox</title>
+</head>
+<body>
+  <div id="resultado">Verificando tu pedido...</div>
+
+  <script src="js/api.js"></script>
+  <script>
+    async function mostrarResultado() {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id");
+      const boldStatus = params.get("bold-tx-status"); // Bold lo agrega al redirigir
+      const div = document.getElementById("resultado");
+
+      if (!orderId) {
+        div.innerHTML = "<p>No encontramos tu pedido.</p>";
+        return;
+      }
+
+      if (boldStatus && boldStatus !== "approved") {
+        div.innerHTML = `<p>Tu pago no se completó (estado: ${boldStatus}). Puedes intentarlo de nuevo desde tu carrito.</p>`;
+        return;
+      }
+
+      try {
+        if (isLoggedIn()) {
+          const order = await getOrder(orderId);
+          div.innerHTML = `<h2>¡Gracias por tu compra!</h2><p>Pedido #${order.id} — estado: ${order.status}</p>`;
+        } else {
+          div.innerHTML = `<h2>¡Gracias por tu compra!</h2><p>Pedido #${orderId} confirmado. Revisa tu correo para más detalles.</p>`;
+        }
+      } catch (e) {
+        div.innerHTML = `<h2>¡Gracias por tu compra!</h2><p>Pedido #${orderId} recibido.</p>`;
+      }
+    }
+    mostrarResultado();
+  </script>
+</body>
+</html>

@@ -138,12 +138,16 @@ async function removeFromCart(itemId) {
 
 // ─── PAGOS Y ÓRDENES ─────────────────────────────────────────────────────────
 
-async function checkout() {
-    return apiFetch("/payments/checkout", { method: "POST" });
+async function checkout(data) {
+    return apiFetch("/payments/checkout", { method: "POST", body: JSON.stringify(data) });
 }
 
 async function getOrders() {
     return apiFetch("/payments/orders");
+}
+
+async function getOrder(orderId) {
+    return apiFetch(`/payments/orders/${orderId}`);
 }
 
 // ─── CARRITO DE INVITADO (localStorage) ──────────────────────────────────────
@@ -214,7 +218,7 @@ async function guestCheckout(data) {
 
 const VX_CURRENCY_KEY = "velonox_currency";
 let VX_TRM = 4200; // valor por defecto
-let VX_CURRENCY = localStorage.getItem(VX_CURRENCY_KEY) || "USD";
+let VX_CURRENCY = localStorage.getItem(VX_CURRENCY_KEY) || "COP";
 
 // Cargar TRM desde el backend al iniciar
 async function loadTRM() {
