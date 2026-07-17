@@ -255,9 +255,9 @@
 
 <div class="toast" id="toast"></div>
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 <script src="js/api.js"></script>
@@ -315,6 +315,7 @@ async function loadRegalos() {
                 '<button class="prod-btn" onclick="event.stopPropagation();handleAdd(\'' + p.id + '\',\'' + p.name.replace(/'/g,"\\'") + '\',' + p.stock + ')">Agregar</button>' +
                 '</div></div></div>';
         }).join('');
+        if (window.animateCards) window.animateCards(".prod-card");
     } catch(e) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#6B8A7A">Error cargando productos.</div>';
     }

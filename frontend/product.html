@@ -652,6 +652,7 @@ async function loadRelatedProducts(currentId) {
                 </div>
             </div>
         `).join('');
+        if (window.animateCards) window.animateCards(".related-card");
     } catch(e) {}
 }
 
@@ -839,11 +840,10 @@ async function getProductPage(productId) {
 
 init();
 window.addEventListener("currencyChanged", function() { init(); });
-
 </script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
-</script>
+window.animateCards = animateCards;
 </script>
 </body>
 </html>

@@ -110,9 +110,9 @@
 </nav>
 <div id="layout-container"></div>
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 <script src="js/api.js"></script>
@@ -181,6 +181,7 @@ async function loadCategories() {
                 </div>
             </a>`;
         }).join('');
+        if (window.animateCards) window.animateCards(".cat-card");
     } catch(e) {
         grid.innerHTML = `<p class="loading">Error cargando categorías.</p>`;
     }

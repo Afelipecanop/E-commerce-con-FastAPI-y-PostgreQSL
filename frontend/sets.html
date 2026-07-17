@@ -232,9 +232,9 @@
 
 <div class="toast" id="toast"></div>
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 <script src="js/api.js"></script>
@@ -300,6 +300,7 @@ async function loadSets() {
                 '</div>' +
                 '</div>';
         }).join('');
+        if (window.animateCards) window.animateCards(".set-card");
     } catch(e) {
         grid.innerHTML = '<div class="empty"><i class="ti ti-alert-circle"></i><h3>Error cargando sets</h3><p>Intenta de nuevo más tarde.</p></div>';
     }

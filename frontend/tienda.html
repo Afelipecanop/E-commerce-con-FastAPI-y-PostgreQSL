@@ -140,9 +140,9 @@
 <div id="layout-container"></div>
 <div class="toast" id="toast"></div>
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 <script src="js/api.js"></script>
@@ -313,6 +313,7 @@ function renderProducts(products) {
             '</div></div></div>';
     });
     grid.innerHTML = html;
+    if (window.animateCards) window.animateCards(".prod-card");
 }
 
 async function handleAdd(id, name, stock) {

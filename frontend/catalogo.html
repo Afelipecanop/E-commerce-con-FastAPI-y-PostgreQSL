@@ -128,9 +128,9 @@
 <div id="layout-container"></div>
 <div class="toast" id="toast"></div>
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 <script src="js/api.js"></script>
@@ -263,6 +263,7 @@ function renderProducts(products) {
             </div>
         </div>`;
     }).join('');
+    if (window.animateCards) window.animateCards(".prod-card");
 }
 
 function filterProducts(type, btn) {
@@ -294,6 +295,7 @@ async function loadOtherCats(currentSlug) {
             const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
             return `<a href="catalogo.html?cat=${cat.slug}" class="other-cat-btn"><i class="${icon}"></i><span>${cat.name}</span></a>`;
         }).join('');
+        if (window.animateCards) window.animateCards(".other-cat-btn");
     } catch(e) {}
 }
 

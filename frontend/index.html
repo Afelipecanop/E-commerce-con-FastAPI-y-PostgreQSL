@@ -205,9 +205,9 @@
 <div id="layout-container"></div>
 
 
-</script>
 <script type="module">
 import { animateCards } from "./js/motion.js";
+window.animateCards = animateCards;
 </script>
 
 
@@ -306,6 +306,7 @@ import { animateCards } from "./js/motion.js";
                 const el = renderLayoutBlock(block, products);
                 if (el) container.appendChild(el);
             }
+            if (window.animateCards) window.animateCards(".prod-card, .cat-card");
         } catch(e) {
             console.error("Error cargando layout:", e);
         }
