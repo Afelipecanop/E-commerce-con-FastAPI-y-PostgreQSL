@@ -3,7 +3,7 @@ import hmac
 import base64
 import os
 
-BOLD_SECRET_KEY = os.getenv("C0p6GYPda4SU83qoYYs9ZwCN5Dr9KfsiVUg9Th0OUl4")
+BOLD_SECRET_KEY = os.getenv("BOLD_SECRET_KEY")
 
 
 def usd_to_cop(amount_usd: float, trm: float) -> int:
