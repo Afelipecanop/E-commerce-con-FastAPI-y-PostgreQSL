@@ -1,25 +1,105 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
-  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon/favicon-48x48.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="/favicon/favicon-64x64.png">
-  <link rel="icon" type="image/png" sizes="128x128" href="/favicon/favicon-128x128.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon/favicon-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/favicon/favicon-512x512.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta charset="UTF-8">
-  <title>Pedido confirmado — Velonox</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon/favicon-64x64.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon/favicon-128x128.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/favicon-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido confirmado — Velonox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
+
+        /* NAV */
+        .nav{background:#0F1A14;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+        .nav-logo{display:flex;align-items:baseline;gap:0;text-decoration:none}
+        .nav-logo span.a{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#C8D8C0;letter-spacing:-.5px}
+        .nav-logo span.b{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1D7A4F;letter-spacing:-.5px}
+        .nav-links{display:flex;gap:1.5rem}
+        .nav-links a{font-size:13px;color:#C8D8C0;text-decoration:none;opacity:.7;transition:opacity .2s}
+        .nav-links a:hover{opacity:1}
+        .nav-right{display:flex;gap:12px;align-items:center}
+        .nav-icon{color:#C8D8C0;opacity:.7;font-size:18px;cursor:pointer;transition:opacity .2s;text-decoration:none}
+        .nav-icon:hover{opacity:1}
+        .nav-cart-wrap{display:flex;align-items:flex-start}
+        .nav-cart-badge{background:#1D7A4F;color:#C8D8C0;font-size:10px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:-8px;margin-top:-8px;font-weight:600}
+        .nav-admin{font-size:12px;color:#4A6A5A;text-decoration:none;padding:4px 10px;border:1px solid #2A4A38;border-radius:2px;transition:all .2s}
+        .nav-admin:hover{color:#C8D8C0;border-color:#4A6A5A}
+        .nav-user{font-size:12px;color:#6B8A7A}
+
+        /* CONFIRMACIÓN */
+        .confirm{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;max-width:560px;margin:0 auto}
+        .confirm-icon{width:72px;height:72px;background:#F0FAF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+        .confirm-icon i{font-size:32px;color:#1D7A4F}
+        .confirm h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#0F1A14;margin-bottom:.75rem}
+        .confirm p{font-size:14px;color:#6B8A7A;line-height:1.7}
+        .confirm-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+        .btn-primary{background:#1D7A4F;color:#F5F5F3;font-size:14px;font-weight:500;padding:12px 28px;border-radius:2px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.02em;transition:background .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+        .btn-primary:hover{background:#22904F}
+        .btn-ghost{background:transparent;color:#C8D8C0;font-size:14px;font-weight:400;padding:12px 28px;border-radius:2px;border:1px solid #2A4A38;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+        .btn-ghost:hover{border-color:#1D7A4F;color:#0F1A14}
+
+        @media (max-width:860px){
+            .nav{padding:0 1rem}
+            .nav-links{display:none}
+        }
+    </style>
 </head>
 <body>
-  <div id="resultado">Verificando tu pedido...</div>
 
-  <script src="/js/api.js"></script>
-  <script>
+<!-- NAV -->
+<nav class="nav">
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <div class="nav-links">
+        <a href="/categorias.html">Cocina</a>
+        <a href="/tienda.html">Catálogo</a>
+        <a href="/sets.html">Sets</a>
+        <a href="/regalos.html">Regalos</a>
+        <a href="/nosotros.html">Nosotros</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" id="nav-user"></span>
+        <a href="/cart.html" class="nav-cart-wrap nav-icon" aria-label="Carrito">
+            <i class="ti ti-shopping-bag"></i>
+        </a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon ti ti-user" id="nav-login" aria-label="Ingresar"></a>
+        <a href="/index.html" class="nav-icon ti ti-logout" id="nav-logout" style="display:none" onclick="logout(); return false;" aria-label="Salir"></a>
+    </div>
+</nav>
+
+<!-- CONTENIDO -->
+<main class="confirm">
+    <div class="confirm-icon"><i class="ti ti-circle-check"></i></div>
+    <div id="resultado">Verificando tu pedido...</div>
+    <div class="confirm-actions">
+        <a href="/index.html" class="btn-primary"><i class="ti ti-home"></i> Volver al inicio</a>
+        <a href="/catalogo.html" class="btn-ghost"><i class="ti ti-shopping-bag"></i> Ver catálogo</a>
+    </div>
+</main>
+
+<script src="/js/api.js"></script>
+<script>
+    if (isLoggedIn()) {
+        document.getElementById("nav-login").style.display = "none";
+        document.getElementById("nav-logout").style.display = "block";
+        getMe().then(function(me) {
+            document.getElementById("nav-user").textContent = me.full_name.split(" ")[0];
+            if (me.is_admin) document.getElementById("nav-admin").style.display = "block";
+        }).catch(function() {});
+    }
+
     async function mostrarResultado() {
       const params = new URLSearchParams(window.location.search);
       const orderId = params.get("order_id");
