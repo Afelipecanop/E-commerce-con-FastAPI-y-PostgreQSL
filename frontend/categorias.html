@@ -100,19 +100,19 @@
 </head>
 <body>
 <nav>
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="index.html">Inicio</a>
-        <a href="categorias.html" class="active">Cocina</a>
-        <a href="tienda.html">Catálogo</a>
-        <a href="index.html">Sets</a>
-        <a href="nosotros.html">Nosotros</a>
+        <a href="/index.html">Inicio</a>
+        <a href="/categorias.html" class="active">Cocina</a>
+        <a href="/tienda.html">Catálogo</a>
+        <a href="/index.html">Sets</a>
+        <a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="/cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
         <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
             <span></span><span></span><span></span>
@@ -126,8 +126,8 @@ import { animateCards } from "./js/motion.js";
 window.animateCards = animateCards;
 </script>
 
-<script src="js/api.js"></script>
-<script src="js/page-blocks.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/page-blocks.js"></script>
 <script>
 const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 const CAT_ICONS = {ollas:"ti ti-soup",sartenes:"ti ti-eggs",utensilios:"ti ti-tools-kitchen-2",accesorios:"ti ti-slice"};
@@ -175,7 +175,7 @@ async function loadCategories() {
             const count = allProducts.filter(p => p.category === cat.slug).length;
             const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
             return `
-            <a href="catalogo.html?cat=${cat.slug}" class="cat-card">
+            <a href="/catalogo.html?cat=${cat.slug}" class="cat-card">
                 <div class="cat-card-img">
                     ${cat.image_url
                         ? `<img src="${cat.image_url}" alt="${cat.name}">`

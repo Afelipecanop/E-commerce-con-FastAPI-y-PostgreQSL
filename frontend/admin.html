@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor — Velonox</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="vendor/tabler-icons/tabler-icons.min.css">
+    <link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
     <style>
         /* ── Paleta de marca Velonox ── */
         :root{
@@ -247,7 +247,7 @@
 
 <!-- ── Topbar ── -->
 <div class="topbar">
-    <a href="index.html" class="logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="divider"></div>
     <div class="tabs">
         <button class="tab active" onclick="switchTab('editor')"><i class="ti ti-layout-2"></i>Editor</button>
@@ -620,7 +620,7 @@
 <!-- ── Toast ── -->
 <div class="toast" id="toast"></div>
 
-<script src="js/api.js"></script>
+<script src="/js/api.js"></script>
 <script>
 const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 
@@ -729,11 +729,11 @@ const BLOCK_DEFAULTS = {
 
 // ── Inicialización ────────────────────────────────────────────────────────────
 async function init() {
-    if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    if (!isLoggedIn()) { window.location.href = "/login.html"; return; }
     try {
         const me = await getMe();
-        if (!me.is_admin) { window.location.href = "index.html"; return; }
-    } catch(e) { window.location.href = "login.html"; return; }
+        if (!me.is_admin) { window.location.href = "/index.html"; return; }
+    } catch(e) { window.location.href = "/login.html"; return; }
 
     try { previewProducts = await getProducts(); } catch(e) { previewProducts = []; }
 
@@ -1203,7 +1203,7 @@ function generatePreviewHTML() {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor/tabler-icons/tabler-icons.min.css">
+<link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
 <style>${BRAND_CSS}</style>
 </head>
 <body>

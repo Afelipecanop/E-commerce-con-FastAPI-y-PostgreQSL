@@ -15,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito — Velonox</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         .cart-qty-btn{
             width:34px;height:34px;display:flex;align-items:center;justify-content:center;
@@ -35,9 +35,9 @@
 
 <body>
     <nav>
-        <a href="index.html" class="logo text-brand">Velo<span class="accent">nox</span></a>
+        <a href="/index.html" class="logo text-brand">Velo<span class="accent">nox</span></a>
         <div class="nav-links">
-            <a href="tienda.html">← Seguir comprando</a>
+            <a href="/tienda.html">← Seguir comprando</a>
             <a href="#" id="nav-logout" onclick="logout(); return false;" style="display:none">Salir</a>
         </div>
     </nav>
@@ -51,7 +51,7 @@
 
     </script>
 
-    <script src="js/api.js"></script>
+    <script src="/js/api.js"></script>
     <script>
         // Mostrar "Salir" solo si hay sesión iniciada (no obligamos a loguearse)
         if (isLoggedIn()) document.getElementById("nav-logout").style.display = "";
@@ -120,7 +120,7 @@
                 container.innerHTML = `
                     <div class="cart-empty">
                         <p>Tu carrito está vacío.</p>
-                        <a href="index.html" class="btn btn-primary">Ver productos</a>
+                        <a href="/index.html" class="btn btn-primary">Ver productos</a>
                     </div>`;
                 return;
             }
@@ -198,7 +198,7 @@
 
         function handleCheckout() {
             if (cartItems.length === 0) return;
-            window.location.href = "checkout.html";
+            window.location.href = "/checkout.html";
         }
 
         loadCart();

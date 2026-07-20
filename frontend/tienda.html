@@ -129,18 +129,18 @@
 <body>
 
 <nav>
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="index.html">Inicio</a>
-        <a href="categorias.html">Cocina</a>
-        <a href="tienda.html" class="active">Catálogo</a>
-        <a href="nosotros.html">Nosotros</a>
+        <a href="/index.html">Inicio</a>
+        <a href="/categorias.html">Cocina</a>
+        <a href="/tienda.html" class="active">Catálogo</a>
+        <a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="/cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
         <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
             <span></span><span></span><span></span>
@@ -156,8 +156,8 @@ import { animateCards } from "./js/motion.js";
 window.animateCards = animateCards;
 </script>
 
-<script src="js/api.js"></script>
-<script src="js/page-blocks.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/page-blocks.js"></script>
 <script>
 const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 const CAT_NAMES = {ollas:"Ollas",sartenes:"Sartenes",utensilios:"Utensilios",accesorios:"Accesorios"};
@@ -312,7 +312,7 @@ function renderProducts(products) {
             ? '<img src="' + p.image_url + '" alt="' + p.name + '" loading="lazy">'
             : '<i class="ti ti-tools-kitchen-2 no-img"></i>';
         var stock = p.stock > 0 ? 'En stock' : 'Sin stock';
-        html += '<div class="prod-card" onclick="window.location.href=\'product.html?id=' + p.id + '\'">' +
+        html += '<div class="prod-card" onclick="window.location.href=\'/product.html?id=' + p.id + '\'">' +
             '<div class="prod-img">' + img + badge + catLabel + '</div>' +
             '<div class="prod-info">' +
             '<div class="stars">★★★★★</div>' +
@@ -328,7 +328,7 @@ function renderProducts(products) {
 }
 
 async function handleAdd(id, name, stock) {
-    if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    if (!isLoggedIn()) { window.location.href = "/login.html"; return; }
     if (stock <= 0) { showToast("Producto sin stock", "err"); return; }
     try {
         await addToCart(id, 1);

@@ -123,19 +123,19 @@
 <body>
 
 <nav>
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="index.html">Inicio</a>
-        <a href="categorias.html">Cocina</a>
-        <a href="tienda.html">Catálogo</a>
-        <a href="sets.html" class="active">Sets</a>
-        <a href="nosotros.html">Nosotros</a>
+        <a href="/index.html">Inicio</a>
+        <a href="/categorias.html">Cocina</a>
+        <a href="/tienda.html">Catálogo</a>
+        <a href="/sets.html" class="active">Sets</a>
+        <a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="/cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
     </div>
 </nav>
@@ -220,10 +220,10 @@
 <footer>
     <div class="footer-top">
         <div><div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div><p class="footer-tagline">Cocina de por vida.</p></div>
-        <div class="footer-col"><p>Tienda</p><a href="tienda.html">Todos los productos</a><a href="categorias.html">Categorías</a><a href="sets.html">Sets</a></div>
-        <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Envíos</a><a href="politicas.html#devoluciones">Devoluciones</a></div>
-        <div class="footer-col"><p>Nosotros</p><a href="nosotros.html">Nuestra historia</a><a href="nosotros.html">Por qué acero</a></div>
-        <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos</a><a href="politicas.html#privacidad">Privacidad</a></div>
+        <div class="footer-col"><p>Tienda</p><a href="/tienda.html">Todos los productos</a><a href="/categorias.html">Categorías</a><a href="/sets.html">Sets</a></div>
+        <div class="footer-col"><p>Ayuda</p><a href="/contacto.html">Contáctanos</a><a href="/politicas.html">Envíos</a><a href="/politicas.html#devoluciones">Devoluciones</a></div>
+        <div class="footer-col"><p>Nosotros</p><a href="/nosotros.html">Nuestra historia</a><a href="/nosotros.html">Por qué acero</a></div>
+        <div class="footer-col"><p>Legal</p><a href="/terminos.html">Términos</a><a href="/politicas.html#privacidad">Privacidad</a></div>
     </div>
     <div class="footer-bottom">
         <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
@@ -248,7 +248,7 @@ import { animateCards } from "./js/motion.js";
 window.animateCards = animateCards;
 </script>
 
-<script src="js/api.js"></script>
+<script src="/js/api.js"></script>
 <script>
 const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 
@@ -297,7 +297,7 @@ async function loadSets() {
                 ? '<img src="' + s.image_url + '" alt="' + s.name + '">'
                 : '<div class="no-img"><i class="ti ti-gift"></i><span>Set Velonox</span></div>';
 
-            return '<div class="set-card" onclick="window.location.href=\'product.html?id=' + s.id + '\'">' +
+            return '<div class="set-card" onclick="window.location.href=\'/product.html?id=' + s.id + '\'">' +
                 '<div class="set-img">' + img + badge + '</div>' +
                 '<div class="set-body">' +
                 '<h3 class="set-name">' + s.name + '</h3>' +

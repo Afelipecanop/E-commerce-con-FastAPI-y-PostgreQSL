@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Velonox — Cocina de por vida</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="vendor/tabler-icons/tabler-icons.min.css">
+    <link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
     <link rel="manifest" href="/site.webmanifest">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
@@ -181,22 +181,22 @@
 
 <!-- NAV -->
 <nav class="nav">
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="categorias.html">Cocina</a>
-        <a href="tienda.html">Catálogo</a>
-        <a href="sets.html">Sets</a>
-        <a href="regalos.html">Regalos</a>
-        <a href="nosotros.html">Nosotros</a>
+        <a href="/categorias.html">Cocina</a>
+        <a href="/tienda.html">Catálogo</a>
+        <a href="/sets.html">Sets</a>
+        <a href="/regalos.html">Regalos</a>
+        <a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-cart-wrap nav-icon" aria-label="Carrito">
+        <a href="/cart.html" class="nav-cart-wrap nav-icon" aria-label="Carrito">
             <i class="ti ti-shopping-bag"></i>
             <div class="nav-cart-badge" id="cart-badge" style="display:none">0</div>
         </a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon ti ti-user" id="nav-login" aria-label="Ingresar"></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon ti ti-user" id="nav-login" aria-label="Ingresar"></a>
         <a href="#" class="nav-icon ti ti-logout" id="nav-logout" style="display:none" onclick="logout(); return false;" aria-label="Salir"></a>
         <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
             <span></span><span></span><span></span>
@@ -226,8 +226,8 @@ window.animateCards = animateCards;
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="js/api.js"></script>
-<script src="js/cart.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
 <script>
     const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 
@@ -373,7 +373,7 @@ window.animateCards = animateCards;
                     <section class="sec" id="prod-section" style="background:#F5F5F3">
                         <div class="sec-header">
                             <h2 class="sec-title">${c.title}</h2>
-                            <a href="categorias.html" class="sec-link">Ver catálogo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
+                            <a href="/categorias.html" class="sec-link">Ver catálogo <i class="ti ti-arrow-right" style="font-size:13px"></i></a>
                         </div>
                         <div class="prod-grid" style="grid-template-columns:repeat(${cols},1fr)">
                             ${prods.length === 0
@@ -382,7 +382,7 @@ window.animateCards = animateCards;
                                     const badges = ["MÁS VENDIDO","NUEVO","REGALO","OFERTA"];
                                     const badge = i<2?`<span class="prod-badge ${i===1?'sand':''}">${badges[i]}</span>`:"";
                                     const img = p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<i class="ti ti-tools-kitchen-2 no-img"></i>`;
-                                    return `<div class="prod-card" onclick="window.location.href='product.html?id=${p.id}'">
+                                    return `<div class="prod-card" onclick="window.location.href='/product.html?id=${p.id}'">
                                         <div class="prod-img">${img}${badge}</div>
                                         <div class="prod-info">
                                             <p class="stars">★★★★★</p>
@@ -429,7 +429,7 @@ window.animateCards = animateCards;
                         <div class="sec-header"><h2 class="sec-title">${c.title}</h2></div>
                         <div class="cat-grid">
                             ${cats.map(cat=>`
-                            <a href="catalogo.html?cat=${categorySlug(cat)}" class="cat-card">
+                            <a href="/catalogo.html?cat=${categorySlug(cat)}" class="cat-card">
                                 <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
                                 <p class="cat-name">${cat}</p>
                             </a>`).join('')}
@@ -450,23 +450,23 @@ window.animateCards = animateCards;
                                 <p class="footer-tagline">${c.tagline}</p>
                             </div>
                             <div class="footer-col"><p>Tienda</p>
-                                <a href="catalogo.html">Catálogo</a>
-                                <a href="index.html">Sets regalo</a>
-                                <a href="index.html">Ofertas</a>
+                                <a href="/catalogo.html">Catálogo</a>
+                                <a href="/index.html">Sets regalo</a>
+                                <a href="/index.html">Ofertas</a>
                             </div>
                             <div class="footer-col"><p>Ayuda</p>
-                                <a href="contacto.html">Contáctanos</a>
-                                <a href="politicas.html">Envíos</a>
-                                <a href="politicas.html#devoluciones">Devoluciones</a>
-                                <a href="politicas.html#garantia">Garantía</a>
+                                <a href="/contacto.html">Contáctanos</a>
+                                <a href="/politicas.html">Envíos</a>
+                                <a href="/politicas.html#devoluciones">Devoluciones</a>
+                                <a href="/politicas.html#garantia">Garantía</a>
                             </div>
                             <div class="footer-col"><p>Nosotros</p>
-                                <a href="nosotros.html">Nuestra historia</a>
-                                <a href="nosotros.html">Por qué acero</a>
+                                <a href="/nosotros.html">Nuestra historia</a>
+                                <a href="/nosotros.html">Por qué acero</a>
                             </div>
                             <div class="footer-col"><p>Legal</p>
-                                <a href="terminos.html">Términos y condiciones</a>
-                                <a href="politicas.html#privacidad">Privacidad</a>
+                                <a href="/terminos.html">Términos y condiciones</a>
+                                <a href="/politicas.html#privacidad">Privacidad</a>
                             </div>
                         </div>
                         <div class="footer-bottom">

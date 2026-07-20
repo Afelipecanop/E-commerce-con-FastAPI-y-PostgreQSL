@@ -88,7 +88,7 @@ document.getElementById("checkout-form").addEventListener("submit", async (e) =>
       if (!opened) submitBtn.disabled = true; // orden quedó creada pero Bold no cargó; evita reintento duplicado
     } else {
       if (!isLoggedIn()) clearGuestCart();
-      window.location.href = `/frontend/pedido-confirmado.html?order_id=${data.order_id}`;
+      window.location.href = `/pedido-confirmado.html?order_id=${data.order_id}`;
     }
   } catch (err) {
     alert(err.message || "Hubo un problema con tu pedido. Intenta de nuevo.");

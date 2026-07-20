@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto — Velonox</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="vendor/tabler-icons/tabler-icons.min.css">
+    <link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#0F1A14}
@@ -118,15 +118,15 @@
 
 <body>
 <nav>
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="categorias.html">Cocina</a><a href="tienda.html">Catálogo</a><a href="index.html">Sets</a><a href="index.html">Regalos</a><a href="nosotros.html">Nosotros</a>
+        <a href="/categorias.html">Cocina</a><a href="/tienda.html">Catálogo</a><a href="/index.html">Sets</a><a href="/index.html">Regalos</a><a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="/cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
         <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
             <span></span><span></span><span></span>
@@ -134,8 +134,8 @@
     </div>
 </nav>
 <div id="layout-container"></div>
-<script src="js/api.js"></script>
-<script src="js/page-blocks.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/page-blocks.js"></script>
 <script>
     async function init() {
         if (isLoggedIn()) {

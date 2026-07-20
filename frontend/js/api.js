@@ -32,7 +32,7 @@ async function apiFetch(endpoint, options = {}) {
 
     if (response.status === 401) {
         removeToken();
-        window.location.href = "/frontend/login.html";
+        window.location.href = "/login.html";
         return;
     }
 
@@ -69,7 +69,7 @@ async function getMe() {
 
 function logout() {
     removeToken();
-    window.location.href = "/frontend/login.html";
+    window.location.href = "/login.html";
 }
 
 // ─── PRODUCTOS ────────────────────────────────────────────────────────────────

@@ -117,19 +117,19 @@
 </head>
 <body>
 <nav>
-    <a href="index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
+    <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
-        <a href="index.html">Inicio</a>
-        <a href="categorias.html" class="active">Cocina</a>
-        <a href="tienda.html">Catálogo</a>
-        <a href="index.html">Sets</a>
-        <a href="nosotros.html">Nosotros</a>
+        <a href="/index.html">Inicio</a>
+        <a href="/categorias.html" class="active">Cocina</a>
+        <a href="/tienda.html">Catálogo</a>
+        <a href="/index.html">Sets</a>
+        <a href="/nosotros.html">Nosotros</a>
     </div>
     <div class="nav-right">
         <span class="nav-user" id="nav-user"></span>
-        <a href="cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
-        <a href="admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
-        <a href="login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
+        <a href="/cart.html" class="nav-icon"><i class="ti ti-shopping-bag"></i></a>
+        <a href="/admin.html" class="nav-admin" id="nav-admin" style="display:none">Admin</a>
+        <a href="/login.html" class="nav-icon" id="nav-login"><i class="ti ti-user"></i></a>
         <a href="#" class="nav-icon" id="nav-logout" style="display:none" onclick="logout();return false"><i class="ti ti-logout"></i></a>
         <button class="nav-burger" id="nav-burger" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNavMenu()">
             <span></span><span></span><span></span>
@@ -144,8 +144,8 @@ import { animateCards } from "./js/motion.js";
 window.animateCards = animateCards;
 </script>
 
-<script src="js/api.js"></script>
-<script src="js/page-blocks.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/page-blocks.js"></script>
 <script>
 const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.app";
 const CAT_ICONS = {ollas:"ti ti-soup",sartenes:"ti ti-eggs",utensilios:"ti ti-tools-kitchen-2",accesorios:"ti ti-slice"};
@@ -208,7 +208,7 @@ async function init() {
     }
     await initPageBlocks("catalogo");
     const slug = getCatSlug();
-    if (!slug) { window.location.href = "categorias.html"; return; }
+    if (!slug) { window.location.href = "/categorias.html"; return; }
     await loadCategory(slug);
     await loadProducts(slug);
     loadOtherCats(slug);
@@ -253,7 +253,7 @@ function renderProducts(products) {
     const grid = document.getElementById("prod-grid");
     document.getElementById("results-count").textContent = `${products.length} producto${products.length !== 1 ? 's' : ''}`;
     if (!products.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="ti ti-mood-empty"></i><h3>Sin productos aún</h3><p>Pronto añadiremos productos a esta categoría.</p><a href="categorias.html" class="btn-ghost">Ver otras categorías</a></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="ti ti-mood-empty"></i><h3>Sin productos aún</h3><p>Pronto añadiremos productos a esta categoría.</p><a href="/categorias.html" class="btn-ghost">Ver otras categorías</a></div>`;
         return;
     }
     const badges = ["MÁS VENDIDO","NUEVO"];
@@ -261,7 +261,7 @@ function renderProducts(products) {
         const badge = i < 2 ? `<span class="prod-badge">${badges[i]}</span>` : "";
         const img = p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : `<i class="ti ti-tools-kitchen-2 no-img"></i>`;
         return `
-        <div class="prod-card" onclick="window.location.href='product.html?id=${p.id}'">
+        <div class="prod-card" onclick="window.location.href='/product.html?id=${p.id}'">
             <div class="prod-img">${img}${badge}</div>
             <div class="prod-info">
                 <div class="stars">★★★★★</div>
@@ -304,14 +304,14 @@ async function loadOtherCats(currentSlug) {
         document.getElementById("other-cats-section").style.display = "block";
         document.getElementById("other-cats-grid").innerHTML = others.map(cat => {
             const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
-            return `<a href="catalogo.html?cat=${cat.slug}" class="other-cat-btn"><i class="${icon}"></i><span>${cat.name}</span></a>`;
+            return `<a href="/catalogo.html?cat=${cat.slug}" class="other-cat-btn"><i class="${icon}"></i><span>${cat.name}</span></a>`;
         }).join('');
         if (window.animateCards) window.animateCards(".other-cat-btn");
     } catch(e) {}
 }
 
 async function handleAdd(id, name, stock) {
-    if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+    if (!isLoggedIn()) { window.location.href = "/login.html"; return; }
     if (stock <= 0) { showToast("Producto sin stock", "err"); return; }
     try {
         await addToCart(id, 1);
