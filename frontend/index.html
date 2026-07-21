@@ -350,9 +350,11 @@ window.animateCards = animateCards;
         const c = block.config;
         const div = document.createElement("div");
         switch(block.block_type) {
-            case "announcement_bar":
-                div.innerHTML = `<div style="background:${c.background_color||'#1D7A4F'};color:${c.text_color||'#fff'};text-align:center;padding:0.5rem 1rem;font-size:12px;font-weight:500;letter-spacing:.3px">${c.text}</div>`;
+            case "announcement_bar": {
+                const text = (c.text || "").replace(/\$(\d+(?:\.\d+)?)\s*USD/gi, (_, amt) => vxPrice(parseFloat(amt)));
+                div.innerHTML = `<div style="background:${c.background_color||'#1D7A4F'};color:${c.text_color||'#fff'};text-align:center;padding:0.5rem 1rem;font-size:12px;font-weight:500;letter-spacing:.3px">${text}</div>`;
                 break;
+            }
             case "hero_banner":
                 div.innerHTML = `
                     <section class="hero" style="${c.image_url?`background:url('${c.image_url}') center/cover no-repeat;`:`background:${c.background_color||'#0F1A14'};`}">
