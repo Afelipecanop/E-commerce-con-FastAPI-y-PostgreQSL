@@ -21,6 +21,9 @@ async function initPageBlocks(slug) {
             newScript.textContent = oldScript.textContent;
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
+
+        // El footer (con el toggle de moneda) se inyecta recién arriba, hay que sincronizarlo
+        updateCurrencyToggle();
     } catch (e) {
         console.error("Error cargando contenido de la página:", e);
     }
@@ -47,13 +50,25 @@ function renderPageBlock(block) {
                         <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
                         <p class="footer-tagline">${c.tagline || ""}</p>
                     </div>
-                    <div class="footer-col"><p>Tienda</p><a href="catalogo.html">Catálogo</a><a href="index.html">Sets regalo</a></div>
-                    <div class="footer-col"><p>Ayuda</p><a href="contacto.html">Contáctanos</a><a href="politicas.html">Políticas</a></div>
-                    <div class="footer-col"><p>Legal</p><a href="terminos.html">Términos y condiciones</a><a href="politicas.html#privacidad">Privacidad</a></div>
+                    <div class="footer-col"><p>Tienda</p><a href="/catalogo.html">Catálogo</a><a href="/index.html">Sets regalo</a></div>
+                    <div class="footer-col"><p>Ayuda</p><a href="/contacto.html">Contáctanos</a><a href="/politicas.html">Políticas</a></div>
+                    <div class="footer-col"><p>Legal</p><a href="/terminos.html">Términos y condiciones</a><a href="/politicas.html#privacidad">Privacidad</a></div>
                 </div>
                 <div class="footer-bottom">
                     <p class="footer-copy">© 2026 ${c.store_name || "Velonox"}. Todos los derechos reservados.</p>
-                    <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                    <div style="display:flex;align-items:center;gap:1rem">
+                        <div style="display:flex;align-items:center;background:#1A2820;border:1px solid #2A4A38;border-radius:2px;overflow:hidden">
+                            <button id="vx-btn-usd" onclick="setCurrency('USD')"
+                                style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4A6A5A;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                USD
+                            </button>
+                            <button id="vx-btn-cop" onclick="setCurrency('COP')"
+                                style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:#1D7A4F;color:white;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                COP
+                            </button>
+                        </div>
+                        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                    </div>
                 </div>
             </footer>`;
 

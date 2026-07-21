@@ -437,7 +437,7 @@ CONTENT_PAGE_BLOCKS = {
             <div><p class="section-eyebrow">Política de envíos</p><h2 class="section-title">Envíos y tiempos de entrega</h2></div>
         </div>
         <div class="policy-text">
-            <div class="highlight"><i class="ti ti-info-circle"></i><p><strong>Envío gratis</strong> en todos los pedidos mayores a $30 USD. Para pedidos menores, el costo de envío se calcula al momento del checkout según tu ubicación.</p></div>
+            <div class="highlight"><i class="ti ti-info-circle"></i><p><strong>Envío gratis</strong> en pedidos mayores a $30 USD dentro de Colombia, y mayores a $40 USD para el resto de países. Para pedidos menores, el costo de envío se calcula al momento del checkout según tu ubicación.</p></div>
             <div class="info-cards">
                 <div class="info-card"><i class="ti ti-map-pin"></i><strong>Colombia</strong><span>2 a 5 días hábiles</span></div>
                 <div class="info-card"><i class="ti ti-world"></i><strong>México · Perú · Chile</strong><span>7 a 15 días hábiles</span></div>
@@ -455,9 +455,9 @@ CONTENT_PAGE_BLOCKS = {
                 <thead><tr><th>País</th><th>Tiempo estimado</th><th>Envío gratis desde</th></tr></thead>
                 <tbody>
                     <tr><td>🇨🇴 Colombia</td><td>2 a 5 días hábiles</td><td>$30 USD</td></tr>
-                    <tr><td>🇲🇽 México</td><td>7 a 12 días hábiles</td><td>$30 USD</td></tr>
-                    <tr><td>🇵🇪 Perú</td><td>8 a 15 días hábiles</td><td>$30 USD</td></tr>
-                    <tr><td>🇨🇱 Chile</td><td>7 a 12 días hábiles</td><td>$30 USD</td></tr>
+                    <tr><td>🇲🇽 México</td><td>7 a 12 días hábiles</td><td>$40 USD</td></tr>
+                    <tr><td>🇵🇪 Perú</td><td>8 a 15 días hábiles</td><td>$40 USD</td></tr>
+                    <tr><td>🇨🇱 Chile</td><td>7 a 12 días hábiles</td><td>$40 USD</td></tr>
                 </tbody>
             </table>
             <div class="warning"><i class="ti ti-alert-triangle"></i><p>Los tiempos de entrega son estimados y pueden variar por factores externos como aduanas, condiciones climáticas o temporadas de alta demanda. Si tu país no aparece en la lista, escríbenos — buscamos una solución.</p></div>
