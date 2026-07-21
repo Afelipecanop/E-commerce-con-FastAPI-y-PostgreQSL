@@ -6,6 +6,7 @@ async function initPageBlocks(slug) {
     const container = document.getElementById("layout-container");
     if (!container) return;
     try {
+        await loadTRM();
         const res = await fetch(`${API_URL}/layout/?page=${slug}`);
         const blocks = await res.json();
         container.innerHTML = blocks
