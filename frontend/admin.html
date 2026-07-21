@@ -1240,6 +1240,7 @@ function generatePreviewHTML() {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vendor/tabler-icons/tabler-icons.min.css">
+<script src="/js/api.js"><\/script>
 <style>${BRAND_CSS}</style>
 </head>
 <body>
@@ -1254,13 +1255,29 @@ function generatePreviewHTML() {
     </div>
 </nav>
 <div class="trust">
-    <div class="trust-item"><i class="ti ti-truck"></i><span><strong>Envío gratis</strong> +$30 USD</span></div>
+    <div class="trust-item"><i class="ti ti-truck"></i><span><strong>Envío gratis</strong> +<span class="vx-price" data-usd="30">$30 USD</span></span></div>
     <div class="trust-item"><i class="ti ti-shield-check"></i><span><strong>Garantía</strong> 1 año</span></div>
     <div class="trust-item"><i class="ti ti-refresh"></i><span><strong>Devolución</strong> 30 días</span></div>
     <div class="trust-item"><i class="ti ti-lock"></i><span><strong>Pago seguro</strong> SSL</span></div>
 </div>
 ${blocksHTML}
 ${empty}
+<script>
+function vxRefreshPrices() {
+    document.querySelectorAll('.vx-price').forEach(function(el) {
+        el.textContent = vxPrice(parseFloat(el.dataset.usd));
+    });
+}
+(async function() {
+    await loadTRM();
+    updateCurrencyToggle();
+    vxRefreshPrices();
+    window.addEventListener('currencyChanged', function() {
+        updateCurrencyToggle();
+        vxRefreshPrices();
+    });
+})();
+<\/script>
 </body>
 </html>`;
 }
@@ -1310,7 +1327,7 @@ function renderBlock(block) {
                             <p class="prod-name">${p.name}</p>
                             <p class="prod-sub">Acero 304 · ${p.stock>0?'En stock':'Sin stock'}</p>
                             <div class="prod-row">
-                                <span class="prod-price">$${Number(p.price).toFixed(2)}</span>
+                                <span class="prod-price vx-price" data-usd="${p.price}">$${Number(p.price).toFixed(2)}</span>
                                 <button class="prod-btn">Agregar</button>
                             </div>
                         </div>
@@ -1380,7 +1397,19 @@ function renderBlock(block) {
                 </div>
                 <div class="footer-bottom">
                     <p class="footer-copy">© 2025 ${c.store_name||'Velonox'}. Todos los derechos reservados.</p>
-                    <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                    <div style="display:flex;align-items:center;gap:1rem">
+                        <div style="display:flex;align-items:center;background:#1A2820;border:1px solid #2A4A38;border-radius:2px;overflow:hidden">
+                            <button id="vx-btn-usd" onclick="setCurrency('USD')"
+                                style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4A6A5A;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                USD
+                            </button>
+                            <button id="vx-btn-cop" onclick="setCurrency('COP')"
+                                style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:#1D7A4F;color:white;font-family:'DM Sans',sans-serif;transition:all .2s">
+                                COP
+                            </button>
+                        </div>
+                        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+                    </div>
                 </div>
             </footer>`;
 
