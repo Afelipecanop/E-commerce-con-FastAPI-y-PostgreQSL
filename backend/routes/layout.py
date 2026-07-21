@@ -845,7 +845,7 @@ CONTENT_PAGE_BLOCKS = {
     </div>
     <div class="footer-bottom">
         <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
-        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+        <div class="footer-social"><a href="https://www.instagram.com/velonox__?igsh=MXhsOXhmcjA5MHI3NA%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener"><i class="ti ti-brand-instagram"></i></a><a href="https://www.tiktok.com/@velonox5?_r=1&amp;_t=ZS-98EK8bwblET" target="_blank" rel="noopener"><i class="ti ti-brand-tiktok"></i></a><a href="https://www.facebook.com/share/1EHVcp5a2P/?mibextid=wwXIfr" target="_blank" rel="noopener"><i class="ti ti-brand-facebook"></i></a></div>
     </div>
 </footer>"""
             }
@@ -907,7 +907,7 @@ CONTENT_PAGE_BLOCKS = {
     </div>
     <div class="footer-bottom">
         <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
-        <div class="footer-social"><i class="ti ti-brand-instagram"></i><i class="ti ti-brand-tiktok"></i><i class="ti ti-brand-facebook"></i></div>
+        <div class="footer-social"><a href="https://www.instagram.com/velonox__?igsh=MXhsOXhmcjA5MHI3NA%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener"><i class="ti ti-brand-instagram"></i></a><a href="https://www.tiktok.com/@velonox5?_r=1&amp;_t=ZS-98EK8bwblET" target="_blank" rel="noopener"><i class="ti ti-brand-tiktok"></i></a><a href="https://www.facebook.com/share/1EHVcp5a2P/?mibextid=wwXIfr" target="_blank" rel="noopener"><i class="ti ti-brand-facebook"></i></a></div>
     </div>
 </footer>"""
             }
@@ -1040,9 +1040,9 @@ CONTENT_PAGE_BLOCKS = {
     <div class="footer-bottom">
         <p class="footer-copy">© 2026 Velonox. Todos los derechos reservados.</p>
         <div class="footer-social">
-            <i class="ti ti-brand-instagram"></i>
-            <i class="ti ti-brand-tiktok"></i>
-            <i class="ti ti-brand-facebook"></i>
+            <a href="https://www.instagram.com/velonox__?igsh=MXhsOXhmcjA5MHI3NA%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener"><i class="ti ti-brand-instagram"></i></a>
+            <a href="https://www.tiktok.com/@velonox5?_r=1&amp;_t=ZS-98EK8bwblET" target="_blank" rel="noopener"><i class="ti ti-brand-tiktok"></i></a>
+            <a href="https://www.facebook.com/share/1EHVcp5a2P/?mibextid=wwXIfr" target="_blank" rel="noopener"><i class="ti ti-brand-facebook"></i></a>
         </div>
     </div>
 </footer>"""
