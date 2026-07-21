@@ -326,7 +326,7 @@
         </div>
         <div class="summary-footer">
             <div class="trust-row"><i class="ti ti-shield-check"></i> Compra 100% segura</div>
-            <div class="trust-row"><i class="ti ti-truck"></i> Envío gratis desde $80.000 COP</div>
+            <div class="trust-row"><i class="ti ti-truck"></i> Envío gratis desde $30 USD</div>
             <div class="trust-row"><i class="ti ti-refresh"></i> 30 días para devoluciones</div>
         </div>
     </div>
@@ -417,7 +417,7 @@ function renderSummary() {
     container.innerHTML = html;
     document.getElementById("summary-subtotal").textContent = vxPrice(total);
     document.getElementById("summary-total").textContent = vxPrice(total);
-    document.getElementById("summary-envio").textContent = total >= 28 ? "Gratis" : vxPrice(5);
+    document.getElementById("summary-envio").textContent = total >= 30 ? "Gratis" : vxPrice(5);
 }
 
 // ── Iniciar ───────────────────────────────────────────────────────────────────

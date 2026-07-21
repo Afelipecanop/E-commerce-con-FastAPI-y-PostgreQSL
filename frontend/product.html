@@ -345,7 +345,7 @@ function getProductId() {
 
 function updateFreeShippingBadge() {
     const el = document.getElementById("trust-free-shipping");
-    if (el) el.textContent = "Pedidos +" + vxPrice(80);
+    if (el) el.textContent = "Pedidos +" + vxPrice(30);
 }
 
 // ── Inicialización ────────────────────────────────────────────────────────────
@@ -467,7 +467,7 @@ function renderProduct(product, page) {
 
                 <div class="price-row">
                     <span class="price-main">${vxPrice(product.price)}</span>
-                    <span class="price-save">Envío gratis +$80</span>
+                    <span class="price-save">Envío gratis +$30</span>
                 </div>
 
                 <div class="stock-indicator ${inStock ? 'in-stock' : 'out-stock'}">
@@ -521,7 +521,7 @@ function renderProduct(product, page) {
                     <div class="trust-badge">
                         <i class="ti ti-truck"></i>
                         <strong>Envío gratis</strong>
-                        <span id="trust-free-shipping">Pedidos +$80 USD</span>
+                        <span id="trust-free-shipping">Pedidos +$30 USD</span>
                     </div>
                     <div class="trust-badge">
                         <i class="ti ti-shield-check"></i>

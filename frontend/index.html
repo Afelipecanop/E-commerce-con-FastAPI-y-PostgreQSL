@@ -320,6 +320,14 @@ window.animateCards = animateCards;
                 const el = renderLayoutBlock(block, products);
                 if (el) container.appendChild(el);
             }
+            // Los <script> insertados vía innerHTML no se ejecutan; hay que
+            // recrearlos para que las secciones personalizadas (custom_html) corran.
+            container.querySelectorAll("script").forEach(oldScript => {
+                const newScript = document.createElement("script");
+                for (const attr of oldScript.attributes) newScript.setAttribute(attr.name, attr.value);
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
             if (window.animateCards) window.animateCards(".prod-card, .cat-card");
         } catch(e) {
             console.error("Error cargando layout:", e);
@@ -328,7 +336,7 @@ window.animateCards = animateCards;
 
     function updateFreeShippingBadge() {
         const el = document.getElementById("trust-free-shipping");
-        if (el) el.textContent = vxPrice(80);
+        if (el) el.textContent = vxPrice(30);
     }
 
     const KNOWN_CAT_SLUGS = ["ollas", "sartenes", "utensilios", "accesorios"];

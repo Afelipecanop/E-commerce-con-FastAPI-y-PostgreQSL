@@ -437,7 +437,7 @@ CONTENT_PAGE_BLOCKS = {
             <div><p class="section-eyebrow">Política de envíos</p><h2 class="section-title">Envíos y tiempos de entrega</h2></div>
         </div>
         <div class="policy-text">
-            <div class="highlight"><i class="ti ti-info-circle"></i><p><strong>Envío gratis</strong> en todos los pedidos mayores a $80 USD. Para pedidos menores, el costo de envío se calcula al momento del checkout según tu ubicación.</p></div>
+            <div class="highlight"><i class="ti ti-info-circle"></i><p><strong>Envío gratis</strong> en todos los pedidos mayores a $30 USD. Para pedidos menores, el costo de envío se calcula al momento del checkout según tu ubicación.</p></div>
             <div class="info-cards">
                 <div class="info-card"><i class="ti ti-map-pin"></i><strong>Colombia</strong><span>2 a 5 días hábiles</span></div>
                 <div class="info-card"><i class="ti ti-world"></i><strong>México · Perú · Chile</strong><span>7 a 15 días hábiles</span></div>
@@ -454,10 +454,10 @@ CONTENT_PAGE_BLOCKS = {
             <table class="policy-table">
                 <thead><tr><th>País</th><th>Tiempo estimado</th><th>Envío gratis desde</th></tr></thead>
                 <tbody>
-                    <tr><td>🇨🇴 Colombia</td><td>2 a 5 días hábiles</td><td>$80 USD</td></tr>
-                    <tr><td>🇲🇽 México</td><td>7 a 12 días hábiles</td><td>$80 USD</td></tr>
-                    <tr><td>🇵🇪 Perú</td><td>8 a 15 días hábiles</td><td>$80 USD</td></tr>
-                    <tr><td>🇨🇱 Chile</td><td>7 a 12 días hábiles</td><td>$80 USD</td></tr>
+                    <tr><td>🇨🇴 Colombia</td><td>2 a 5 días hábiles</td><td>$30 USD</td></tr>
+                    <tr><td>🇲🇽 México</td><td>7 a 12 días hábiles</td><td>$30 USD</td></tr>
+                    <tr><td>🇵🇪 Perú</td><td>8 a 15 días hábiles</td><td>$30 USD</td></tr>
+                    <tr><td>🇨🇱 Chile</td><td>7 a 12 días hábiles</td><td>$30 USD</td></tr>
                 </tbody>
             </table>
             <div class="warning"><i class="ti ti-alert-triangle"></i><p>Los tiempos de entrega son estimados y pueden variar por factores externos como aduanas, condiciones climáticas o temporadas de alta demanda. Si tu país no aparece en la lista, escríbenos — buscamos una solución.</p></div>
@@ -707,7 +707,7 @@ CONTENT_PAGE_BLOCKS = {
             <ul>
                 <li>Colombia: 2 a 5 días hábiles desde el despacho.</li>
                 <li>México, Perú, Chile: 7 a 15 días hábiles desde el despacho.</li>
-                <li>El envío es gratuito en pedidos mayores a $80 USD.</li>
+                <li>El envío es gratuito en pedidos mayores a $30 USD.</li>
                 <li>Recibirás un número de guía de seguimiento por email una vez despachado tu pedido.</li>
             </ul>
             <p>Velonox no se hace responsable por paquetes extraviados una vez entregados a la empresa transportista, aunque haremos todo lo posible por ayudarte a rastrear y recuperar tu envío.</p>
@@ -822,7 +822,7 @@ CONTENT_PAGE_BLOCKS = {
 <div class="strip">
     <div class="strip-inner">
         <div class="strip-item"><i class="ti ti-certificate"></i><strong>Acero 304 certificado</strong><span>Grado alimentario en cada producto</span></div>
-        <div class="strip-item"><i class="ti ti-truck"></i><strong>Envío gratis</strong><span>En compras desde $80.000 COP</span></div>
+        <div class="strip-item"><i class="ti ti-truck"></i><strong>Envío gratis</strong><span>En compras desde $30 USD</span></div>
         <div class="strip-item"><i class="ti ti-shield-check"></i><strong>Garantía 1 año</strong><span>Contra defectos de fabricación</span></div>
         <div class="strip-item"><i class="ti ti-refresh"></i><strong>30 días devolución</strong><span>Sin preguntas, sin complicaciones</span></div>
     </div>
