@@ -162,6 +162,9 @@
         .footer-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700}
         .footer-logo .a{color:#C8D8C0}.footer-logo .b{color:#1D7A4F}
         footer p{font-size:11px;color:#2A4A38}
+        .footer-social{display:flex;gap:12px}
+        .footer-social i{font-size:18px;color:#2A4A38;cursor:pointer;transition:color .2s}
+        .footer-social i:hover{color:#1D7A4F}
 
         /* LOADING / ERROR */
         .loading{text-align:center;padding:4rem 2rem;color:#6B8A7A}
@@ -417,6 +420,7 @@ async function init() {
         document.getElementById("breadcrumb-name").textContent = product.name;
 
         renderProduct(product, page);
+        updateCurrencyToggle(); // el footer con el toggle recién existe tras renderProduct()
         loadRelatedProducts(productId);
 
     } catch(e) {
@@ -636,8 +640,27 @@ function renderProduct(product, page) {
 
         <!-- FOOTER -->
         <footer>
-            <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
-            <p>© 2025 Velonox · Cocina de por vida</p>
+            <div>
+                <div class="footer-logo"><span class="a">Velo</span><span class="b">nox</span></div>
+                <p>© 2025 Velonox · Cocina de por vida</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem">
+                <div style="display:flex;align-items:center;background:#1A2820;border:1px solid #2A4A38;border-radius:2px;overflow:hidden">
+                    <button id="vx-btn-usd" onclick="setCurrency('USD')"
+                        style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4A6A5A;font-family:'DM Sans',sans-serif;transition:all .2s">
+                        USD
+                    </button>
+                    <button id="vx-btn-cop" onclick="setCurrency('COP')"
+                        style="padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:#1D7A4F;color:white;font-family:'DM Sans',sans-serif;transition:all .2s">
+                        COP
+                    </button>
+                </div>
+                <div class="footer-social">
+                    <i class="ti ti-brand-instagram"></i>
+                    <i class="ti ti-brand-tiktok"></i>
+                    <i class="ti ti-brand-facebook"></i>
+                </div>
+            </div>
         </footer>
     `;
 }
