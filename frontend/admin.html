@@ -71,6 +71,8 @@
         .btn-save{display:flex;align-items:center;gap:.4rem;background:var(--green);color:#fff;border:none;
             padding:.5rem 1.1rem;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:background .15s}
         .btn-save:hover{background:var(--green-hi)}
+        .btn-save:disabled{opacity:.55;cursor:not-allowed}
+        .btn-save:disabled:hover{background:var(--green)}
         .btn-save i,.btn-ghost-top i{font-size:16px}
 
         /* ── Layout principal ── */
@@ -259,7 +261,8 @@
     <div class="spacer"></div>
     <div class="actions">
         <button class="btn-ghost-top" onclick="openPreview()"><i class="ti ti-external-link"></i>Ver tienda</button>
-        <button class="btn-save" onclick="saveLayout()"><i class="ti ti-device-floppy"></i>Guardar cambios</button>
+        <button class="btn-ghost-top" onclick="openHistoryModal()"><i class="ti ti-history"></i>Historial</button>
+        <button class="btn-save" id="btn-save-layout" onclick="saveLayout()"><i class="ti ti-device-floppy"></i>Guardar cambios</button>
     </div>
 </div>
 
@@ -617,6 +620,26 @@
     </div>
 </div>
 
+<!-- ── Modal Historial / Revertir ── -->
+<div id="history-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="ti ti-history"></i>Historial de cambios</h3>
+            <button class="modal-close" onclick="closeHistoryModal()"><i class="ti ti-x"></i></button>
+        </div>
+        <p class="side-hint" style="margin-bottom:1rem">
+            Versiones guardadas de <strong id="history-page-name"></strong>. Restaurar reemplaza el contenido
+            actual — tu estado actual también queda guardado en el historial antes de restaurar, así que nunca se pierde.
+        </p>
+        <div id="history-list" style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.2rem"></div>
+        <div style="border-top:1px solid var(--line);padding-top:1rem">
+            <button class="btn-del" style="width:100%;justify-content:center" onclick="resetToDefault()">
+                <i class="ti ti-refresh-alert"></i>Restablecer esta página a los valores de fábrica
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ── Toast ── -->
 <div class="toast" id="toast"></div>
 
@@ -631,6 +654,7 @@ let currentDevice = 'desktop';
 let previewProducts = [];   // productos reales para el preview en vivo
 let currentPage = '__live__';
 let editingProductId = null;   // id del producto en edición, null = modo crear
+let isLayoutLoading = false;   // evita que "Guardar" sobreescriba con datos a medio cargar
 
 // ── Páginas editables con bloques (slug de backend + archivo real) ────────────
 const EDITABLE_PAGES = {
@@ -747,13 +771,27 @@ async function init() {
 // ── Layout ────────────────────────────────────────────────────────────────────
 async function loadLayout() {
     const page = EDITABLE_PAGES[currentPage] || EDITABLE_PAGES.__live__;
+    isLayoutLoading = true;
+    updateSaveButtonState();
     try {
         const blocks = await apiFetch(`/layout/?page=${page.slug}`);
         layout = blocks;
         selectedBlockId = null;
         renderLayers();
         renderProps();
-    } catch(e) { showToast("Error cargando el layout", "error"); }
+    } catch(e) {
+        showToast("Error cargando el layout", "error");
+    } finally {
+        isLayoutLoading = false;
+        updateSaveButtonState();
+    }
+}
+
+// Mientras el layout está cargando, deshabilita "Guardar" — evita que un save
+// disparado antes de que termine loadLayout() sobreescriba la página con datos a medio cargar.
+function updateSaveButtonState() {
+    const btn = document.getElementById("btn-save-layout");
+    if (btn) btn.disabled = isLayoutLoading;
 }
 
 function renderLayers() {
@@ -1269,6 +1307,10 @@ async function saveLayout() {
         showToast("Esta vista es solo de previsualización, no se puede guardar", "error");
         return;
     }
+    if (isLayoutLoading) {
+        showToast("Espera a que termine de cargar el editor antes de guardar", "error");
+        return;
+    }
     try {
         layout.forEach((b, i) => b.order_index = i);
         await apiFetch(`/layout/?page=${page.slug}`, {
@@ -1279,6 +1321,77 @@ async function saveLayout() {
         renderPreview();
     } catch(e) {
         showToast("Error guardando: " + e.message, "error");
+    }
+}
+
+// ── Historial / Revertir cambios ─────────────────────────────────────────────
+async function openHistoryModal() {
+    const page = EDITABLE_PAGES[currentPage];
+    if (!page) {
+        showToast("Esta vista es solo de previsualización, no tiene historial", "error");
+        return;
+    }
+    document.getElementById("history-page-name").textContent = page.file;
+    document.getElementById("history-modal").style.display = "flex";
+    await loadHistoryList(page.slug);
+}
+
+function closeHistoryModal() {
+    document.getElementById("history-modal").style.display = "none";
+}
+
+async function loadHistoryList(slug) {
+    const list = document.getElementById("history-list");
+    list.innerHTML = `<div class="no-selection"><i class="ti ti-loader-2"></i>Cargando versiones...</div>`;
+    try {
+        const versions = await apiFetch(`/layout/history?page=${slug}`);
+        if (!versions.length) {
+            list.innerHTML = `<div class="no-selection"><i class="ti ti-history-off"></i>Todavía no hay versiones guardadas de esta página.<br>Se archiva una automáticamente cada vez que guardas cambios.</div>`;
+            return;
+        }
+        list.innerHTML = versions.map(v => {
+            const formatted = new Date(v.created_at).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
+            return `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;border:1px solid var(--line);border-radius:8px">
+                    <div>
+                        <p style="font-size:13px;font-weight:600;color:var(--text);margin:0 0 .2rem">${formatted}</p>
+                        <p style="font-size:11.5px;color:var(--text-2);margin:0">${v.block_count} secciones</p>
+                    </div>
+                    <button class="btn-primary" style="padding:.4rem .8rem;font-size:12.5px" onclick="restoreHistoryVersion('${v.id}')">
+                        <i class="ti ti-arrow-back-up"></i> Restaurar
+                    </button>
+                </div>`;
+        }).join("");
+    } catch(e) {
+        list.innerHTML = `<div class="no-selection"><i class="ti ti-alert-triangle"></i>Error cargando el historial</div>`;
+    }
+}
+
+async function restoreHistoryVersion(historyId) {
+    if (!confirm("¿Restaurar esta versión? Reemplaza el contenido actual de la página (tu estado actual queda guardado en el historial antes de restaurar).")) return;
+    try {
+        await apiFetch(`/layout/restore/${historyId}`, { method: "POST" });
+        showToast("Versión restaurada", "success");
+        closeHistoryModal();
+        await loadLayout();
+        await renderPreview();
+    } catch(e) {
+        showToast("Error restaurando: " + e.message, "error");
+    }
+}
+
+async function resetToDefault() {
+    const page = EDITABLE_PAGES[currentPage];
+    if (!page) return;
+    if (!confirm(`¿Restablecer "${page.file}" a los valores de fábrica? Quita todas las secciones personalizadas actuales (quedan guardadas en el historial por si quieres recuperarlas).`)) return;
+    try {
+        await apiFetch(`/layout/reset?page=${page.slug}`, { method: "POST" });
+        showToast("Página restablecida a los valores de fábrica", "success");
+        closeHistoryModal();
+        await loadLayout();
+        await renderPreview();
+    } catch(e) {
+        showToast("Error restableciendo: " + e.message, "error");
     }
 }
 

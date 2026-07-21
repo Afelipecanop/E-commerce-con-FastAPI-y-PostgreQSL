@@ -14,3 +14,13 @@ class StoreLayout(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     page_slug = Column(String, nullable=True, default="home")
+
+
+class StoreLayoutHistory(Base):
+    """Snapshot del layout de una página justo antes de sobreescribirlo o restaurarlo, para poder revertir."""
+    __tablename__ = "store_layout_history"
+
+    id = Column(String, primary_key=True)
+    page_slug = Column(String, nullable=False, index=True)
+    blocks = Column(Text, nullable=False)  # JSON: lista de bloques tal como estaban antes del cambio
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -8,11 +8,54 @@ import os
 import requests as http_requests
 
 from database import get_db
-from models.layout import StoreLayout
+from models.layout import StoreLayout, StoreLayoutHistory
 from schemas.layout import LayoutUpdate, BlockResponse, BlockConfig, AIGenerateRequest
 from middleware.auth import get_current_admin
 
 router = APIRouter(prefix="/layout", tags=["Layout de la tienda"])
+
+# Cuántas versiones anteriores se conservan por página en el historial
+MAX_HISTORY_PER_PAGE = 20
+
+
+def _snapshot_current_layout(db: Session, page: str) -> None:
+    """Guarda el estado actual de una página como una versión de historial antes de sobreescribirlo."""
+    blocks = (
+        db.query(StoreLayout)
+        .filter(StoreLayout.page_slug == page)
+        .order_by(StoreLayout.order_index)
+        .all()
+    )
+    if not blocks:
+        return
+
+    snapshot = [
+        {
+            "id": b.id,
+            "block_type": b.block_type,
+            "order_index": b.order_index,
+            "is_visible": b.is_visible,
+            "config": json.loads(b.config),
+        }
+        for b in blocks
+    ]
+    db.add(StoreLayoutHistory(
+        id=str(uuid.uuid4()),
+        page_slug=page,
+        blocks=json.dumps(snapshot),
+    ))
+    db.flush()
+
+    # Poda versiones viejas, nos quedamos solo con las últimas MAX_HISTORY_PER_PAGE
+    old_versions = (
+        db.query(StoreLayoutHistory)
+        .filter(StoreLayoutHistory.page_slug == page)
+        .order_by(StoreLayoutHistory.created_at.desc())
+        .offset(MAX_HISTORY_PER_PAGE)
+        .all()
+    )
+    for old in old_versions:
+        db.delete(old)
 
 
 @router.post("/generate-block")
@@ -1127,8 +1170,11 @@ def update_layout(
     """
     Guarda el layout completo de una página.
     Reemplaza todos los bloques existentes de esa página con los nuevos.
+    Antes de sobreescribir, archiva el estado actual en el historial (ver /layout/history).
     Solo administradores.
     """
+    _snapshot_current_layout(db, page)
+
     # Borra los bloques actuales de esta página únicamente
     db.query(StoreLayout).filter(StoreLayout.page_slug == page).delete()
 
@@ -1146,6 +1192,79 @@ def update_layout(
 
     db.commit()
     return {"mensaje": "Layout guardado ✅"}
+
+
+@router.get("/history")
+def get_layout_history(
+    page: str = "home",
+    db: Session = Depends(get_db),
+    admin=Depends(get_current_admin)
+):
+    """Lista las versiones guardadas de una página, más reciente primero. Solo administradores."""
+    rows = (
+        db.query(StoreLayoutHistory)
+        .filter(StoreLayoutHistory.page_slug == page)
+        .order_by(StoreLayoutHistory.created_at.desc())
+        .all()
+    )
+    result = []
+    for row in rows:
+        blocks = json.loads(row.blocks)
+        result.append({
+            "id": row.id,
+            "created_at": row.created_at.isoformat() if row.created_at else None,
+            "block_count": len(blocks),
+            "block_types": [b["block_type"] for b in blocks],
+        })
+    return result
+
+
+@router.post("/restore/{history_id}")
+def restore_layout(
+    history_id: str,
+    db: Session = Depends(get_db),
+    admin=Depends(get_current_admin)
+):
+    """Restaura una versión anterior del layout de una página. Solo administradores."""
+    version = db.query(StoreLayoutHistory).filter(StoreLayoutHistory.id == history_id).first()
+    if not version:
+        raise HTTPException(status_code=404, detail="Versión no encontrada")
+
+    page = version.page_slug
+    # Archiva el estado actual antes de restaurar, para poder deshacer la restauración también
+    _snapshot_current_layout(db, page)
+
+    db.query(StoreLayout).filter(StoreLayout.page_slug == page).delete()
+    blocks = json.loads(version.blocks)
+    for i, block in enumerate(blocks):
+        db.add(StoreLayout(
+            id=block.get("id") or str(uuid.uuid4()),
+            page_slug=page,
+            block_type=block["block_type"],
+            order_index=i,
+            is_visible=block.get("is_visible", True),
+            config=json.dumps(block["config"]),
+        ))
+
+    db.commit()
+    return {"mensaje": "Versión restaurada ✅"}
+
+
+@router.post("/reset")
+def reset_layout(
+    page: str = "home",
+    db: Session = Depends(get_db),
+    admin=Depends(get_current_admin)
+):
+    """
+    Borra los bloques guardados de una página para que vuelva a los bloques
+    por defecto de fábrica en la siguiente carga. El estado actual queda
+    archivado en el historial por si se quiere deshacer. Solo administradores.
+    """
+    _snapshot_current_layout(db, page)
+    db.query(StoreLayout).filter(StoreLayout.page_slug == page).delete()
+    db.commit()
+    return {"mensaje": "Página restablecida a los valores de fábrica ✅"}
 
 
 @router.post("/blocks")
