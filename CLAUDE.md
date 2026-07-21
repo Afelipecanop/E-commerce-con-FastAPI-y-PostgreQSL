@@ -56,3 +56,6 @@ No bundler, no framework — plain `.html` files each with inline `<script>`/`<s
 ## Deployment
 
 Backend: Railway (`backend/procfile` runs migrations then `uvicorn`). Frontend: Cloudflare Pages, static (`frontend/_redirects` has a catch-all 404 rule, no SPA fallback to any page). Cloudflare Web Analytics is embedded in the frontend pages.
+
+## Idiome
+Spanish
