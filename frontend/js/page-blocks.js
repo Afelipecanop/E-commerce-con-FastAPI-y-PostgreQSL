@@ -12,6 +12,15 @@ async function initPageBlocks(slug) {
             .filter(b => b.is_visible)
             .map(b => renderPageBlock(b))
             .join("\n");
+
+        container.querySelectorAll("script").forEach(oldScript => {
+            const newScript = document.createElement("script");
+            for (const attr of oldScript.attributes) {
+                newScript.setAttribute(attr.name, attr.value);
+            }
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
     } catch (e) {
         console.error("Error cargando contenido de la página:", e);
     }
