@@ -104,7 +104,7 @@
     <div class="nav-links">
         <a href="/index.html">Inicio</a>
         <a href="/categorias.html" class="active">Cocina</a>
-        <a href="/tienda.html">Catálogo</a>
+        <a href="/catalogo.html">Catálogo</a>
         <a href="/index.html">Sets</a>
         <a href="/nosotros.html">Nosotros</a>
     </div>
@@ -175,7 +175,7 @@ async function loadCategories() {
             const count = allProducts.filter(p => p.category === cat.slug).length;
             const icon = cat.icon || CAT_ICONS[cat.slug] || "ti ti-tools-kitchen-2";
             return `
-            <a href="/catalogo.html?cat=${cat.slug}" class="cat-card">
+            <a href="/categoria.html?cat=${cat.slug}" class="cat-card">
                 <div class="cat-card-img">
                     ${cat.image_url
                         ? `<img src="${cat.image_url}" alt="${cat.name}">`

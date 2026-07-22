@@ -185,7 +185,7 @@
     <a href="/index.html" class="nav-logo"><span class="a">Velo</span><span class="b">nox</span></a>
     <div class="nav-links">
         <a href="/categorias.html">Cocina</a>
-        <a href="/tienda.html">Catálogo</a>
+        <a href="/catalogo.html">Catálogo</a>
         <a href="/sets.html">Sets</a>
         <a href="/regalos.html">Regalos</a>
         <a href="/nosotros.html">Nosotros</a>
@@ -440,7 +440,7 @@ window.animateCards = animateCards;
                         <div class="sec-header"><h2 class="sec-title">${c.title}</h2></div>
                         <div class="cat-grid">
                             ${cats.map(cat=>`
-                            <a href="/catalogo.html?cat=${categorySlug(cat)}" class="cat-card">
+                            <a href="/categoria.html?cat=${categorySlug(cat)}" class="cat-card">
                                 <div class="cat-icon"><i class="ti ti-tools-kitchen-2"></i></div>
                                 <p class="cat-name">${cat}</p>
                             </a>`).join('')}

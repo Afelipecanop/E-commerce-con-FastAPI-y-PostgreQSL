@@ -1052,7 +1052,7 @@ CONTENT_PAGE_BLOCKS = {
             <p class="footer-tagline">Cocina de por vida.</p>
         </div>
         <div class="footer-col"><p>Tienda</p>
-            <a href="tienda.html">Todos los productos</a>
+            <a href="catalogo.html">Todos los productos</a>
             <a href="categorias.html">Categorías</a>
             <a href="index.html">Inicio</a>
         </div>
