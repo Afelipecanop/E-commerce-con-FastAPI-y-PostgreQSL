@@ -1,0 +1,46 @@
+/* Fix responsive del grid/tarjeta de producto (.prod-grid / .prod-card / #vx-products-grid).
+   Compartido por index.html, tienda.html, catalogo.html y regalos.html — se enlaza
+   después del <style> propio de cada página para poder sobreescribir sus reglas
+   sin duplicar el resto del componente. */
+
+@media (max-width: 600px) {
+    .prod-grid,
+    #vx-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    /* Precios en COP son largos ($1,250,000 COP) — en tarjetas angostas
+       el precio va arriba y el botón "Agregar" ocupa la fila completa debajo. */
+    .prod-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .4rem;
+    }
+
+    .prod-btn {
+        align-self: stretch;
+        text-align: center;
+    }
+}
+
+.prod-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.prod-row {
+    gap: .5rem;
+}
+
+.prod-price {
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+.prod-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
