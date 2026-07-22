@@ -113,37 +113,27 @@ Responde SOLO con un objeto JSON con esta estructura exacta, sin explicaciones n
             
         return parsed
 
-# Bloques por defecto que tiene la tienda al inicio
+# Bloques por defecto que tiene la tienda al inicio (diseño original de Velonox,
+# no un placeholder genérico — ver renderLayoutBlock() en index.html para el HTML real).
 DEFAULT_BLOCKS = [
-    {
-        "id": "block-announcement",
-        "block_type": "announcement_bar",
-        "order_index": 0,
-        "is_visible": True,
-        "config": {
-            "text": "🚚 Envío gratis en compras mayores a $50",
-            "background_color": "#2563eb",
-            "text_color": "#ffffff"
-        }
-    },
     {
         "id": "block-banner",
         "block_type": "hero_banner",
-        "order_index": 1,
+        "order_index": 0,
         "is_visible": True,
         "config": {
-            "title": "Bienvenido a nuestra tienda",
-            "subtitle": "Descubre nuestra colección exclusiva",
+            "title": "Cocina de",
+            "subtitle": "por vida.",
             "button_text": "Ver productos",
             "image_url": "",
-            "background_color": "#1e293b",
+            "background_color": "#0F1A14",
             "text_color": "#ffffff"
         }
     },
     {
         "id": "block-products",
         "block_type": "product_grid",
-        "order_index": 2,
+        "order_index": 1,
         "is_visible": True,
         "config": {
             "title": "Nuestros productos",
@@ -153,48 +143,49 @@ DEFAULT_BLOCKS = [
         }
     },
     {
-        "id": "block-text",
-        "block_type": "text_section",
-        "order_index": 3,
-        "is_visible": False,
+        "id": "block-why",
+        "block_type": "custom_html",
+        "order_index": 2,
+        "is_visible": True,
         "config": {
-            "title": "Sobre nosotros",
-            "content": "Somos una tienda dedicada a ofrecerte los mejores productos.",
-            "background_color": "#f8fafc",
-            "text_align": "center"
-        }
-    },
-    {
-        "id": "block-testimonials",
-        "block_type": "testimonials",
-        "order_index": 4,
-        "is_visible": False,
-        "config": {
-            "title": "Lo que dicen nuestros clientes",
-            "items": [
-                {
-                    "name": "María García",
-                    "text": "Excelente servicio y productos de calidad.",
-                    "rating": 5
-                },
-                {
-                    "name": "Carlos López",
-                    "text": "Muy buena experiencia de compra.",
-                    "rating": 5
-                }
-            ]
+            "css": "",
+            "html": """<section style="background:#0F1A14;padding:3.5rem 2rem" id="why">
+    <h2 style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#C8D8C0;margin-bottom:2rem">¿Por qué acero inoxidable?</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:#1A2820">
+        <div style="background:#0F1A14;padding:1.5rem;display:flex;flex-direction:column;gap:.75rem">
+            <p style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#1D7A4F;line-height:1">0</p>
+            <p style="font-size:14px;font-weight:500;color:#C8D8C0;line-height:1.4">Tóxicos liberados al cocinar</p>
+            <p style="font-size:12px;color:#4A6A5A;line-height:1.6">El teflón libera PFAS a temperaturas comunes. El acero 304 es inerte: no reacciona con los alimentos.</p>
+        </div>
+        <div style="background:#0F1A14;padding:1.5rem;display:flex;flex-direction:column;gap:.75rem">
+            <p style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#1D7A4F;line-height:1">25+</p>
+            <p style="font-size:14px;font-weight:500;color:#C8D8C0;line-height:1.4">Años de vida útil promedio</p>
+            <p style="font-size:12px;color:#4A6A5A;line-height:1.6">Una buena sartén de acero dura décadas con uso correcto. El teflón: 2–5 años.</p>
+        </div>
+        <div style="background:#0F1A14;padding:1.5rem;display:flex;flex-direction:column;gap:.75rem">
+            <p style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#1D7A4F;line-height:1">100%</p>
+            <p style="font-size:14px;font-weight:500;color:#C8D8C0;line-height:1.4">Compatible con inducción</p>
+            <p style="font-size:12px;color:#4A6A5A;line-height:1.6">Funciona en todas las fuentes de calor: inducción, vitrocerámica, gas y horno.</p>
+        </div>
+        <div style="background:#0F1A14;padding:1.5rem;display:flex;flex-direction:column;gap:.75rem">
+            <p style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#1D7A4F;line-height:1">↑</p>
+            <p style="font-size:14px;font-weight:500;color:#C8D8C0;line-height:1.4">Retención de calor superior</p>
+            <p style="font-size:12px;color:#4A6A5A;line-height:1.6">El acero de triple capa distribuye el calor de forma uniforme, eliminando puntos quemados.</p>
+        </div>
+    </div>
+</section>"""
         }
     },
     {
         "id": "block-footer",
         "block_type": "footer",
-        "order_index": 5,
+        "order_index": 3,
         "is_visible": True,
         "config": {
-            "store_name": "Mi Tienda",
-            "tagline": "Tu tienda de confianza",
-            "email": "contacto@mitienda.com",
-            "background_color": "#1e293b",
+            "store_name": "Velonox",
+            "tagline": "Cocina de por vida.",
+            "email": "contacto@velonox.com",
+            "background_color": "#0F1A14",
             "text_color": "#94a3b8"
         }
     }
