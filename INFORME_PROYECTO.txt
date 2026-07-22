@@ -1,28 +1,27 @@
 ﻿================================================================================
 INFORME DETALLADO DEL PROYECTO E-COMMERCE CON FASTAPI Y POSTGRESQL
-Fecha de Actualización: Julio 16, 2026
+Fecha de Actualización: Julio 21, 2026
 ================================================================================
 
 1. DESCRIPCIÓN GENERAL
 ================================================================================
 
 Proyecto e-commerce en desarrollo activo, con backend desarrollado en FastAPI,
-PostgreSQL como motor de base de datos y un frontend en HTML, CSS y JavaScript
-vanilla. La plataforma permite gestionar usuarios, catálogo de productos, categorías,
-carrito, pagos, checkout invitado, contenido visual de la tienda, páginas de producto
-personalizadas, ajustes de configuración y una experiencia de compra más completa
-para clientes y administradores.
+PostgreSQL como motor de base de datos y un frontend estático en HTML, CSS y
+JavaScript vanilla. La plataforma permite gestionar usuarios, catálogo de productos,
+categorías, carrito, pagos, checkout invitado, contenido visual de la tienda,
+páginas de producto personalizadas, ajustes de configuración, métricas de negocio
+y una experiencia de compra más completa para clientes y administradores.
 
-Estado actual: aproximadamente 98% del MVP funcional.
-- Backend: ~97% funcional
-- Frontend público: ~96% funcional
-- Panel de administración: ~95% funcional
-- Integraciones externas: activas y en uso
-- Testing automatizado: 0% (sin suite implementada aún)
+Estado actual: MVP funcional con módulos principales operativos.
+- Backend: funcional y en uso para la experiencia comercial principal
+- Frontend público: funcional y alineado con la experiencia de compra
+- Panel de administración: operativo para gestión de productos, layout y ajustes
+- Integraciones externas: activas para pagos (Bold), fulfillment (Dropi), TRM y IA
+- Testing automatizado: 0% (sin suite implementada en este repositorio)
 
-El proyecto se encuentra en una etapa madura de desarrollo, con módulos principales
-operativos y con una base sólida para seguir escalando con nuevas mejoras y una
-implementación más robusta en producción.
+El proyecto se encuentra en una etapa madura de desarrollo, con una base sólida para
+seguir escalando con nuevas mejoras y una implementación más robusta en producción.
 
 
 2. PROPÓSITO Y ALCANCE
@@ -32,10 +31,10 @@ OBJETIVOS PRINCIPALES:
 [OK] Plataforma e-commerce con catálogo, carrito, checkout y pagos
 [OK] Registro e inicio de sesión con autenticación JWT
 [OK] Gestión de productos, categorías y contenido visual desde un panel admin
-[OK] Editor de layout con bloques dinámicos y generación asistida por IA
-[OK] Integración con Stripe para pagos y webhooks de confirmación
-[OK] Flujo completo de compra y confirmación de órdenes
-[OK] Gestión de páginas de producto, métricas de negocio y ajustes de tienda
+[OK] Editor de layout con bloques dinámicos, historial y restauración
+[OK] Integración con Bold para pagos y webhooks de confirmación
+[OK] Flujo completo de compra y confirmación de órdenes con Dropi
+[OK] Gestión de páginas de producto, métricas de negocio, TRM y ajustes de tienda
 [OK] Checkout invitado para pedidos sin registro previo
 
 CASO DE USO:
@@ -44,7 +43,7 @@ Tienda online B2C donde:
   pueden hacer pedidos como invitados.
 - ADMINS: gestionan productos, editan la experiencia visual de la tienda,
   generan nuevas secciones de contenido, revisan métricas del negocio y ajustan
-  configuración general de la marca.
+  la configuración general de la marca.
 
 
 3. ARQUITECTURA TÉCNICA
@@ -63,7 +62,8 @@ BASE DE DATOS:
 - carts y cart_items: carrito de compras por usuario
 - orders y order_items: órdenes y detalle de compra
 - store_layout: bloques dinámicos del layout de la tienda
-- product_pages: configuraciones adicionales del contenido de páginas de producto
+- store_layout_history: snapshot del estado anterior al guardar cambios
+- product_pages: contenido enriquecido de páginas de producto
 - store_settings: configuraciones generales de la tienda y parámetros comerciales
 
 PRINCIPALES FUNCIONALIDADES BACKEND:
@@ -73,19 +73,19 @@ PRINCIPALES FUNCIONALIDADES BACKEND:
 - Gestión de carrito con validación de stock
 - Creación de órdenes y flujo de checkout
 - Checkout invitado con creación automática de cuenta y envío de correos
-- Confirmación de pagos y actualización del estado de órdenes vía webhooks
-- Gestión de bloques del layout con persistencia en base de datos
+- Confirmación de pagos y actualización del estado de órdenes vía webhooks de Bold
+- Gestión de bloques del layout con persistencia en base de datos y versión histórica
 - Endpoints para generación de contenido con IA
 - Endpoints dinámicos para personalizar páginas de producto
 - Endpoints de métricas para seguimiento del negocio
-- Endpoints de configuración de la tienda, colores y TRM
+- Endpoints de configuración de la tienda, colores, logo, slogan y TRM
 
 SERVICIOS Y CAPAS:
 - Auth service: registro, login y generación de tokens JWT
 - Middleware: protección de rutas por usuario y por administrador
 - Schemas: validación y serialización de datos
 - Models: estructura relacional del negocio
-- Services: envío de correos y lógica de negocio asociada
+- Services: envío de correos, pagos con Bold, fulfillment con Dropi y lógica de negocio asociada
 
 3.2 FRONTEND - HTML/CSS/JavaScript
 ------------------------------------
@@ -94,24 +94,23 @@ El frontend está implementado con HTML semántico, estilos propios y JavaScript
 vanilla para interactuar con la API.
 
 PÁGINAS IMPLEMENTADAS:
-- index.html: catálogo principal y home de la tienda
+- index.html: home de la tienda y catálogo principal
 - login.html: registro e inicio de sesión
 - cart.html: visualización y gestión del carrito
 - checkout.html: flujo de compra y confirmación de pago
 - admin.html: panel administrativo y editor visual
-- product.html: página de detalle de producto con descripción, características,
-  especificaciones y productos relacionados
-- nosotros.html: página institucional con información de marca y propuesta de valor
+- product.html: detalle de producto con descripción, características y productos relacionados
+- nosotros.html: información institucional y propuesta de valor
 - contacto.html: formulario de contacto y canal de comunicación
 - politicas.html y terminos.html: información legal y condiciones de uso
 - regalos.html y sets.html: páginas temáticas de contenido comercial
 
 COMPONENTES DESTACADOS:
-- Diseño responsive
+- Diseño responsive y estilos compartidos
 - Integración con la API para carga dinámica de datos
 - Persistencia de sesión con token de acceso
-- Menú administrativo con vistas de productos, categorías, layout y métricas
-- Experiencia visual más refinada en la página de producto y el editor de layout
+- Menú administrativo con vistas de productos, categorías, layout, métricas y ajustes
+- Experiencia visual refinada en la página de producto y el editor de layout
 
 
 4. FUNCIONALIDADES IMPLEMENTADAS HASTA EL MOMENTO
@@ -129,23 +128,23 @@ COMPONENTES DESTACADOS:
 - Panel administrativo para gestionar el catálogo, el diseño visual y la configuración
 
 4.2 FUNCIONALIDADES AVANZADAS
-- Editor visual del layout de la tienda
-- Bloques editables para secciones de contenido
-- Generación de bloques con IA
+- Editor visual del layout de la tienda con bloques editables y previsualización
+- Historial de versiones del layout y restauración de estados previos
+- Generación de bloques con IA en el backend
 - Página de producto con:
   - galería visual
   - descripción principal
   - sección de especificaciones
   - características destacadas
-  - reseñas de referencia
   - productos relacionados
 - Página institucional de la marca con enfoque comercial y emocional
 - Módulo de métricas para seguimiento de indicadores del negocio
-- Ajustes de tienda con colores, logo, banner, slogan y TRM
+- Ajustes de tienda con colores, logo, banner, slogan, TRM y moneda dinámica USD/COP
 
 4.3 INTEGRACIONES
-- Pagos con Stripe
-- Confirmación de pagos vía webhook
+- Pagos con Bold y firma de integridad para el botón de pago
+- Confirmación de pagos vía webhook y actualización del estado de órdenes
+- Creación de órdenes de envío en Dropi para pago anticipado y contraentrega
 - Manejo de stock al procesar órdenes
 - Integración con IA para generación de contenido visual
 - Envío de correos transaccionales
@@ -162,7 +161,7 @@ COMPONENTES DESTACADOS:
 El proyecto está compuesto por tres capas principales:
 - Capa de frontend: archivos estáticos HTML/CSS/JS servidos desde un hosting estático.
 - Capa de backend: API REST desarrollada con FastAPI y ejecutada mediante Uvicorn.
-- Capa de datos: base de datos PostgreSQL gestionada por un servicio relacional.
+- Capa de datos: base de datos PostgreSQL gestionada por el entorno de ejecución del backend.
 
 La comunicación entre el frontend y el backend se realiza mediante peticiones HTTP
 seguras, con autenticación por token JWT y configuración de CORS para permitir el
@@ -194,9 +193,9 @@ La aplicación depende de variables de entorno para su funcionamiento en distint
 eventos. Entre las más importantes se encuentran:
 - DATABASE_URL: conexión a la base de datos PostgreSQL
 - SECRET_KEY: firma de tokens JWT
-- STRIPE_SECRET_KEY: acceso a la API de Stripe
-- STRIPE_WEBHOOK_SECRET: verificación de eventos webhook
 - FRONTEND_URL: URL base del frontend para redirecciones y CORS
+- BOLD_API_KEY y BOLD_SECRET_KEY: acceso a la API de Bold y verificación de integridad
+- DROPI_BASE_URL y DROPI_API_KEY: integración con Dropi
 - ANTHROPIC_API_KEY: acceso a la integración de IA
 - SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD y SMTP_FROM: envío de correos
 
@@ -235,7 +234,7 @@ PUNTOS FUERTES:
 - El backend expone rutas funcionales para el flujo comercial principal
 - El frontend ya cubre las experiencias clave para clientes y administradores
 - El proyecto demuestra un avance sólido en la implementación del MVP
-- La integración de layout, páginas de producto, métricas y checkout invitado aporta
+- La integración de layout, páginas de producto, métricas, TRM y checkout invitado aporta
   valor real al negocio
 
 MEJORAS PENDIENTES:
@@ -258,7 +257,8 @@ ESTADO GENERAL:
 Este proyecto está organizado como una aplicación web full-stack con una separación
 clara entre frontend, backend, base de datos y documentación. La idea general es que
 el frontend entregue una experiencia comercial y visual al usuario, mientras el
-backend centraliza la lógica de negocio, seguridad, autenticación, pagos y persistencia.
+backend centraliza la lógica de negocio, seguridad, autenticación, pagos, layout y
+persistencia.
 
 7.1 ESTRUCTURA GENERAL DEL REPOSITORIO
 ------------------------------------
@@ -313,9 +313,9 @@ El backend está construido sobre FastAPI y SQLAlchemy, con una organización mo
   - products.py: CRUD de productos
   - categories.py: categorías y productos por categoría
   - cart.py: agregar, actualizar y eliminar productos del carrito
-  - payments.py: checkout con Stripe y webhook de confirmación
+  - payments.py: checkout con Bold, webhook y fulfillment
   - guest_checkout.py: flujo de compra para usuarios no registrados
-  - layout.py: editor visual del layout y generación de bloques con IA
+  - layout.py: editor visual del layout, historial y generación de bloques con IA
   - product_pages.py: páginas de producto personalizadas
   - metrics.py: métricas de negocio para el panel admin
   - settings.py: ajustes de tienda, colores, banner, slogan y TRM
@@ -323,7 +323,10 @@ El backend está construido sobre FastAPI y SQLAlchemy, con una organización mo
 - backend/services/
   Contiene lógica de negocio transversal que no pertenece directamente a una ruta:
   - auth.py: hash de contraseñas, autenticación y generación de tokens JWT
+  - bold.py: firma de integridad y verificación de webhooks de Bold
+  - dropi.py: creación de órdenes de envío con Dropi
   - email.py: envío de correos transaccionales y confirmaciones
+  - settings.py: cálculo y acceso a la TRM
 
 - backend/middleware/
   - auth.py: middleware y dependencias para verificar JWT y roles de usuario/admin
@@ -368,7 +371,7 @@ un framework complejo.
 
 - frontend/js/api.js
   Centraliza la comunicación con la API. Aquí se define el manejo base de peticiones,
-  headers, autenticación y endpoints.
+  headers, autenticación, moneda y endpoints.
 
 - frontend/js/auth.js
   Lógica de sesión, registro, login y protección de vistas.
@@ -405,9 +408,9 @@ realizar cambios seguros:
    - La lógica valida stock antes de registrar cambios.
 
 4. Checkout y pagos
-   - /payments/checkout crea una orden y una sesión de Stripe.
-   - /payments/webhook confirma el pago recibido y actualiza el estado de la orden.
-   - Al confirmar, se descuenta stock y se limpia el carrito.
+   - /payments/checkout crea una orden y prepara el flujo de pago según el método elegido.
+   - /payments/checkout admite pago anticipado (Bold) y contraentrega (confirmación inmediata + Dropi).
+   - /payments/bold/webhook actualiza el estado de la orden y descuenta stock al confirmar el pago.
 
 5. Checkout invitado
    - /guest/checkout permite crear un pedido sin crear una cuenta previa.
@@ -415,14 +418,12 @@ realizar cambios seguros:
      correos de bienvenida y confirmación.
 
 6. Layout y edición visual
+   - /layout/ y /layout/history permiten guardar, restaurar y resetear bloques CMS.
    - /layout/generate-block genera bloques de contenido con IA.
-   - /layout/ y /product_pages/ permiten persistir bloques y contenido personalizado.
    - El frontend admin usa estos endpoints para previsualizar cambios en tiempo real.
 
 7. Ajustes y métricas
-   - /settings/ administra branding, colores, banner y configuración comercial.
-   - /metrics/dashboard devuelve KPIs para el panel administrativo.
-
+   - /settings/ administra branding, colores, banner, configuración comercial y TRM.
 7.5 PUNTOS DE EXTENSIÓN RECOMENDADOS
 ------------------------------------
 

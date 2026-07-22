@@ -1,115 +1,221 @@
-# Velonox Store
+<div align="center">
 
-Proyecto e-commerce en desarrollo activo, construido con FastAPI en el backend, PostgreSQL como base de datos y un frontend estático en HTML, CSS y JavaScript vanilla.
+# 🛍️ Velonox Store
 
-Este repositorio reúne la lógica de negocio de una tienda online con un enfoque comercial completo: autenticación de usuarios, catálogo de productos, categorías, carrito de compras, checkout, pagos, checkout invitado, panel administrativo, edición visual del layout, páginas de producto personalizadas, ajustes de tienda y métricas de negocio.
+**Plataforma de e-commerce full-stack construida con FastAPI, PostgreSQL y JavaScript vanilla**
 
-## Estado actual
+Autenticación · Catálogo · Carrito · Checkout (registrado e invitado) · Pagos · Panel administrativo · CMS visual · Métricas de negocio
 
-El proyecto ya cuenta con una base funcional sólida y varios módulos operativos.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.x-D71F00)](https://www.sqlalchemy.org/)
+[![Alembic](https://img.shields.io/badge/Alembic-Migrations-6BA539)](https://alembic.sqlalchemy.org/)
+[![Vanilla JS](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-F7DF1E?logo=javascript&logoColor=black)](#)
+[![Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?logo=railway&logoColor=white)](https://railway.app/)
+[![Cloudflare Pages](https://img.shields.io/badge/Frontend-Cloudflare%20Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
+[![License](https://img.shields.io/badge/status-en%20desarrollo%20activo-yellow)](#)
 
-- Backend con rutas para autenticación, productos, categorías, carrito, pagos, checkout invitado, layout, páginas de producto, métricas y ajustes de tienda.
-- Frontend público con home, catálogo, categorías, detalle de producto, carrito, checkout, páginas institucionales, contacto, regalos, sets y políticas legales.
-- Panel administrativo para gestionar productos, categorías, bloques visuales, ajustes de tienda y métricas del negocio.
-- Integraciones con Stripe, IA para generación de bloques visuales y analítica web.
-- Se siguen incorporando mejoras de experiencia, estabilidad, diseño, documentación y despliegue.
+</div>
 
-## Características implementadas
+---
+
+## 📌 Tabla de contenidos
+
+- [Sobre el proyecto](#-sobre-el-proyecto)
+- [Estado actual](#-estado-actual)
+- [Arquitectura](#-arquitectura)
+- [Características](#-características)
+- [Stack técnico](#-stack-técnico)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Instalación rápida](#-instalación-rápida)
+- [Variables de entorno](#-variables-de-entorno)
+- [Despliegue](#-despliegue)
+- [Roadmap](#-roadmap)
+
+---
+
+## 🧭 Sobre el proyecto
+
+**Velonox Store** es una tienda online construida desde cero con un enfoque comercial completo: no es solo un catálogo con carrito, sino una plataforma con panel administrativo, edición visual del layout, checkout invitado, integración con pasarelas de pago y fulfillment, y un sistema de moneda dinámico USD/COP.
+
+El backend expone una API REST con **FastAPI** sobre **PostgreSQL** (SQLAlchemy 2.x, patrón síncrono), y el frontend es **HTML, CSS y JavaScript vanilla**, sin frameworks — priorizando control total y rendimiento sobre el "boilerplate" de un SPA.
+
+## 🚦 Estado actual
+
+El proyecto cuenta con una base funcional sólida y varios módulos operativos:
+
+| Módulo | Estado |
+|---|---|
+| Autenticación (JWT) | ✅ Operativo |
+| Catálogo, productos y categorías | ✅ Operativo |
+| Carrito y checkout (registrado / invitado) | ✅ Operativo |
+| Pagos con Bold (webhooks + firma de integridad) | ✅ Operativo |
+| Fulfillment con Dropi | ✅ Operativo |
+| CMS visual del layout (con historial y restauración) | ✅ Operativo |
+| Panel administrativo | ✅ Operativo |
+| Métricas de negocio | ✅ Operativo |
+| Conversión USD/COP vía TRM | ✅ Operativo |
+| Suite de pruebas automatizadas | 🚧 Pendiente |
+
+## 🏗️ Arquitectura
+
+```mermaid
+flowchart LR
+    subgraph Cliente["🌐 Cliente"]
+        FE["Frontend estático\nHTML / CSS / JS vanilla\n(Cloudflare Pages)"]
+    end
+
+    subgraph Servidor["⚙️ Backend — FastAPI (Railway)"]
+        API["API REST"]
+        AUTH["Auth · JWT"]
+        CATALOG["Productos · Categorías · Layout CMS"]
+        CART["Carrito · Checkout · Checkout invitado"]
+        METRICS["Métricas de negocio"]
+    end
+
+    DB[("🗄️ PostgreSQL")]
+    BOLD["💳 Bold\nPagos + Webhooks"]
+    DROPI["📦 Dropi\nFulfillment"]
+    TRM["💱 TRM\nUSD ⇄ COP"]
+    AI["🤖 IA\nGenerador de bloques visuales"]
+
+    FE -->|HTTPS / JSON| API
+    API --> AUTH & CATALOG & CART & METRICS
+    AUTH --> DB
+    CATALOG --> DB
+    CART --> DB
+    METRICS --> DB
+    CART -->|checkout| BOLD
+    BOLD -->|webhook: pago confirmado| CART
+    CART -->|crea guía de envío| DROPI
+    CATALOG -->|conversión de precios| TRM
+    CATALOG -->|generación de contenido| AI
+```
+
+## ✨ Características
+
+<table>
+<tr>
+<td valign="top" width="50%">
 
 ### Frontend
-- Página de inicio con catálogo destacado y contenido visual de la tienda.
-- Página de detalle de producto con descripción, especificaciones, características, reseñas de referencia y productos relacionados.
-- Carrito de compras con actualización de cantidades y eliminación de elementos.
-- Flujo de checkout y página de resultado de pago.
-- Checkout invitado para pedidos sin registro previo.
-- Panel administrativo para edición visual del layout, gestión de productos, categorías, ajustes de marca y métricas.
-- Páginas institucionales, de contacto, políticas y contenido temático como regalos y sets.
+
+- Home con catálogo destacado y contenido visual administrable
+- Detalle de producto con descripción, specs, características y relacionados
+- Carrito con actualización de cantidades y eliminación de ítems
+- Checkout con dos modalidades: pago anticipado y contraentrega
+- Checkout invitado sin registro previo
+- Panel administrativo para layout, productos, categorías, marca y métricas
+- Páginas institucionales, contacto, políticas, regalos y sets
+
+</td>
+<td valign="top" width="50%">
 
 ### Backend
-- API REST con FastAPI.
-- Autenticación y autorización basada en JWT.
-- Gestión de usuarios, productos, categorías, carritos, órdenes y páginas de producto.
-- Integración con pagos y webhooks de Stripe.
-- Gestión dinámica del layout de la tienda con bloques configurables y generación asistida por IA.
-- Endpoints para métricas de negocio, checkout invitado y ajustes de configuración de la tienda.
-- Estructura preparada para extender la plataforma con nuevas funcionalidades y servicios adicionales.
 
-## Stack técnico
+- API REST con FastAPI y autenticación JWT
+- Gestión de usuarios, productos, categorías, carritos, órdenes y páginas de producto
+- Integración con pagos y webhooks de Bold (firma de integridad + confirmación de estados)
+- Creación automática de órdenes de envío en Dropi
+- CMS de layout con bloques configurables, historial de versiones y restauración
+- Endpoints de métricas de negocio, checkout invitado, TRM y ajustes de tienda
+- Arquitectura preparada para nuevos servicios y funcionalidades
 
-- Python
-- FastAPI
-- Uvicorn
-- SQLAlchemy
-- PostgreSQL
-- Alembic
-- HTML / CSS / JavaScript vanilla
-- Stripe
-- API de IA para generación de contenido visual
-- Cloudflare Web Analytics
+</td>
+</tr>
+</table>
 
-## Estructura del proyecto
+## 🧰 Stack técnico
 
-- backend/: lógica del servidor, rutas, modelos, esquemas, servicios, middleware y configuración.
-- frontend/: páginas HTML, estilos y scripts del lado del cliente.
-- alembic/: migraciones de base de datos.
-- docs/: documentación técnica y de negocio del proyecto.
-- INFORME_PROYECTO.txt: documento de seguimiento del proyecto.
+| Categoría | Tecnología |
+|---|---|
+| **Lenguaje** | Python 3.10+ |
+| **Framework backend** | FastAPI + Uvicorn |
+| **ORM / Base de datos** | SQLAlchemy 2.x (síncrono) + PostgreSQL |
+| **Migraciones** | Alembic |
+| **Frontend** | HTML5, CSS3, JavaScript vanilla |
+| **Pagos** | Bold |
+| **Fulfillment** | Dropi |
+| **Contenido generativo** | API de IA para bloques visuales (server-side) |
+| **Analítica** | Cloudflare Web Analytics |
+| **Infraestructura** | Railway (backend) · Cloudflare Pages (frontend) |
 
-## Requisitos
+## 📁 Estructura del proyecto
 
-- Python 3.10+
-- PostgreSQL
-- Entorno virtual recomendado
-- Dependencias del backend instaladas desde backend/requirements.txt
+```
+.
+├── backend/          # Lógica del servidor
+│   ├── routes/        # auth, products, categories, cart, payments,
+│   │                   # guest_checkout, layout, product_pages, metrics, settings
+│   ├── models/         # Modelos SQLAlchemy
+│   ├── schemas/         # Esquemas Pydantic
+│   ├── services/         # Integraciones (Bold, Dropi, TRM, IA)
+│   ├── middleware/         # CORS y seguridad
+│   └── alembic/              # Migraciones de base de datos
+├── frontend/          # Páginas HTML, estilos y scripts del cliente
+├── docs/              # Documentación técnica y de negocio
+└── INFORME_PROYECTO.txt  # Documento de seguimiento del proyecto
+```
 
-## Instalación rápida
+## 🚀 Instalación rápida
 
-1. Crear y activar un entorno virtual.
-2. Instalar dependencias del backend con pip install -r backend/requirements.txt.
-3. Configurar las variables de entorno necesarias.
-4. Ejecutar las migraciones de base de datos con alembic upgrade head.
-5. Levantar la API localmente desde la carpeta backend con uvicorn main:app --reload.
-6. Abrir el frontend desde un servidor estático o desde el navegador.
+```bash
+# 1. Crear y activar entorno virtual
+python -m venv venv
+source venv/bin/activate      # En Windows: venv\Scripts\activate
 
-## Variables de entorno
+# 2. Instalar dependencias del backend
+pip install -r backend/requirements.txt
 
-Se recomienda configurar variables como:
+# 3. Configurar variables de entorno (ver sección siguiente)
+cp .env.example .env
 
-- DATABASE_URL
-- SECRET_KEY
-- STRIPE_SECRET_KEY
-- STRIPE_WEBHOOK_SECRET
-- FRONTEND_URL
-- ANTHROPIC_API_KEY
-- SMTP_HOST
-- SMTP_PORT
-- SMTP_USER
-- SMTP_PASSWORD
-- SMTP_FROM
+# 4. Ejecutar migraciones
+cd backend
+alembic upgrade head
 
-No se incluyen credenciales ni secretos en este archivo.
+# 5. Levantar la API
+uvicorn main:app --reload
 
-## Uso
+# 6. Servir el frontend
+#    Abrir frontend/index.html o servirlo con un servidor estático local
+```
 
-Una vez levantado el proyecto, se puede:
+## 🔐 Variables de entorno
 
-- Registrarse o iniciar sesión.
-- Explorar productos y categorías.
-- Agregar productos al carrito.
-- Completar el proceso de compra.
-- Usar el checkout invitado para pedidos sin crear cuenta.
-- Acceder al panel administrativo para gestionar la tienda.
-- Revisar métricas, ajustes visuales y contenido asociado a la experiencia comercial.
+| Variable | Propósito |
+|---|---|
+| `DATABASE_URL` | Cadena de conexión a PostgreSQL |
+| `SECRET_KEY` | Firma de tokens JWT |
+| `FRONTEND_URL` | Origen permitido para CORS |
+| `BOLD_API_KEY` / `BOLD_SECRET_KEY` | Integración de pagos con Bold |
+| `DROPI_BASE_URL` / `DROPI_API_KEY` | Integración de fulfillment con Dropi |
+| `ANTHROPIC_API_KEY` | Generación de bloques visuales vía IA |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | Envío de correos transaccionales |
 
-## Roadmap
+> No se incluyen credenciales ni secretos en este repositorio.
 
-- Mejorar la experiencia del panel administrativo.
-- Añadir más validaciones y manejo de errores.
-- Ampliar pruebas automatizadas y cobertura.
-- Mejorar la documentación técnica y de uso.
-- Seguir refinando la experiencia visual y la usabilidad.
-- Fortalecer el despliegue, la observabilidad y la infraestructura del sistema.
+## ☁️ Despliegue
 
-## Nota
+- **Backend** → Railway
+- **Frontend** → Cloudflare Pages
+- **Base de datos** → PostgreSQL gestionada por el entorno de ejecución del backend
+- **Seguridad** → CORS y políticas de acceso configuradas explícitamente para permitir solo los orígenes esperados
 
-Este proyecto está en desarrollo continuo y su finalidad es evolucionar hacia una plataforma más completa, escalable y preparada para producción.
+## 🗺️ Roadmap
+
+- [ ] Mejorar la experiencia del panel administrativo
+- [ ] Añadir más validaciones y manejo de errores
+- [ ] Ampliar pruebas automatizadas y cobertura
+- [ ] Mejorar la documentación técnica y de uso
+- [ ] Refinar la experiencia visual y la usabilidad
+- [ ] Fortalecer el despliegue, la observabilidad y la infraestructura
+
+---
+
+<div align="center">
+
+Proyecto en desarrollo continuo, evolucionando hacia una plataforma más completa, escalable y lista para producción.
+
+</div>
