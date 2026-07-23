@@ -151,6 +151,16 @@ COMPONENTES DESTACADOS:
 - Analítica web con Cloudflare
 - Endpoints de salud y verificación de base de datos
 
+4.4 NOVEDADES RECIENTES
+------------------------------------
+- Se integró autenticación con Google Identity Services en la página de login del frontend,
+  con un endpoint backend /auth/google que valida el ID token y genera un JWT de sesión.
+- El flujo de acceso ahora soporta usuarios registrados por email/contraseña y usuarios que
+  ingresan por Google, creando automáticamente su carrito al momento de registrarse.
+- El panel administrativo recibió mejoras en la experiencia de edición del layout, incluyendo
+  previsualización en vivo del contenido y soporte para historial y restauración de versiones
+  previas del CMS visual.
+
 
 5. INFRAESTRUCTURA DEL PROYECTO
 ================================================================================

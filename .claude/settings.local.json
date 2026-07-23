@@ -9,7 +9,8 @@
       "Bash(where node *)",
       "Bash(pip install *)",
       "Bash(python3 -m playwright install chromium --with-deps)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "WebFetch(domain:e-commerce-con-fastapi-y-postgreqsl.pages.dev)"
     ]
   }
 }

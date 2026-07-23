@@ -126,6 +126,12 @@ flowchart LR
 </tr>
 </table>
 
+## ✨ Novedades recientes
+
+- Integración de autenticación con Google Identity Services en la página de login, con endpoint backend para validar el token de Google y crear o reutilizar la cuenta del usuario.
+- Flujo de acceso híbrido que soporta login con email/contraseña y login social, incluyendo la creación automática de carrito para usuarios que ingresan por Google.
+- Mejoras en el panel administrativo con previsualización en vivo del layout y soporte para historial y restauración de versiones previas del CMS visual.
+
 ## 🧰 Stack técnico
 
 | Categoría | Tecnología |

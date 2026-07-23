@@ -63,8 +63,27 @@
     padding:3rem 2rem;
     position:relative;
     background:var(--hueso);
+    overflow:hidden;
   }
-  .form-inner{width:100%;max-width:400px;}
+  .form-inner{width:100%;max-width:400px;position:relative;z-index:1;}
+
+  /* Versión móvil: el panel-hero de escritorio (con la imagen pixel art nítida)
+     está oculto por debajo de 900px, así que aquí mostramos la misma imagen
+     como fondo difuminado y sutil detrás del formulario en vez de omitirla. */
+  .panel-form::before{
+    content:"";
+    position:absolute;
+    inset:-40px;
+    background-image:url('/img/login-hero-pixel-kitchen.png');
+    background-size:cover;
+    background-position:center 40%;
+    filter:blur(24px);
+    opacity:0.16;
+    z-index:0;
+  }
+  @media (min-width:900px){
+    .panel-form::before{ content:none; }
+  }
 
   .eyebrow{
     font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
@@ -191,10 +210,15 @@
   .hero-image{
     position:absolute;inset:16px;border-radius:26px;overflow:hidden;
     background:linear-gradient(160deg, var(--noche) 0%, var(--noche-2) 55%, #10241a 100%);
+    /* isolation:isolate contiene el mix-blend-mode de la img en su propio
+       stacking context; sin esto, algunos navegadores (Chrome/Safari) pintan
+       el blend por fuera del border-radius del padre pese al overflow:hidden. */
+    isolation:isolate;
   }
   .hero-image img{
     width:100%;height:100%;object-fit:cover;opacity:.55;
     mix-blend-mode:luminosity;
+    border-radius:inherit;
   }
   .hero-overlay{
     position:absolute;inset:0;
