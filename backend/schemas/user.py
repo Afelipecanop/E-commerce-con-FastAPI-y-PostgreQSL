@@ -17,6 +17,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+# Lo que el frontend manda tras un login con Google Identity Services
+class GoogleAuth(BaseModel):
+    id_token: str
+
+
 # Lo que la API devuelve sobre un usuario (nunca incluye la contraseña)
 class UserResponse(BaseModel):
     id: UUID

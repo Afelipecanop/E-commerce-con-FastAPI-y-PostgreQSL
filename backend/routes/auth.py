@@ -5,12 +5,14 @@ from datetime import timedelta
 from database import get_db
 from models.user import User
 from models.cart import Cart
-from schemas.user import UserCreate, UserLogin, UserResponse, Token
+from schemas.user import UserCreate, UserLogin, UserResponse, Token, GoogleAuth
 from services.auth import (
     hash_password,
     authenticate_user,
     create_access_token,
-    get_user_by_email
+    get_user_by_email,
+    verify_google_token,
+    get_or_create_google_user,
 )
 from middleware.auth import get_current_user
 
@@ -59,6 +61,39 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
         )
 
     # Crea el token con el ID del usuario
+    access_token = create_access_token(data={"sub": str(user.id)})
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/google", response_model=Token)
+def google_login(auth_data: GoogleAuth, db: Session = Depends(get_db)):
+    """Autentica con un ID token de Google Identity Services y devuelve un token JWT."""
+
+    try:
+        payload = verify_google_token(auth_data.id_token)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token de Google inválido o expirado",
+        )
+
+    email = payload.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="El token de Google no incluye un email",
+        )
+
+    full_name = payload.get("name", "")
+    user = get_or_create_google_user(db, email, full_name)
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Usuario desactivado"
+        )
+
     access_token = create_access_token(data={"sub": str(user.id)})
 
     return {"access_token": access_token, "token_type": "bearer"}

@@ -1,150 +1,413 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
-    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon/favicon-48x48.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon/favicon-64x64.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="/favicon/favicon-128x128.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/favicon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/favicon-512x512.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Velonox</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        .auth-container {
-            max-width: 420px;
-            margin: 4rem auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .auth-container h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-        }
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 2px solid var(--primary);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 0.6rem;
-            border: none;
-            background: transparent;
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab-btn.active { background: var(--primary); color: white; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velonox — Iniciar sesión</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --noche: #0F1A14;
+    --noche-2: #1A2820;
+    --verde: #1D7A4F;
+    --verde-light: #2E9A67;
+    --salvia: #C8D8C0;
+    --arena: #D6C5A0;
+    --hueso: #F5F5F3;
+    --acero: #B0BEB8;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'DM Sans', Arial, sans-serif;
+    background:var(--hueso);
+    color:var(--noche);
+    min-height:100vh;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+  }
+
+  /* ---------- LEFT: FORM ---------- */
+  .panel-form{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:3rem 2rem;
+    position:relative;
+    background:var(--hueso);
+  }
+  .form-inner{width:100%;max-width:400px;}
+
+  .eyebrow{
+    font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
+    color:var(--verde);
+    display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow svg{width:16px;height:16px;flex-shrink:0;}
+
+  h1.title{
+    font-family:'Playfair Display', Georgia, serif;
+    font-weight:700;
+    font-size:clamp(32px,5vw,44px);
+    line-height:1.05;
+    letter-spacing:-1px;
+    margin:14px 0 10px;
+  }
+  h1.title em{font-style:italic;color:var(--verde);}
+
+  p.subtitle{
+    font-size:14.5px;
+    color:#555;
+    line-height:1.6;
+    max-width:340px;
+  }
+
+  form{margin-top:2rem;display:flex;flex-direction:column;gap:18px;}
+
+  .field label{
+    display:block;font-size:12px;font-weight:500;color:#5b6b62;
+    text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;
+  }
+  .input-wrap{
+    border-radius:14px;
+    border:1.5px solid #E1DED6;
+    background:#fff;
+    transition:border-color .25s ease, box-shadow .25s ease;
+    position:relative;
+  }
+  .input-wrap:focus-within{
+    border-color:var(--verde);
+    box-shadow:0 0 0 4px rgba(29,122,79,0.12);
+  }
+  .input-wrap input{
+    width:100%;background:transparent;border:none;outline:none;
+    font-family:'DM Sans',sans-serif;font-size:14.5px;color:var(--noche);
+    padding:14px 16px;
+  }
+  .input-wrap input::placeholder{color:#B7B2A6;}
+  .pw-toggle{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    background:none;border:none;cursor:pointer;padding:8px;
+    color:#9A968A;
+  }
+  .pw-toggle:hover{color:var(--noche);}
+  .pw-toggle svg{width:18px;height:18px;display:block;}
+
+  .row-between{
+    display:flex;align-items:center;justify-content:space-between;font-size:13px;
+  }
+  .remember{display:flex;align-items:center;gap:8px;color:#555;cursor:pointer;user-select:none;}
+  .remember input{accent-color:var(--verde);width:16px;height:16px;cursor:pointer;}
+  .link-green{color:var(--verde);text-decoration:none;font-weight:500;}
+  .link-green:hover{text-decoration:underline;}
+
+  .btn-primary{
+    position:relative;overflow:hidden;
+    width:100%;padding:15px;border:none;border-radius:14px;
+    background:var(--verde);color:#fff;font-family:'DM Sans',sans-serif;
+    font-size:14.5px;font-weight:600;letter-spacing:.3px;cursor:pointer;
+    transition:background .25s ease, transform .15s ease;
+  }
+  .btn-primary:hover{background:var(--verde-light);}
+  .btn-primary:active{transform:scale(0.98);}
+  .btn-primary::after{
+    content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform:skewX(-20deg);
+    animation:shine 3.2s ease-in-out infinite;
+    animation-delay:1.2s;
+  }
+  @keyframes shine{
+    0%{left:-60%;}
+    35%{left:130%;}
+    100%{left:130%;}
+  }
+
+  .divider{
+    display:flex;align-items:center;gap:14px;color:#A6A196;font-size:12.5px;
+  }
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:#E1DED6;}
+
+  .btn-google{
+    width:100%;padding:13px;border-radius:14px;border:1.5px solid #E1DED6;
+    background:#fff;display:flex;align-items:center;justify-content:center;gap:10px;
+    font-size:13.5px;font-weight:500;color:var(--noche);cursor:pointer;
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .btn-google:hover{background:#FAFAF8;border-color:#D2CDC1;}
+
+  .footer-link{text-align:center;font-size:13.5px;color:#666;}
+
+  /* ---------- RIGHT: HERO ---------- */
+  .panel-hero{
+    flex:1;position:relative;padding:16px;display:none;
+  }
+  @media (min-width:900px){ .panel-hero{display:block;} }
+
+  .hero-image{
+    position:absolute;inset:16px;border-radius:26px;overflow:hidden;
+    background:linear-gradient(160deg, var(--noche) 0%, var(--noche-2) 55%, #10241a 100%);
+  }
+  .hero-image img{
+    width:100%;height:100%;object-fit:cover;opacity:.55;
+    mix-blend-mode:luminosity;
+  }
+  .hero-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(15,26,20,0.15) 0%, rgba(15,26,20,0.35) 55%, rgba(15,26,20,0.92) 100%);
+  }
+
+  .hero-content{
+    position:absolute;top:44px;left:44px;right:44px;color:var(--hueso);
+  }
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(200,216,192,0.12);border:1px solid rgba(200,216,192,0.35);
+    padding:6px 14px;border-radius:100px;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;color:var(--salvia);
+  }
+  .hero-headline{
+    font-family:'Playfair Display',Georgia,serif;font-weight:700;
+    font-size:clamp(26px,2.6vw,34px);line-height:1.2;margin-top:18px;max-width:420px;
+  }
+  .hero-headline .nox{color:var(--verde-light);}
+
+  .steam{
+    position:absolute;pointer-events:none;
+  }
+  .steam span{
+    position:absolute;bottom:0;width:6px;height:6px;border-radius:50%;
+    background:rgba(200,216,192,0.5);filter:blur(2px);
+    animation:rise 6s ease-in infinite;
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) scale(1);opacity:0;}
+    15%{opacity:.7;}
+    100%{transform:translateY(-180px) scale(2.4);opacity:0;}
+  }
+
+  .testimonials{
+    position:absolute;bottom:32px;left:0;right:0;
+    display:flex;gap:14px;justify-content:center;padding:0 32px;flex-wrap:wrap;
+  }
+  .t-card{
+    width:230px;background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter:blur(14px);
+    border-radius:18px;padding:16px;display:flex;gap:10px;
+  }
+  .t-card img{width:36px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0;}
+  .t-name{font-size:12.5px;font-weight:600;color:var(--hueso);}
+  .t-handle{font-size:11px;color:var(--acero);margin-bottom:4px;}
+  .t-text{font-size:11.5px;line-height:1.5;color:rgba(245,245,243,0.85);}
+
+  /* ---------- ENTRANCE ANIMATIONS ---------- */
+  .rise-el{opacity:0;filter:blur(6px);transform:translateY(14px);
+    animation:riseIn .7s cubic-bezier(.2,.8,.2,1) forwards;}
+  @keyframes riseIn{to{opacity:1;filter:blur(0);transform:translateY(0);}}
+  .d1{animation-delay:.05s;} .d2{animation-delay:.15s;} .d3{animation-delay:.25s;}
+  .d4{animation-delay:.35s;} .d5{animation-delay:.45s;} .d6{animation-delay:.55s;}
+  .d7{animation-delay:.65s;} .d8{animation-delay:.75s;} .d9{animation-delay:.85s;}
+
+  .slide-hero{opacity:0;transform:translateX(18px);
+    animation:slideIn .8s cubic-bezier(.2,.8,.2,1) forwards; animation-delay:.2s;}
+  @keyframes slideIn{to{opacity:1;transform:translateX(0);}}
+
+  .t-card{opacity:0;transform:translateY(10px) scale(.97);
+    animation:cardIn .6s cubic-bezier(.2,.8,.2,1) forwards;}
+  .t1{animation-delay:1.0s;} .t2{animation-delay:1.15s;} .t3{animation-delay:1.3s;}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1);}}
+</style>
 </head>
-
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0bb04015632048a0b04508aaa5b93945"}'></script><!-- End Cloudflare Web Analytics -->
-
 <body>
-    <div class="auth-container">
-        <h2>Velonox</h2>
 
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('login')">Iniciar sesión</button>
-            <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+<div class="wrap">
+
+  <!-- LEFT: FORM -->
+  <section class="panel-form">
+    <div class="form-inner">
+      <div class="eyebrow rise-el d1">
+        <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="28,8 44,48 34,48 28,30 22,48 12,48" fill="#0F1A14"/>
+          <polygon points="28,30 44,48 34,48" fill="#1D7A4F"/>
+        </svg>
+        Velonox
+      </div>
+
+      <h1 class="title rise-el d2">Bienvenida <em>de vuelta</em></h1>
+      <p class="subtitle rise-el d3">Accede a tu cuenta y sigue eligiendo acero inoxidable grado 304 para tu cocina de por vida.</p>
+
+      <form id="signin-form">
+        <div class="field rise-el d4">
+          <label for="email">Correo electrónico</label>
+          <div class="input-wrap">
+            <input id="email" name="email" type="email" placeholder="tucorreo@ejemplo.com" required>
+          </div>
         </div>
 
-        <div id="alert"></div>
-
-        <!-- Formulario Login -->
-        <div id="login-form">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="login-email" placeholder="tu@email.com">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="login-password" placeholder="••••••••">
-            </div>
-            <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">
-                Entrar
+        <div class="field rise-el d5">
+          <label for="password">Contraseña</label>
+          <div class="input-wrap">
+            <input id="password" name="password" type="password" placeholder="Ingresa tu contraseña" required>
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Mostrar contraseña">
+              <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none"><path d="M17.9 17.9A10.6 10.6 0 0 1 12 19c-7 0-11-7-11-7a18.6 18.6 0 0 1 4.2-5.2M9.9 4.2A10 10 0 0 1 12 4c7 0 11 7 11 7a18.7 18.7 0 0 1-2.2 3.1M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M1 1l22 22"/></svg>
             </button>
+          </div>
         </div>
 
-        <!-- Formulario Registro -->
-        <div id="register-form" style="display:none">
-            <div class="form-group">
-                <label>Nombre completo</label>
-                <input type="text" id="reg-name" placeholder="Tu nombre">
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="reg-email" placeholder="tu@email.com">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres">
-            </div>
-            <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">
-                Crear cuenta
-            </button>
+        <div class="row-between rise-el d6">
+          <label class="remember"><input type="checkbox" name="remember"> Mantener sesión iniciada</label>
+          <a href="#" class="link-green" id="reset-link">¿Olvidaste tu contraseña?</a>
         </div>
+
+        <button type="submit" class="btn-primary rise-el d7">Iniciar sesión</button>
+      </form>
+
+      <div class="divider rise-el d8">o continúa con</div>
+
+      <button class="btn-google rise-el d8" id="google-btn" style="margin-top:8px;">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-2.641-.21-5.236-.611-7.743z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.022 35.026 44 30.038 44 24c0-2.641-.21-5.236-.611-7.743z"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <p class="footer-link rise-el d9" style="margin-top:20px;">¿Nueva en Velonox? <a href="#" class="link-green">Crea tu cuenta</a></p>
+    </div>
+  </section>
+
+  <!-- RIGHT: HERO -->
+  <section class="panel-hero">
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1584990347449-a8b1067c7423?w=1400&q=80" alt="">
+      <div class="hero-overlay"></div>
+      <div class="steam" style="left:38%;bottom:120px;">
+        <span style="left:0;animation-delay:0s;"></span>
+        <span style="left:14px;animation-delay:1.5s;"></span>
+        <span style="left:-10px;animation-delay:3s;"></span>
+      </div>
     </div>
 
-    <script src="/js/api.js"></script>
-    <script>
-        // Página a la que volver tras iniciar sesión (p. ej. el carrito al pagar)
-        const redirectTo = new URLSearchParams(location.search).get("redirect") || "/index.html";
+    <div class="hero-content slide-hero">
+      <span class="hero-badge">Acero inoxidable grado 304</span>
+      <h2 class="hero-headline">Cocina de por vida, <span class="nox">sin teflón, sin trampas.</span></h2>
+    </div>
 
-        // Si ya está logueado, ir directo al destino
-        if (isLoggedIn()) window.location.href = redirectTo;
+    <div class="testimonials">
+      <div class="t-card t1">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="">
+        <div>
+          <p class="t-name">Camila R.</p>
+          <p class="t-handle">Bogotá</p>
+          <p class="t-text">Las arepas ya no se me pegan y el set se ve elegante en mi cocina.</p>
+        </div>
+      </div>
+      <div class="t-card t2">
+        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="">
+        <div>
+          <p class="t-name">Valentina G.</p>
+          <p class="t-handle">Medellín</p>
+          <p class="t-text">Apta para inducción y aguanta años. Vale cada peso.</p>
+        </div>
+      </div>
+      <div class="t-card t3">
+        <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="">
+        <div>
+          <p class="t-name">Sofía M.</p>
+          <p class="t-handle">CDMX</p>
+          <p class="t-text">Por fin cocino sin miedo a los químicos del teflón viejo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        function showTab(tab) {
-            document.getElementById("login-form").style.display = tab === "login" ? "block" : "none";
-            document.getElementById("register-form").style.display = tab === "register" ? "block" : "none";
-            document.querySelectorAll(".tab-btn").forEach((btn, i) => {
-                btn.classList.toggle("active", (i === 0 && tab === "login") || (i === 1 && tab === "register"));
-            });
-        }
+</div>
 
-        function showAlert(message, type = "error") {
-            document.getElementById("alert").innerHTML =
-                `<div class="alert alert-${type}">${message}</div>`;
-        }
+<script>
+  // ======================================================
+  // GOOGLE SIGN-IN — CONFIGURACIÓN
+  // Pega aquí tu Client ID de Google Cloud Console
+  // (termina en .apps.googleusercontent.com)
+  // ======================================================
+  const GOOGLE_CLIENT_ID = "120365471700-u6na7h4kjd4qht46krdlnftsvij2mv5c.apps.googleusercontent.com";
 
-        async function handleLogin() {
-            const email = document.getElementById("login-email").value;
-            const password = document.getElementById("login-password").value;
-            if (!email || !password) return showAlert("Completa todos los campos");
-            try {
-                await login(email, password);
-                window.location.href = redirectTo;
-            } catch (e) {
-                showAlert(e.message);
-            }
-        }
+  window.onload = function () {
+    if (typeof google === "undefined") return; // por si el script de Google no cargó aún
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleResponse
+    });
+  };
 
-        async function handleRegister() {
-            const name = document.getElementById("reg-name").value;
-            const email = document.getElementById("reg-email").value;
-            const password = document.getElementById("reg-password").value;
-            if (!name || !email || !password) return showAlert("Completa todos los campos");
-            try {
-                await register(email, password, name);
-                showAlert("¡Cuenta creada! Ahora inicia sesión.", "success");
-                showTab("login");
-            } catch (e) {
-                showAlert(e.message);
-            }
-        }
-    </script>
+  // Esto se ejecuta cuando Google confirma la identidad del usuario
+  async function handleGoogleResponse(response) {
+    const idToken = response.credential;
+    try {
+      const res = await fetch('/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('access_token', data.access_token);
+        window.location.href = '/index.html';
+      } else {
+        console.error('Error en login con Google:', data);
+        alert('No se pudo iniciar sesión con Google. Intenta de nuevo.');
+      }
+    } catch (err) {
+      console.error('Error de red al conectar con /auth/google:', err);
+    }
+  }
+
+  // Toggle password visibility
+  const pwToggle = document.getElementById('pw-toggle');
+  const pwInput = document.getElementById('password');
+  const eyeOpen = document.getElementById('eye-open');
+  const eyeClosed = document.getElementById('eye-closed');
+  pwToggle.addEventListener('click', () => {
+    const show = pwInput.type === 'password';
+    pwInput.type = show ? 'text' : 'password';
+    eyeOpen.style.display = show ? 'none' : 'block';
+    eyeClosed.style.display = show ? 'block' : 'none';
+  });
+
+  // Form submit -> hook this to /auth/login in your FastAPI backend
+  document.getElementById('signin-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = pwInput.value;
+    // Reemplaza esta parte por tu llamada real a la API:
+    // const res = await fetch('/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+    console.log('Iniciar sesión con:', email);
+  });
+
+  document.getElementById('google-btn').addEventListener('click', () => {
+    if (typeof google === "undefined") {
+      alert('Google aún no ha cargado, espera un segundo e intenta de nuevo.');
+      return;
+    }
+    google.accounts.id.prompt(); // abre la ventana de selección de cuenta de Google
+  });
+
+  document.getElementById('reset-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log('Reset password clicked');
+  });
+</script>
+
 </body>
 </html>
