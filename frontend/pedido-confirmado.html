@@ -116,6 +116,10 @@
         return;
       }
 
+      // Pedido confirmado (invitado, logueado o Bold aprobado): el carrito local
+      // ya no debe reflejar productos que ya se compraron.
+      clearGuestCart();
+
       try {
         if (isLoggedIn()) {
           const order = await getOrder(orderId);

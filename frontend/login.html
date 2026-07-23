@@ -83,12 +83,25 @@
   @media (min-width:900px){
     .panel-form::before{ content:none; }
   }
+  /* El fondo con la imagen (visible solo en móvil) resta contraste al texto
+     normal; oscurecemos esos tonos claros únicamente en este breakpoint. */
+  @media (max-width:899px){
+    p.subtitle{ color:#3a3a3a; }
+    .field label{ color:#3a473e; }
+    .remember{ color:#333; }
+    .footer-link{ color:#3a3a3a; }
+    .divider{ color:#6e695d; }
+    .input-wrap input::placeholder{ color:#8f8a7d; }
+  }
 
   .eyebrow{
     font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
     color:var(--verde);
     display:flex;align-items:center;gap:8px;
+    text-decoration:none;width:fit-content;cursor:pointer;
+    transition:opacity .2s ease;
   }
+  .eyebrow:hover{opacity:.75;}
   .eyebrow svg{width:16px;height:16px;flex-shrink:0;}
 
   h1.title{
@@ -289,13 +302,13 @@
   <!-- LEFT: FORM -->
   <section class="panel-form">
     <div class="form-inner">
-      <div class="eyebrow rise-el d1">
+      <a href="/index.html" class="eyebrow rise-el d1" aria-label="Ir a la página principal">
         <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
           <polygon points="28,8 44,48 34,48 28,30 22,48 12,48" fill="#0F1A14"/>
           <polygon points="28,30 44,48 34,48" fill="#1D7A4F"/>
         </svg>
         Velonox
-      </div>
+      </a>
 
       <h1 class="title rise-el d2" id="page-title">Bienvenida <em>de vuelta</em></h1>
       <p class="subtitle rise-el d3" id="page-subtitle">Accede a tu cuenta y sigue eligiendo acero inoxidable grado 304 para tu cocina de por vida.</p>
