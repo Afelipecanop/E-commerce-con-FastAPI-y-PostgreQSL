@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import timedelta
 
@@ -112,17 +112,18 @@ def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
-def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+def forgot_password(data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Genera un token de recuperación y envía el email, si el usuario existe.
 
     Siempre responde con el mismo mensaje genérico, exista o no la cuenta,
-    para no revelar qué correos están registrados.
+    para no revelar qué correos están registrados. El envío del email corre
+    en background para que el SMTP (lento o caído) nunca bloquee la respuesta.
     """
     user = get_user_by_email(db, data.email)
     if user and user.auth_provider == "local":
         raw_token = create_password_reset_token(db, user)
         reset_link = f"{FRONTEND_URL}/reset-password.html?token={raw_token}"
-        email_recuperacion_password(user.email, user.full_name, reset_link)
+        background_tasks.add_task(email_recuperacion_password, user.email, user.full_name, reset_link)
 
     return {"message": "Si el correo está registrado, enviamos instrucciones para restablecer tu contraseña."}
 
