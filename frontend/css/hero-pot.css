@@ -1,0 +1,149 @@
+/* Olla decorativa animada del hero (index.html) — ver velonox-olla-premium-animada.html (origen) */
+
+.hero-pot {
+    position: absolute;
+    right: clamp(0.5rem, 3vw, 2.5rem);
+    bottom: 0;
+    width: clamp(200px, 24vw, 360px);
+    aspect-ratio: 1 / 1;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1;
+}
+
+.hero-pot-platform {
+    position: absolute;
+    left: 50%;
+    bottom: 9.05%;
+    transform: translateX(-50%);
+    width: 61.9%;
+    height: 6.19%;
+    background: radial-gradient(ellipse at center, rgba(29,122,79,0.35) 0%, rgba(29,122,79,0) 75%);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: hero-pot-pulse 3s ease-in-out infinite;
+}
+
+.hero-pot-wrap {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 61.9%;
+    height: 52.38%;
+    animation: hero-pot-float 4s ease-in-out infinite;
+}
+
+.hero-pot-lid {
+    position: absolute;
+    top: 8.18%;
+    left: 11.54%;
+    width: 76.92%;
+    height: 15.45%;
+    border-radius: 50% / 76.47%;
+    background: linear-gradient(180deg, #F5F5F3 0%, #C8D8C0 35%, #8FA79B 60%, #647A6F 100%);
+    box-shadow: inset 0 -4px 6px rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.hero-pot-knob-stem {
+    position: absolute;
+    top: 0.91%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3.08%;
+    height: 7.27%;
+    background: linear-gradient(180deg,#E6ECE8,#8FA79B);
+    border-radius: 3px;
+}
+
+.hero-pot-knob {
+    position: absolute;
+    top: -4.55%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8.46%;
+    height: 10%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #3AA36C, #1D7A4F 55%, #12482f 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+}
+
+.hero-pot-body {
+    position: absolute;
+    top: 20.91%;
+    left: 7.69%;
+    width: 84.62%;
+    height: 68.18%;
+    border-radius: 7.27% 7.27% 15.45% 15.45% / 10.67% 10.67% 26.67% 26.67%;
+    background: linear-gradient(100deg,
+        #7c8f89 0%, #d7e2de 14%, #F5F5F3 22%, #9fb0aa 32%, #5c6d67 42%,
+        #8fa39c 55%, #dfe8e4 66%, #6f8078 78%, #a9b8b2 90%, #F5F5F3 100%);
+    background-size: 260% 100%;
+    box-shadow:
+        inset 0 6px 10px rgba(255,255,255,0.35),
+        inset 0 -10px 18px rgba(0,0,0,0.35),
+        0 18px 30px rgba(0,0,0,0.5);
+    animation: hero-pot-sheen 5s linear infinite;
+}
+
+.hero-pot-band {
+    position: absolute;
+    bottom: -0.91%;
+    left: 7.69%;
+    width: 84.62%;
+    height: 6.36%;
+    background: linear-gradient(90deg, #12482f, #1D7A4F 40%, #2fa066 55%, #1D7A4F 70%, #12482f 100%);
+    border-radius: 0 0 15.45% 15.45% / 0 0 60% 60%;
+}
+
+.hero-pot-handle {
+    position: absolute;
+    top: 36.36%;
+    width: 10%;
+    height: 7.27%;
+    background: linear-gradient(180deg,#E6ECE8,#7c8f89);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+.hero-pot-handle.left{ left: -6.15%; border-radius: 8px 0 0 8px; }
+.hero-pot-handle.right{ right: -6.15%; border-radius: 0 8px 8px 0; }
+
+@keyframes hero-pot-pulse {
+    0%,100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+}
+@keyframes hero-pot-float {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+}
+@keyframes hero-pot-sheen {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 0%; }
+}
+
+/* Asegura que el texto y los botones del hero queden siempre por encima de la olla */
+.hero-eyebrow, .hero-title, .hero-cut, .hero-sub, .hero-actions {
+    position: relative;
+    z-index: 2;
+}
+.hero-badge { z-index: 2; }
+
+/* Tablet: reduce tamaño y opacidad para que no compita con el texto */
+@media (max-width: 1200px) {
+    .hero-pot {
+        width: clamp(140px, 20vw, 220px);
+        opacity: 0.5;
+    }
+}
+
+/* Mobile / tablets pequeñas: mismo punto de quiebre donde el hero cambia a
+   flujo vertical (badge estático, min-height auto) — ya no hay espacio muerto
+   detrás del texto, así que la ocultamos para priorizar la legibilidad. */
+@media (max-width: 860px) {
+    .hero-pot { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-pot, .hero-pot * {
+        animation-play-state: paused !important;
+    }
+}

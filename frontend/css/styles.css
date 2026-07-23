@@ -34,6 +34,10 @@
 }
 
 body {
+  cursor: url('assets/cursors/tenedor-velonox-32.png') 4 4, auto;
+}
+
+body {
     font-family: var(--font-body);
     background: var(--bg);
     color: var(--text);

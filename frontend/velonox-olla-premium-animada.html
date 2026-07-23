@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Velonox — Olla Premium Animada</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh;
+    background: radial-gradient(ellipse at center, #16241b 0%, #0F1A14 70%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:'DM Sans', Arial, sans-serif;
+    overflow:hidden;
+    gap:1.5rem;
+  }
+
+  .stage {
+    position:relative;
+    width:420px;
+    height:420px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+
+  .platform {
+    position:absolute;
+    bottom:38px;
+    width:260px;
+    height:26px;
+    background: radial-gradient(ellipse at center, rgba(29,122,79,0.35) 0%, rgba(29,122,79,0) 75%);
+    border-radius:50%;
+    filter: blur(2px);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:0.6; transform:scale(1); }
+    50% { opacity:1; transform:scale(1.06); }
+  }
+
+  .pot-wrap {
+    position:relative;
+    width:260px;
+    height:220px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .lid {
+    position:absolute;
+    top:18px;
+    left:30px;
+    width:200px;
+    height:34px;
+    border-radius:100px / 26px;
+    background: linear-gradient(180deg, #F5F5F3 0%, #C8D8C0 35%, #8FA79B 60%, #647A6F 100%);
+    box-shadow: inset 0 -4px 6px rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .knob-stem {
+    position:absolute;
+    top:2px;
+    left:50%;
+    transform:translateX(-50%);
+    width:8px;
+    height:16px;
+    background: linear-gradient(180deg,#E6ECE8,#8FA79B);
+    border-radius:3px;
+  }
+  .knob {
+    position:absolute;
+    top:-10px;
+    left:50%;
+    transform:translateX(-50%);
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #3AA36C, #1D7A4F 55%, #12482f 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+  }
+
+  .body {
+    position:absolute;
+    top:46px;
+    left:20px;
+    width:220px;
+    height:150px;
+    border-radius:16px 16px 34px 34px / 16px 16px 40px 40px;
+    background: linear-gradient(100deg,
+      #7c8f89 0%,
+      #d7e2de 14%,
+      #F5F5F3 22%,
+      #9fb0aa 32%,
+      #5c6d67 42%,
+      #8fa39c 55%,
+      #dfe8e4 66%,
+      #6f8078 78%,
+      #a9b8b2 90%,
+      #F5F5F3 100%);
+    background-size: 260% 100%;
+    box-shadow:
+      inset 0 6px 10px rgba(255,255,255,0.35),
+      inset 0 -10px 18px rgba(0,0,0,0.35),
+      0 18px 30px rgba(0,0,0,0.5);
+    animation: sheen 5s linear infinite;
+  }
+  @keyframes sheen {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 100% 0%; }
+  }
+
+  .band {
+    position:absolute;
+    bottom:-2px;
+    left:20px;
+    width:220px;
+    height:14px;
+    background: linear-gradient(90deg, #12482f, #1D7A4F 40%, #2fa066 55%, #1D7A4F 70%, #12482f 100%);
+    border-radius: 0 0 34px 34px / 0 0 40px 40px;
+  }
+
+  .handle {
+    position:absolute;
+    top:80px;
+    width:26px;
+    height:16px;
+    background: linear-gradient(180deg,#E6ECE8,#7c8f89);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+  .handle.left { left:-16px; border-radius:8px 0 0 8px; }
+  .handle.right { right:-16px; border-radius:0 8px 8px 0; }
+
+  .caption {
+    text-align:center;
+  }
+  .caption h1 {
+    color:#C8D8C0;
+    font-size:14px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    font-weight:500;
+  }
+  .caption h1 span { color:#1D7A4F; }
+  .caption p {
+    color:#4A6A5A;
+    font-size:11px;
+    letter-spacing:1px;
+    margin-top:6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="platform"></div>
+  <div class="pot-wrap">
+    <div class="lid">
+      <div class="knob-stem"></div>
+      <div class="knob"></div>
+    </div>
+    <div class="body"></div>
+    <div class="band"></div>
+    <div class="handle left"></div>
+    <div class="handle right"></div>
+  </div>
+</div>
+
+<div class="caption">
+  <h1>Velo<span>nox</span> — Acero grado 304</h1>
+  <p>Apta para inducción · sin teflón · cocina de por vida</p>
+</div>
+
+</body>
+</html>
