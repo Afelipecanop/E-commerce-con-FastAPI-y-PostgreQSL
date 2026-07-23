@@ -47,6 +47,7 @@ async function apiFetch(endpoint, options = {}) {
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
 
+
 async function register(email, password, fullName) {
     return apiFetch("/auth/register", {
         method: "POST",
@@ -61,6 +62,20 @@ async function login(email, password) {
     });
     setToken(data.access_token);
     return data;
+}
+
+async function forgotPassword(email) {
+    return apiFetch("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email })
+    });
+}
+
+async function resetPassword(token, newPassword) {
+    return apiFetch("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ token, new_password: newPassword })
+    });
 }
 
 async function getMe() {

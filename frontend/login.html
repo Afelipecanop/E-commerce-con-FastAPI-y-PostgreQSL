@@ -344,7 +344,7 @@
 
         <div class="row-between rise-el d6">
           <label class="remember"><input type="checkbox" name="remember"> Mantener sesión iniciada</label>
-          <a href="#" class="link-green" id="reset-link">¿Olvidaste tu contraseña?</a>
+          <a href="/forgot-password.html" class="link-green" id="reset-link">¿Olvidaste tu contraseña?</a>
         </div>
 
         <button type="submit" class="btn-primary rise-el d7" id="submit-btn">Iniciar sesión</button>
@@ -540,7 +540,7 @@
 
   document.getElementById('reset-link').addEventListener('click', (e) => {
     e.preventDefault();
-    showAlert('La recuperación de contraseña todavía no está disponible en el sitio. Escríbenos desde la página de contacto y te ayudamos a recuperar el acceso.', 'info');
+    showAlert('La recuperación de contraseña todavía no está disponible en el sitio...', 'info');
   });
 </script>
 
