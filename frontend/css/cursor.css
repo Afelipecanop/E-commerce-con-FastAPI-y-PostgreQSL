@@ -1,5 +1,0 @@
-/* Cursor personalizado (tenedor Velonox) — solo tiene efecto en desktop/mouse,
-   los navegadores táctiles lo ignoran. */
-body {
-    cursor: url('/assets/tenedor-velonox-32.png') 4 4, auto;
-}
