@@ -37,7 +37,7 @@
     <nav>
         <a href="/index.html" class="logo text-brand">Velo<span class="accent">nox</span></a>
         <div class="nav-links">
-            <a href="/catalogo.html">← Seguir comprando</a>
+            <a href="/catalogo.html" id="nav-back" onclick="goBack(); return false;">← Seguir comprando</a>
             <a href="#" id="nav-logout" onclick="logout(); return false;" style="display:none">Salir</a>
         </div>
     </nav>
@@ -57,6 +57,25 @@
         if (isLoggedIn()) document.getElementById("nav-logout").style.display = "";
 
         let cartItems = [];   // {id, name, price, image_url, stock, quantity, cart_item_id?}
+
+        // Un item "fantasma" (sin id/name/price válidos) no se renderiza: se descarta.
+        function isValidCartItem(item) {
+            return !!(item && item.id && typeof item.name === "string" && item.name.trim() &&
+                typeof item.price === "number" && !isNaN(item.price) && item.price >= 0);
+        }
+
+        // "Seguir comprando": vuelve a la página anterior si el usuario llegó navegando
+        // desde el propio sitio; si no hay un referrer válido (link directo, nueva pestaña),
+        // cae de vuelta al catálogo.
+        function goBack() {
+            let sameOrigin = false;
+            try { sameOrigin = document.referrer && new URL(document.referrer).origin === window.location.origin; } catch (e) {}
+            if (sameOrigin && history.length > 1) {
+                history.back();
+            } else {
+                window.location.href = "/catalogo.html";
+            }
+        }
 
         async function loadCart() {
             await loadTRM();
@@ -107,20 +126,27 @@
                         stock: item.product.stock,
                         quantity: item.quantity,
                         cart_item_id: item.id
-                    }));
+                    })).filter(isValidCartItem);
                 } catch (e) {
                     cartItems = [];
                 }
             } else {
-                // Invitado → cargar desde localStorage
-                cartItems = getGuestCart();
+                // Invitado → cargar desde localStorage. "velonox_cart" también lo escribe
+                // js/cart.js (addToLocalCart) con una forma distinta ({product_id, quantity}
+                // en vez de {id, name, price, ...}), así que descartamos cualquier item que
+                // no traiga los campos que esta vista necesita para renderizarse.
+                const rawGuestCart = getGuestCart();
+                cartItems = rawGuestCart.filter(isValidCartItem);
+                if (cartItems.length !== rawGuestCart.length) {
+                    saveGuestCart(cartItems); // purga los items corruptos del localStorage
+                }
             }
 
             if (cartItems.length === 0) {
                 container.innerHTML = `
                     <div class="cart-empty">
                         <p>Tu carrito está vacío.</p>
-                        <a href="/index.html" class="btn btn-primary">Ver productos</a>
+                        <a href="/catalogo.html" class="btn btn-primary">Ver productos</a>
                     </div>`;
                 return;
             }
