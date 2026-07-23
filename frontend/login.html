@@ -5,7 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Velonox — Iniciar sesión</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+  // El script de Google es async: puede terminar de cargar antes o después de que
+  // el resto de esta página (con la función real _initGoogleAuth) se haya ejecutado.
+  // Esperamos a que ambas cosas estén listas antes de inicializar.
+  var vxGoogleLibReady = false;
+  var vxDomReady = false;
+  function vxTryInitGoogleAuth() {
+    if (vxGoogleLibReady && vxDomReady && typeof _initGoogleAuth === "function") {
+      _initGoogleAuth();
+    }
+  }
+  function vxOnGoogleLibLoaded() {
+    vxGoogleLibReady = true;
+    vxTryInitGoogleAuth();
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    vxDomReady = true;
+    vxTryInitGoogleAuth();
+  });
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="vxOnGoogleLibLoaded()"></script>
 <style>
   :root{
     --noche: #0F1A14;
@@ -136,15 +156,31 @@
   }
   .divider::before,.divider::after{content:"";flex:1;height:1px;background:#E1DED6;}
 
+  .btn-google-wrap{position:relative;width:100%;}
   .btn-google{
     width:100%;padding:13px;border-radius:14px;border:1.5px solid #E1DED6;
     background:#fff;display:flex;align-items:center;justify-content:center;gap:10px;
     font-size:13.5px;font-weight:500;color:var(--noche);cursor:pointer;
     transition:background .2s ease, border-color .2s ease;
   }
-  .btn-google:hover{background:#FAFAF8;border-color:#D2CDC1;}
+  .btn-google:hover, .btn-google.hovered{background:#FAFAF8;border-color:#D2CDC1;}
+  /* Botón real de Google, invisible y superpuesto: recibe el click de verdad
+     (GIS no permite estilizar su botón, así que lo montamos sobre el nuestro) */
+  #g_id_signin{
+    position:absolute;inset:0;overflow:hidden;opacity:0.01;pointer-events:none;
+  }
+  #g_id_signin.ready{pointer-events:auto;}
+  #g_id_signin iframe{width:100% !important;height:100% !important;}
 
   .footer-link{text-align:center;font-size:13.5px;color:#666;}
+
+  .alert-box{
+    display:none;font-size:13px;line-height:1.5;padding:12px 14px;border-radius:12px;
+    margin-top:-4px;
+  }
+  .alert-box.show{display:block;}
+  .alert-box.error{background:rgba(192,57,43,0.08);color:#A93226;border:1px solid rgba(192,57,43,0.25);}
+  .alert-box.info{background:rgba(29,122,79,0.08);color:#175C3C;border:1px solid rgba(29,122,79,0.25);}
 
   /* ---------- RIGHT: HERO ---------- */
   .panel-hero{
@@ -194,20 +230,17 @@
     100%{transform:translateY(-180px) scale(2.4);opacity:0;}
   }
 
-  .testimonials{
-    position:absolute;bottom:32px;left:0;right:0;
-    display:flex;gap:14px;justify-content:center;padding:0 32px;flex-wrap:wrap;
-  }
-  .t-card{
-    width:230px;background:rgba(255,255,255,0.06);
+  .pixel-kitchen{
+    position:absolute;bottom:32px;left:32px;right:32px;
+    background:rgba(255,255,255,0.06);
     border:1px solid rgba(255,255,255,0.14);
     backdrop-filter:blur(14px);
-    border-radius:18px;padding:16px;display:flex;gap:10px;
+    border-radius:18px;padding:10px;
   }
-  .t-card img{width:36px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0;}
-  .t-name{font-size:12.5px;font-weight:600;color:var(--hueso);}
-  .t-handle{font-size:11px;color:var(--acero);margin-bottom:4px;}
-  .t-text{font-size:11.5px;line-height:1.5;color:rgba(245,245,243,0.85);}
+  .pixel-kitchen img{
+    width:100%;display:block;border-radius:12px;
+    image-rendering:crisp-edges;image-rendering:pixelated;
+  }
 
   /* ---------- ENTRANCE ANIMATIONS ---------- */
   .rise-el{opacity:0;filter:blur(6px);transform:translateY(14px);
@@ -221,9 +254,8 @@
     animation:slideIn .8s cubic-bezier(.2,.8,.2,1) forwards; animation-delay:.2s;}
   @keyframes slideIn{to{opacity:1;transform:translateX(0);}}
 
-  .t-card{opacity:0;transform:translateY(10px) scale(.97);
-    animation:cardIn .6s cubic-bezier(.2,.8,.2,1) forwards;}
-  .t1{animation-delay:1.0s;} .t2{animation-delay:1.15s;} .t3{animation-delay:1.3s;}
+  .pixel-kitchen{opacity:0;transform:translateY(10px) scale(.97);
+    animation:cardIn .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay:1.0s;}
   @keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1);}}
 </style>
 </head>
@@ -242,10 +274,19 @@
         Velonox
       </div>
 
-      <h1 class="title rise-el d2">Bienvenida <em>de vuelta</em></h1>
-      <p class="subtitle rise-el d3">Accede a tu cuenta y sigue eligiendo acero inoxidable grado 304 para tu cocina de por vida.</p>
+      <h1 class="title rise-el d2" id="page-title">Bienvenida <em>de vuelta</em></h1>
+      <p class="subtitle rise-el d3" id="page-subtitle">Accede a tu cuenta y sigue eligiendo acero inoxidable grado 304 para tu cocina de por vida.</p>
+
+      <div class="alert-box rise-el d4" id="form-alert"></div>
 
       <form id="signin-form">
+        <div class="field rise-el d4" id="field-name" style="display:none;">
+          <label for="full_name">Nombre completo</label>
+          <div class="input-wrap">
+            <input id="full_name" name="full_name" type="text" placeholder="Tu nombre">
+          </div>
+        </div>
+
         <div class="field rise-el d4">
           <label for="email">Correo electrónico</label>
           <div class="input-wrap">
@@ -269,22 +310,27 @@
           <a href="#" class="link-green" id="reset-link">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" class="btn-primary rise-el d7">Iniciar sesión</button>
+        <button type="submit" class="btn-primary rise-el d7" id="submit-btn">Iniciar sesión</button>
       </form>
 
       <div class="divider rise-el d8">o continúa con</div>
 
-      <button class="btn-google rise-el d8" id="google-btn" style="margin-top:8px;">
-        <svg width="18" height="18" viewBox="0 0 48 48">
-          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-2.641-.21-5.236-.611-7.743z"/>
-          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.022 35.026 44 30.038 44 24c0-2.641-.21-5.236-.611-7.743z"/>
-        </svg>
-        Continuar con Google
-      </button>
+      <div class="btn-google-wrap rise-el d8" style="margin-top:8px;">
+        <button class="btn-google" id="google-btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-2.641-.21-5.236-.611-7.743z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.022 35.026 44 30.038 44 24c0-2.641-.21-5.236-.611-7.743z"/>
+          </svg>
+          Continuar con Google
+        </button>
+        <div id="g_id_signin"></div>
+      </div>
 
-      <p class="footer-link rise-el d9" style="margin-top:20px;">¿Nueva en Velonox? <a href="#" class="link-green">Crea tu cuenta</a></p>
+      <p class="footer-link rise-el d9" style="margin-top:20px;">
+        <span id="mode-toggle-text">¿Nueva en Velonox? <a href="#" class="link-green" id="mode-toggle-link">Crea tu cuenta</a></span>
+      </p>
     </div>
   </section>
 
@@ -305,73 +351,82 @@
       <h2 class="hero-headline">Cocina de por vida, <span class="nox">sin teflón, sin trampas.</span></h2>
     </div>
 
-    <div class="testimonials">
-      <div class="t-card t1">
-        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="">
-        <div>
-          <p class="t-name">Camila R.</p>
-          <p class="t-handle">Bogotá</p>
-          <p class="t-text">Las arepas ya no se me pegan y el set se ve elegante en mi cocina.</p>
-        </div>
-      </div>
-      <div class="t-card t2">
-        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="">
-        <div>
-          <p class="t-name">Valentina G.</p>
-          <p class="t-handle">Medellín</p>
-          <p class="t-text">Apta para inducción y aguanta años. Vale cada peso.</p>
-        </div>
-      </div>
-      <div class="t-card t3">
-        <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="">
-        <div>
-          <p class="t-name">Sofía M.</p>
-          <p class="t-handle">CDMX</p>
-          <p class="t-text">Por fin cocino sin miedo a los químicos del teflón viejo.</p>
-        </div>
-      </div>
+    <div class="pixel-kitchen">
+      <img src="/img/login-hero-pixel-kitchen.png" alt="Cocina en pixel art con utensilios de acero inoxidable" width="720" height="405">
     </div>
   </section>
 
 </div>
 
+<script src="/js/api.js"></script>
 <script>
-  // ======================================================
-  // GOOGLE SIGN-IN — CONFIGURACIÓN
-  // Pega aquí tu Client ID de Google Cloud Console
-  // (termina en .apps.googleusercontent.com)
-  // ======================================================
   const GOOGLE_CLIENT_ID = "120365471700-u6na7h4kjd4qht46krdlnftsvij2mv5c.apps.googleusercontent.com";
 
-  window.onload = function () {
-    if (typeof google === "undefined") return; // por si el script de Google no cargó aún
+  // Página a la que volver tras iniciar sesión (p. ej. el carrito al pagar)
+  const redirectTo = new URLSearchParams(location.search).get("redirect") || "/index.html";
+  if (isLoggedIn()) window.location.href = redirectTo;
+
+  function showAlert(message, type = "error") {
+    const box = document.getElementById('form-alert');
+    box.textContent = message;
+    box.className = `alert-box show ${type}`;
+  }
+  function clearAlert() {
+    const box = document.getElementById('form-alert');
+    box.className = 'alert-box';
+  }
+
+  // ---------- GOOGLE SIGN-IN ----------
+  // Llamado por vxTryInitGoogleAuth() una vez que el script de Google Y el DOM
+  // están listos (ver bootstrap en el <head>, evita la condición de carrera).
+  function _initGoogleAuth() {
+    if (typeof google === "undefined") return;
     google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse
+      callback: handleGoogleResponse,
+      use_fedcm_for_prompt: true
     });
-  };
 
-  // Esto se ejecuta cuando Google confirma la identidad del usuario
+    // Montamos el botón OFICIAL de Google (invisible) encima de nuestro botón
+    // con estilo propio. En escritorio, el One Tap (prompt()) solo aparece si
+    // el navegador ya tiene una sesión de Google activa; el botón oficial en
+    // cambio siempre abre el selector de cuentas, así que es la vía confiable.
+    const mount = document.getElementById('g_id_signin');
+    google.accounts.id.renderButton(mount, { type: 'standard', size: 'large', width: 320 });
+    mount.classList.add('ready');
+
+    // Mantiene el efecto :hover del botón visible aunque el click real
+    // lo reciba el iframe invisible de Google montado encima.
+    const visualBtn = document.getElementById('google-btn');
+    mount.addEventListener('mouseenter', () => visualBtn.classList.add('hovered'));
+    mount.addEventListener('mouseleave', () => visualBtn.classList.remove('hovered'));
+  }
+
   async function handleGoogleResponse(response) {
-    const idToken = response.credential;
     try {
-      const res = await fetch('/auth/google', {
+      const res = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_token: idToken })
+        body: JSON.stringify({ id_token: response.credential })
       });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem('access_token', data.access_token);
-        window.location.href = '/index.html';
+        setToken(data.access_token);
+        window.location.href = redirectTo;
       } else {
-        console.error('Error en login con Google:', data);
-        alert('No se pudo iniciar sesión con Google. Intenta de nuevo.');
+        showAlert(data.detail || 'No se pudo iniciar sesión con Google. Intenta de nuevo.');
       }
     } catch (err) {
-      console.error('Error de red al conectar con /auth/google:', err);
+      showAlert('No pudimos conectar con el servidor. Revisa tu conexión e intenta de nuevo.');
     }
   }
+
+  // Respaldo visible por si el script de Google no llega a cargar (bloqueadores, etc.)
+  document.getElementById('google-btn').addEventListener('click', () => {
+    if (typeof google === "undefined") {
+      showAlert('Google aún no ha cargado, espera un segundo e intenta de nuevo.', 'info');
+    }
+  });
 
   // Toggle password visibility
   const pwToggle = document.getElementById('pw-toggle');
@@ -385,27 +440,70 @@
     eyeClosed.style.display = show ? 'block' : 'none';
   });
 
-  // Form submit -> hook this to /auth/login in your FastAPI backend
-  document.getElementById('signin-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = pwInput.value;
-    // Reemplaza esta parte por tu llamada real a la API:
-    // const res = await fetch('/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
-    console.log('Iniciar sesión con:', email);
+  // ---------- LOGIN / REGISTRO ----------
+  let mode = 'login';
+  const fieldName = document.getElementById('field-name');
+  const fullNameInput = document.getElementById('full_name');
+  const submitBtn = document.getElementById('submit-btn');
+  const pageTitle = document.getElementById('page-title');
+  const pageSubtitle = document.getElementById('page-subtitle');
+  const modeToggleText = document.getElementById('mode-toggle-text');
+
+  function setMode(next) {
+    mode = next;
+    clearAlert();
+    if (mode === 'register') {
+      fieldName.style.display = '';
+      fullNameInput.required = true;
+      submitBtn.textContent = 'Crear cuenta';
+      pageTitle.innerHTML = 'Crea tu <em>cuenta</em>';
+      pageSubtitle.textContent = 'Regístrate para guardar tus pedidos y seguir eligiendo acero inoxidable grado 304.';
+      modeToggleText.innerHTML = '¿Ya tienes cuenta? <a href="#" class="link-green" id="mode-toggle-link">Inicia sesión</a>';
+    } else {
+      fieldName.style.display = 'none';
+      fullNameInput.required = false;
+      submitBtn.textContent = 'Iniciar sesión';
+      pageTitle.innerHTML = 'Bienvenida <em>de vuelta</em>';
+      pageSubtitle.textContent = 'Accede a tu cuenta y sigue eligiendo acero inoxidable grado 304 para tu cocina de por vida.';
+      modeToggleText.innerHTML = '¿Nueva en Velonox? <a href="#" class="link-green" id="mode-toggle-link">Crea tu cuenta</a>';
+    }
+  }
+  // Delegación de eventos: el link se recrea en cada setMode(), así que
+  // escuchamos en el contenedor fijo en vez de reengancharnos cada vez.
+  modeToggleText.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'mode-toggle-link') {
+      e.preventDefault();
+      setMode(mode === 'login' ? 'register' : 'login');
+    }
   });
 
-  document.getElementById('google-btn').addEventListener('click', () => {
-    if (typeof google === "undefined") {
-      alert('Google aún no ha cargado, espera un segundo e intenta de nuevo.');
-      return;
+  document.getElementById('signin-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearAlert();
+    const email = document.getElementById('email').value.trim();
+    const password = pwInput.value;
+
+    submitBtn.disabled = true;
+    try {
+      if (mode === 'register') {
+        const fullName = fullNameInput.value.trim();
+        if (!fullName) { showAlert('Ingresa tu nombre completo.'); return; }
+        await register(email, password, fullName);
+        await login(email, password);
+      } else {
+        await login(email, password);
+      }
+      window.location.href = redirectTo;
+    } catch (err) {
+      showAlert(err.message || 'Algo salió mal. Intenta de nuevo.');
+    } finally {
+      submitBtn.disabled = false;
     }
-    google.accounts.id.prompt(); // abre la ventana de selección de cuenta de Google
   });
 
   document.getElementById('reset-link').addEventListener('click', (e) => {
     e.preventDefault();
-    console.log('Reset password clicked');
+    showAlert('La recuperación de contraseña todavía no está disponible en el sitio. Escríbenos desde la página de contacto y te ayudamos a recuperar el acceso.', 'info');
   });
 </script>
 
