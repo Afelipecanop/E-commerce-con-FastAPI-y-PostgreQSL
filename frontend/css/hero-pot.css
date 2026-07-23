@@ -136,10 +136,21 @@
 }
 
 /* Mobile / tablets pequeñas: mismo punto de quiebre donde el hero cambia a
-   flujo vertical (badge estático, min-height auto) — ya no hay espacio muerto
-   detrás del texto, así que la ocultamos para priorizar la legibilidad. */
+   flujo vertical (badge estático, min-height auto). Ya no hay espacio muerto
+   a la derecha, así que en vez de una ilustración esquinada la mostramos
+   como fondo difuminado detrás de todo el texto: grande, centrada y muy
+   translúcida para que la animación se distinga sin afectar la legibilidad. */
 @media (max-width: 860px) {
-    .hero-pot { display: none; }
+    .hero-pot {
+        top: 50%;
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+        width: clamp(300px, 92vw, 480px);
+        opacity: 0.22;
+        filter: blur(1px);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
