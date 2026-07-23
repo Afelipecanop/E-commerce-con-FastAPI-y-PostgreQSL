@@ -16,6 +16,8 @@ from models.cart import Cart, CartItem
 from models.layout import StoreLayout
 from models.product_page import ProductPage
 from models.settings import StoreSetting
+from models.category import Category
+from models.password_reset_token import PasswordResetToken
 
 config = context.config
 

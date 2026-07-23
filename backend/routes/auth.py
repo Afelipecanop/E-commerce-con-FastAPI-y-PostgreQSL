@@ -15,6 +15,12 @@ from services.auth import (
     get_or_create_google_user,
 )
 from middleware.auth import get_current_user
+from schemas.user import ForgotPasswordRequest, ResetPasswordRequest
+from services.auth import create_password_reset_token, get_valid_reset_token, consume_reset_token
+from services.email import email_recuperacion_password
+import os
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://e-commerceutcocina.pages.dev")
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
@@ -103,3 +109,32 @@ def google_login(auth_data: GoogleAuth, db: Session = Depends(get_db)):
 def get_me(current_user: User = Depends(get_current_user)):
     """Devuelve los datos del usuario autenticado."""
     return current_user
+
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Genera un token de recuperación y envía el email, si el usuario existe.
+
+    Siempre responde con el mismo mensaje genérico, exista o no la cuenta,
+    para no revelar qué correos están registrados.
+    """
+    user = get_user_by_email(db, data.email)
+    if user and user.auth_provider == "local":
+        raw_token = create_password_reset_token(db, user)
+        reset_link = f"{FRONTEND_URL}/reset-password.html?token={raw_token}"
+        email_recuperacion_password(user.email, user.full_name, reset_link)
+
+    return {"message": "Si el correo está registrado, enviamos instrucciones para restablecer tu contraseña."}
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+    reset_token = get_valid_reset_token(db, data.token)
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El link de recuperación es inválido o expiró. Solicita uno nuevo.",
+        )
+
+    consume_reset_token(db, reset_token, data.new_password)
+    return {"message": "Tu contraseña fue actualizada correctamente."}

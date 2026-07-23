@@ -10,6 +10,11 @@ import os
 
 from models.user import User
 from schemas.user import TokenData
+import secrets
+import hashlib
+from models.password_reset_token import PasswordResetToken
+
+RESET_TOKEN_EXPIRE_MINUTES = 30
 
 load_dotenv()
 
@@ -99,3 +104,47 @@ def decode_token(token: str) -> Optional[TokenData]:
         return TokenData(user_id=user_id)
     except JWTError:
         return None
+
+# Password reset token management
+
+def _hash_reset_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode()).hexdigest()
+
+
+def create_password_reset_token(db: Session, user: User) -> str:
+    """Genera un token de recuperación, guarda solo su hash, y devuelve el token en texto plano (para el email)."""
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = _hash_reset_token(raw_token)
+
+    reset_token = PasswordResetToken(
+        user_id=user.id,
+        token_hash=token_hash,
+        expires_at=datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES),
+    )
+    db.add(reset_token)
+    db.commit()
+
+    return raw_token
+
+
+def get_valid_reset_token(db: Session, raw_token: str) -> Optional[PasswordResetToken]:
+    token_hash = _hash_reset_token(raw_token)
+    reset_token = (
+        db.query(PasswordResetToken)
+        .filter(PasswordResetToken.token_hash == token_hash)
+        .first()
+    )
+    if not reset_token:
+        return None
+    if reset_token.used:
+        return None
+    if reset_token.expires_at < datetime.utcnow():
+        return None
+    return reset_token
+
+
+def consume_reset_token(db: Session, reset_token: PasswordResetToken, new_password: str):
+    user = db.query(User).filter(User.id == reset_token.user_id).first()
+    user.hashed_password = hash_password(new_password)
+    reset_token.used = True
+    db.commit()

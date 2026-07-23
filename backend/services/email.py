@@ -191,3 +191,39 @@ def email_confirmacion_orden(to: str, nombre: str, order_id: str, items: list, t
     </html>
     """
     return send_email(to, f"Tu pedido Velonox #{order_id[:8].upper()} fue confirmado", html)
+
+
+def email_recuperacion_password(to: str, nombre: str, reset_link: str):
+    """Email con el link para restablecer la contraseña."""
+    html = f"""
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F5F3;padding:40px 0;font-family:'DM Sans',Arial,sans-serif;">
+      <tr><td align="center">
+        <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;">
+          <tr><td style="background:#0F1A14;padding:28px 32px;">
+            <span style="font-family:Georgia,serif;font-size:24px;font-weight:700;">
+              <span style="color:#C8D8C0;">Velo</span><span style="color:#1D7A4F;">nox</span>
+            </span>
+          </td></tr>
+          <tr><td style="padding:32px;">
+            <p style="font-size:15px;color:#0F1A14;margin-bottom:16px;">Hola {nombre},</p>
+            <p style="font-size:14px;color:#555;line-height:1.6;margin-bottom:24px;">
+              Recibimos una solicitud para restablecer tu contraseña. Si fuiste tú, haz clic en el botón de abajo.
+              Este link es válido por 30 minutos.
+            </p>
+            <table cellpadding="0" cellspacing="0"><tr><td style="border-radius:2px;background:#1D7A4F;">
+              <a href="{reset_link}" style="display:inline-block;padding:14px 28px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
+                Restablecer contraseña
+              </a>
+            </td></tr></table>
+            <p style="font-size:12.5px;color:#999;margin-top:24px;">
+              Si no solicitaste esto, puedes ignorar este correo — tu contraseña seguirá siendo la misma.
+            </p>
+          </td></tr>
+          <tr><td style="background:#0F1A14;padding:20px 32px;text-align:center;">
+            <p style="font-size:11px;color:#4A6A5A;">© 2026 Velonox</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+    """
+    return send_email(to, "Restablece tu contraseña — Velonox", html)

@@ -22,3 +22,4 @@ class User(Base):
     # Relaciones
     orders = relationship("Order", back_populates="user")
     cart = relationship("Cart", back_populates="user", uselist=False)
+    password_reset_tokens = relationship("PasswordResetToken", back_populates="user")

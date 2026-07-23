@@ -6,3 +6,4 @@ from .settings import StoreSetting
 from .layout import StoreLayout
 from .product_page import ProductPage
 from .category import Category
+from .password_reset_token import PasswordResetToken

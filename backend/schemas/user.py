@@ -44,3 +44,12 @@ class Token(BaseModel):
 # Los datos que viven dentro del token
 class TokenData(BaseModel):
     user_id: Optional[str] = None
+
+# Reset password schemas
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
