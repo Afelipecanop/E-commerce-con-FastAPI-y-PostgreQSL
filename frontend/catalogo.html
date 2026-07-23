@@ -54,6 +54,7 @@
         .search-input{width:100%;padding:.5rem .75rem .5rem 2.2rem;border:1px solid #E8E8E4;border-radius:2px;font-size:13px;font-family:'DM Sans',sans-serif;color:#0F1A14;transition:border-color .2s}
         .search-input:focus{outline:none;border-color:#1D7A4F}
         .search-input::placeholder{color:#B0BEB8}
+        .filters-panel{display:contents}
         .filters{display:flex;gap:.4rem;flex-wrap:wrap;flex:1}
         .filter-btn{padding:.4rem .9rem;border:1px solid #E8E8E4;border-radius:2px;font-size:12px;font-weight:500;color:#6B8A7A;background:white;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
         .filter-btn.active{border-color:#1D7A4F;color:#1D7A4F;background:#F0FAF5}
@@ -124,6 +125,24 @@
             .toolbar-inner{gap:.5rem}
         }
         @media(max-width:480px){.prod-grid{grid-template-columns:1fr}}
+        .filters-toggle{display:none}
+        @media(max-width:768px){
+            .filters-toggle{
+                display:flex;align-items:center;gap:.3rem;
+                padding:.4rem .8rem;border:1px solid #E8E8E4;border-radius:2px;
+                font-size:12px;font-weight:500;color:#6B8A7A;background:white;
+                cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;
+            }
+            .filters-toggle i{font-size:14px;transition:transform .2s ease}
+            .filters-toggle.open i{transform:rotate(180deg)}
+            .filters-panel{
+                flex-basis:100%;max-height:0;overflow:hidden;
+                transition:max-height .25s ease;
+            }
+            .filters-panel.open{max-height:220px;margin-top:.6rem}
+            .filters{width:100%}
+            .toolbar-right{width:100%;justify-content:space-between;margin-left:0;margin-top:.6rem}
+        }
     </style>
     <link rel="stylesheet" href="/css/product-card.css">
 </head>
@@ -233,6 +252,7 @@ async function init() {
     }
 
     await initPageBlocks("tienda");
+    setupMobileFilters();
 
     const params = new URLSearchParams(window.location.search);
     const catParam = params.get("cat");
@@ -253,6 +273,34 @@ async function init() {
     filtersEl.innerHTML = filterHTML;
 
     applyFilters();
+}
+
+// En móvil, el bloque de categorías + orden ("filters" + "toolbar-right") ocupaba
+// media pantalla desplegado siempre. Los envolvemos en un panel colapsable con un
+// botón "Filtros" (en escritorio .filters-panel es display:contents y no afecta nada).
+function setupMobileFilters() {
+    const toolbarInner = document.querySelector(".toolbar-inner");
+    const filtersEl = document.getElementById("cat-filters");
+    if (!toolbarInner || !filtersEl) return;
+
+    const toolbarRight = toolbarInner.querySelector(".toolbar-right");
+
+    const panel = document.createElement("div");
+    panel.className = "filters-panel";
+    filtersEl.parentNode.insertBefore(panel, filtersEl);
+    panel.appendChild(filtersEl);
+    if (toolbarRight) panel.appendChild(toolbarRight);
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "filters-toggle";
+    toggle.id = "filters-toggle";
+    toggle.innerHTML = 'Filtros <i class="ti ti-chevron-down"></i>';
+    toggle.addEventListener("click", function() {
+        panel.classList.toggle("open");
+        toggle.classList.toggle("open");
+    });
+    toolbarInner.insertBefore(toggle, panel);
 }
 
 function applyFilters() {
