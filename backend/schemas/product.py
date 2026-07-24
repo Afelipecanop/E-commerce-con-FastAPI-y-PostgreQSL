@@ -10,6 +10,7 @@ class ProductCreate(BaseModel):
     price: float
     stock: int
     image_url: Optional[str] = None
+    category: Optional[str] = None
 
 
 class ProductUpdate(BaseModel):
@@ -18,6 +19,7 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     stock: Optional[int] = None
     image_url: Optional[str] = None
+    category: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -28,6 +30,7 @@ class ProductResponse(BaseModel):
     price: float
     stock: int
     image_url: Optional[str]
+    category: Optional[str]
     is_active: bool
     created_at: datetime
 
