@@ -7,6 +7,8 @@ import os
 
 from routes.auth import router as auth_router
 from routes.products import router as products_router
+from routes.product_variants import router as product_variants_router
+from routes.product_images import router as product_images_router
 from routes.cart import router as cart_router
 from routes.payments import router as payments_router
 from routes.layout import router as layout_router
@@ -47,6 +49,8 @@ app.include_router(product_pages_router)
 app.include_router(layout_router)
 app.include_router(auth_router)
 app.include_router(products_router)
+app.include_router(product_variants_router)
+app.include_router(product_images_router)
 app.include_router(cart_router)
 app.include_router(payments_router)
 app.include_router(metrics_router)

@@ -1,7 +1,10 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+
+from schemas.product_variant import ProductVariantResponse
+from schemas.product_image import ProductImageResponse
 
 
 class ProductCreate(BaseModel):
@@ -33,6 +36,8 @@ class ProductResponse(BaseModel):
     category: Optional[str]
     is_active: bool
     created_at: datetime
+    variants: List[ProductVariantResponse] = []
+    images: List[ProductImageResponse] = []
 
     class Config:
         from_attributes = True

@@ -371,10 +371,6 @@
                     <label>Categoría</label>
                     <select id="p-category" style="width:100%;padding:.5rem .7rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem;background:white;cursor:pointer">
                         <option value="">Sin categoría</option>
-                        <option value="ollas">Ollas y cacerolas</option>
-                        <option value="sartenes">Sartenes</option>
-                        <option value="utensilios">Utensilios</option>
-                        <option value="accesorios">Accesorios</option>
                     </select>
                 </div>
                 <div style="display:flex;gap:.6rem">
@@ -385,6 +381,28 @@
             <div>
                 <h3 style="display:flex;align-items:center;gap:.5rem;font-size:15px;margin:0 0 1.2rem"><i class="ti ti-list" style="color:var(--green)"></i>Productos activos</h3>
                 <div id="products-table"></div>
+            </div>
+        </div>
+
+        <div id="variants-section" class="panel-card" style="display:none;margin-top:1.5rem">
+            <h3><i class="ti ti-versions"></i>Variantes de "<span id="variants-product-name"></span>"</h3>
+            <p style="font-size:12px;color:var(--text-2);margin:-.5rem 0 1rem">Ej: mismo producto en distintos colores. Deja el precio vacío para usar el precio base del producto.</p>
+            <div id="variants-list"></div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.5rem;margin-top:.75rem;align-items:end">
+                <div class="form-group" style="margin:0"><label>Nombre</label><input type="text" id="v-name" placeholder="Ej: Rojo"></div>
+                <div class="form-group" style="margin:0"><label>Precio (opcional)</label><input type="number" id="v-price" step="0.01" placeholder="Precio base"></div>
+                <div class="form-group" style="margin:0"><label>Stock</label><input type="number" id="v-stock" placeholder="0"></div>
+                <button class="btn-primary" onclick="handleAddVariant()" style="height:fit-content">Agregar</button>
+            </div>
+        </div>
+
+        <div id="images-section" class="panel-card" style="display:none;margin-top:1.5rem">
+            <h3><i class="ti ti-photo"></i>Galería de "<span id="images-product-name"></span>"</h3>
+            <p style="font-size:12px;color:var(--text-2);margin:-.5rem 0 1rem">La imagen marcada como principal es la que se usa en el catálogo y las tarjetas de producto (campo "URL de imagen" de arriba).</p>
+            <div id="images-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.75rem;margin-bottom:1rem"></div>
+            <div style="display:flex;gap:.5rem">
+                <input type="text" id="img-url" placeholder="https://..." style="flex:1;padding:.5rem .7rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
+                <button class="btn-primary" onclick="handleAddImage()">Agregar</button>
             </div>
         </div>
     </div>
@@ -654,6 +672,10 @@ let currentDevice = 'desktop';
 let previewProducts = [];   // productos reales para el preview en vivo
 let currentPage = '__live__';
 let editingProductId = null;   // id del producto en edición, null = modo crear
+let variantsProductId = null;  // id del producto cuyas variantes se están gestionando
+let currentVariants = [];      // variantes del producto en edición
+let imagesProductId = null;    // id del producto cuya galería se está gestionando
+let currentImages = [];        // imágenes del producto en edición
 let isLayoutLoading = false;   // evita que "Guardar" sobreescriba con datos a medio cargar
 
 // ── Páginas editables con bloques (slug de backend + archivo real) ────────────
@@ -765,6 +787,7 @@ async function init() {
     await loadMiniProducts();
     await loadSettings();
     loadProducts();
+    loadProductCategoryOptions();
     renderPreview();   // preview en vivo al cargar (no sobreescribimos con src)
 }
 
@@ -1417,6 +1440,7 @@ function switchTab(tab) {
     });
     if (tab === "metrics") loadMetrics();
     if (tab === "categories") loadCategoriesPanel();
+    if (tab === "products") loadProductCategoryOptions();
     if  (tab === "settings") loadTRMAdmin();
     if (tab === "metrics") {
         loadMetrics();
@@ -1457,6 +1481,19 @@ async function loadMiniProducts() {
             </div>
         `).join("");
     } catch(e) {}
+}
+
+// Repuebla el <select> de categoría del formulario de producto desde la API,
+// preservando la selección actual (si la categoría seleccionada ya no existe, cae a "Sin categoría").
+async function loadProductCategoryOptions() {
+    const sel = document.getElementById("p-category");
+    const current = sel.value;
+    try {
+        const cats = await apiFetch("/categories/");
+        sel.innerHTML = `<option value="">Sin categoría</option>` +
+            cats.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+        sel.value = current;
+    } catch (e) {}
 }
 
 // ── Productos ─────────────────────────────────────────────────────────────────
@@ -1537,6 +1574,18 @@ function handleEditProduct(id) {
     document.getElementById("product-form-cancel").style.display = "";
     document.getElementById("product-form-alert").innerHTML = "";
     document.querySelector("#products-tab .panel-card").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    variantsProductId = id;
+    currentVariants = product.variants || [];
+    document.getElementById("variants-product-name").textContent = product.name || "";
+    document.getElementById("variants-section").style.display = "";
+    renderVariantsList();
+
+    imagesProductId = id;
+    currentImages = product.images || [];
+    document.getElementById("images-product-name").textContent = product.name || "";
+    document.getElementById("images-section").style.display = "";
+    renderImagesList();
 }
 
 function resetProductForm() {
@@ -1545,6 +1594,159 @@ function resetProductForm() {
     document.getElementById("product-form-title").innerHTML = `<i class="ti ti-plus"></i>Nuevo producto`;
     document.getElementById("product-form-btn").textContent = "Crear producto";
     document.getElementById("product-form-cancel").style.display = "none";
+
+    variantsProductId = null;
+    currentVariants = [];
+    document.getElementById("variants-section").style.display = "none";
+    ["v-name","v-price","v-stock"].forEach(id => document.getElementById(id).value = "");
+
+    imagesProductId = null;
+    currentImages = [];
+    document.getElementById("images-section").style.display = "none";
+    document.getElementById("img-url").value = "";
+}
+
+// ── Variantes de producto ────────────────────────────────────────────────────
+// previewProducts es la caché en memoria que handleEditProduct() usa para leer un producto
+// por id; sin esto, tras agregar/editar/borrar una variante, reabrir el editor del mismo
+// producto (sin recargar la página) mostraría las variantes desactualizadas.
+function syncVariantsToPreviewCache() {
+    const product = previewProducts.find(p => p.id === variantsProductId);
+    if (product) product.variants = currentVariants;
+}
+
+function renderVariantsList() {
+    const container = document.getElementById("variants-list");
+    if (!currentVariants.length) {
+        container.innerHTML = `<p style="font-size:12.5px;color:var(--text-2)">Sin variantes todavía.</p>`;
+        return;
+    }
+    container.innerHTML = currentVariants.map(v => `
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto auto;gap:.5rem;align-items:center;margin-bottom:.5rem">
+            <input type="text" value="${v.name}" id="v-name-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
+            <input type="number" step="0.01" value="${v.price ?? ''}" placeholder="Precio base" id="v-price-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
+            <input type="number" value="${v.stock}" id="v-stock-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
+            <button class="btn-del" style="color:var(--green,#1D7A4F);border-color:#c8e2d2" onclick="handleUpdateVariant('${v.id}')" title="Guardar"><i class="ti ti-device-floppy"></i></button>
+            <button class="btn-del" onclick="handleDeleteVariant('${v.id}')" title="Eliminar"><i class="ti ti-trash"></i></button>
+        </div>
+    `).join("");
+}
+
+async function handleAddVariant() {
+    if (!variantsProductId) return;
+    const name = document.getElementById("v-name").value.trim();
+    if (!name) { showToast("El nombre de la variante es obligatorio", "error"); return; }
+    const priceRaw = document.getElementById("v-price").value;
+    const data = {
+        name,
+        price: priceRaw !== "" ? parseFloat(priceRaw) : null,
+        stock: parseInt(document.getElementById("v-stock").value) || 0
+    };
+    try {
+        const variant = await apiFetch(`/products/${variantsProductId}/variants`, { method: "POST", body: JSON.stringify(data) });
+        currentVariants.push(variant);
+        syncVariantsToPreviewCache();
+        renderVariantsList();
+        ["v-name","v-price","v-stock"].forEach(id => document.getElementById(id).value = "");
+        showToast("Variante agregada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
+}
+
+async function handleUpdateVariant(variantId) {
+    const name = document.getElementById(`v-name-${variantId}`).value.trim();
+    if (!name) { showToast("El nombre de la variante es obligatorio", "error"); return; }
+    const priceRaw = document.getElementById(`v-price-${variantId}`).value;
+    const data = {
+        name,
+        price: priceRaw !== "" ? parseFloat(priceRaw) : null,
+        stock: parseInt(document.getElementById(`v-stock-${variantId}`).value) || 0
+    };
+    try {
+        const updated = await apiFetch(`/products/${variantsProductId}/variants/${variantId}`, { method: "PUT", body: JSON.stringify(data) });
+        const idx = currentVariants.findIndex(v => v.id === variantId);
+        if (idx !== -1) currentVariants[idx] = updated;
+        syncVariantsToPreviewCache();
+        showToast("Variante actualizada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
+}
+
+async function handleDeleteVariant(variantId) {
+    if (!confirm("¿Eliminar esta variante?")) return;
+    try {
+        await apiFetch(`/products/${variantsProductId}/variants/${variantId}`, { method: "DELETE" });
+        currentVariants = currentVariants.filter(v => v.id !== variantId);
+        syncVariantsToPreviewCache();
+        renderVariantsList();
+        showToast("Variante eliminada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
+}
+
+// ── Galería de imágenes de producto ──────────────────────────────────────────
+// La imagen principal de la galería sincroniza con Product.image_url (el campo
+// "URL de imagen" del formulario), que es el que usan las tarjetas/catálogo hoy.
+function syncImagesToPreviewCache() {
+    const product = previewProducts.find(p => p.id === imagesProductId);
+    if (product) product.images = currentImages;
+}
+
+function setMainImageField(url) {
+    document.getElementById("p-image").value = url;
+    const product = previewProducts.find(p => p.id === imagesProductId);
+    if (product) product.image_url = url;
+}
+
+function renderImagesList() {
+    const container = document.getElementById("images-list");
+    if (!currentImages.length) {
+        container.innerHTML = `<p style="font-size:12.5px;color:var(--text-2);grid-column:1/-1">Sin imágenes todavía.</p>`;
+        return;
+    }
+    container.innerHTML = currentImages.map(img => `
+        <div style="border:2px solid ${img.is_primary ? 'var(--green)' : '#e2e8f0'};border-radius:8px;padding:.4rem;text-align:center">
+            <img src="${img.url}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:.4rem">
+            ${img.is_primary
+                ? `<div style="font-size:10px;font-weight:600;color:var(--green);margin-bottom:.3rem">★ Principal</div>`
+                : `<button class="btn-del" style="font-size:10px;padding:.2rem .4rem;margin-bottom:.3rem;width:100%" onclick="handleSetPrimaryImage('${img.id}')">Marcar principal</button>`}
+            <button class="btn-del" style="font-size:10px;padding:.2rem .4rem;width:100%" onclick="handleDeleteImage('${img.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+    `).join("");
+}
+
+async function handleAddImage() {
+    if (!imagesProductId) return;
+    const url = document.getElementById("img-url").value.trim();
+    if (!url) { showToast("La URL de la imagen es obligatoria", "error"); return; }
+    try {
+        const image = await apiFetch(`/products/${imagesProductId}/images`, { method: "POST", body: JSON.stringify({ url }) });
+        currentImages.push(image);
+        if (image.is_primary) setMainImageField(image.url);
+        syncImagesToPreviewCache();
+        renderImagesList();
+        document.getElementById("img-url").value = "";
+        showToast("Imagen agregada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
+}
+
+async function handleSetPrimaryImage(imageId) {
+    try {
+        const updated = await apiFetch(`/products/${imagesProductId}/images/${imageId}/set-primary`, { method: "POST" });
+        currentImages = currentImages.map(img => ({ ...img, is_primary: img.id === imageId }));
+        setMainImageField(updated.url);
+        syncImagesToPreviewCache();
+        renderImagesList();
+        showToast("Imagen principal actualizada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
+}
+
+async function handleDeleteImage(imageId) {
+    if (!confirm("¿Eliminar esta imagen?")) return;
+    try {
+        await apiFetch(`/products/${imagesProductId}/images/${imageId}`, { method: "DELETE" });
+        currentImages = currentImages.filter(img => img.id !== imageId);
+        syncImagesToPreviewCache();
+        renderImagesList();
+        showToast("Imagen eliminada ✅", "success");
+    } catch (e) { showToast(e.message, "error"); }
 }
 
 async function handleDeleteProduct(id, name) {
@@ -1732,6 +1934,7 @@ async function handleSaveCat() {
         document.getElementById("cat-form-alert").innerHTML =
             `<div class="alert alert-success">✅ Categoría actualizada</div>`;
         loadCategoriesPanel();
+        loadProductCategoryOptions();
         showToast("Categoría guardada ✅", "success");
     } catch(e) {
         document.getElementById("cat-form-alert").innerHTML =
