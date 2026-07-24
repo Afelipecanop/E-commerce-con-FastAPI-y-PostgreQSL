@@ -15,7 +15,9 @@ class ProductVariant(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=True)  # null = usa el precio del producto base
     stock = Column(Integer, nullable=False, default=0)
+    image_id = Column(UUID(as_uuid=True), ForeignKey("product_images.id", ondelete="SET NULL"), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     product = relationship("Product", back_populates="variants")
+    image = relationship("ProductImage")

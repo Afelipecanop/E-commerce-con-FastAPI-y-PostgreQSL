@@ -388,10 +388,14 @@
             <h3><i class="ti ti-versions"></i>Variantes de "<span id="variants-product-name"></span>"</h3>
             <p style="font-size:12px;color:var(--text-2);margin:-.5rem 0 1rem">Ej: mismo producto en distintos colores. Deja el precio vacío para usar el precio base del producto.</p>
             <div id="variants-list"></div>
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.5rem;margin-top:.75rem;align-items:end">
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr auto;gap:.5rem;margin-top:.75rem;align-items:end">
                 <div class="form-group" style="margin:0"><label>Nombre</label><input type="text" id="v-name" placeholder="Ej: Rojo"></div>
                 <div class="form-group" style="margin:0"><label>Precio (opcional)</label><input type="number" id="v-price" step="0.01" placeholder="Precio base"></div>
                 <div class="form-group" style="margin:0"><label>Stock</label><input type="number" id="v-stock" placeholder="0"></div>
+                <div class="form-group" style="margin:0">
+                    <label>Imagen (opcional)</label>
+                    <select id="v-image" style="width:100%;padding:.5rem .7rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem;background:white"></select>
+                </div>
                 <button class="btn-primary" onclick="handleAddVariant()" style="height:fit-content">Agregar</button>
             </div>
         </div>
@@ -1575,17 +1579,18 @@ function handleEditProduct(id) {
     document.getElementById("product-form-alert").innerHTML = "";
     document.querySelector("#products-tab .panel-card").scrollIntoView({ behavior: "smooth", block: "start" });
 
-    variantsProductId = id;
-    currentVariants = product.variants || [];
-    document.getElementById("variants-product-name").textContent = product.name || "";
-    document.getElementById("variants-section").style.display = "";
-    renderVariantsList();
-
     imagesProductId = id;
     currentImages = product.images || [];
     document.getElementById("images-product-name").textContent = product.name || "";
     document.getElementById("images-section").style.display = "";
     renderImagesList();
+    populateVariantImageSelect();
+
+    variantsProductId = id;
+    currentVariants = product.variants || [];
+    document.getElementById("variants-product-name").textContent = product.name || "";
+    document.getElementById("variants-section").style.display = "";
+    renderVariantsList();
 }
 
 function resetProductForm() {
@@ -1599,6 +1604,7 @@ function resetProductForm() {
     currentVariants = [];
     document.getElementById("variants-section").style.display = "none";
     ["v-name","v-price","v-stock"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("v-image").innerHTML = "";
 
     imagesProductId = null;
     currentImages = [];
@@ -1615,6 +1621,16 @@ function syncVariantsToPreviewCache() {
     if (product) product.variants = currentVariants;
 }
 
+// Repuebla el <select> de imagen del formulario "agregar variante" (las filas ya
+// existentes se repueblan solas dentro de renderVariantsList a partir de currentImages).
+function populateVariantImageSelect() {
+    const sel = document.getElementById("v-image");
+    const current = sel.value;
+    sel.innerHTML = `<option value="">Sin imagen</option>` +
+        currentImages.map((img, i) => `<option value="${img.id}">Imagen ${i + 1}</option>`).join("");
+    sel.value = current;
+}
+
 function renderVariantsList() {
     const container = document.getElementById("variants-list");
     if (!currentVariants.length) {
@@ -1622,10 +1638,14 @@ function renderVariantsList() {
         return;
     }
     container.innerHTML = currentVariants.map(v => `
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto auto;gap:.5rem;align-items:center;margin-bottom:.5rem">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr auto auto;gap:.5rem;align-items:center;margin-bottom:.5rem">
             <input type="text" value="${v.name}" id="v-name-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
             <input type="number" step="0.01" value="${v.price ?? ''}" placeholder="Precio base" id="v-price-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
             <input type="number" value="${v.stock}" id="v-stock-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem">
+            <select id="v-image-${v.id}" style="padding:.4rem .6rem;border:2px solid #e2e8f0;border-radius:6px;font-size:.85rem;background:white">
+                <option value="">Sin imagen</option>
+                ${currentImages.map((img, i) => `<option value="${img.id}" ${img.id === v.image_id ? "selected" : ""}>Imagen ${i + 1}</option>`).join("")}
+            </select>
             <button class="btn-del" style="color:var(--green,#1D7A4F);border-color:#c8e2d2" onclick="handleUpdateVariant('${v.id}')" title="Guardar"><i class="ti ti-device-floppy"></i></button>
             <button class="btn-del" onclick="handleDeleteVariant('${v.id}')" title="Eliminar"><i class="ti ti-trash"></i></button>
         </div>
@@ -1640,7 +1660,8 @@ async function handleAddVariant() {
     const data = {
         name,
         price: priceRaw !== "" ? parseFloat(priceRaw) : null,
-        stock: parseInt(document.getElementById("v-stock").value) || 0
+        stock: parseInt(document.getElementById("v-stock").value) || 0,
+        image_id: document.getElementById("v-image").value || null
     };
     try {
         const variant = await apiFetch(`/products/${variantsProductId}/variants`, { method: "POST", body: JSON.stringify(data) });
@@ -1648,6 +1669,7 @@ async function handleAddVariant() {
         syncVariantsToPreviewCache();
         renderVariantsList();
         ["v-name","v-price","v-stock"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("v-image").value = "";
         showToast("Variante agregada ✅", "success");
     } catch (e) { showToast(e.message, "error"); }
 }
@@ -1659,7 +1681,8 @@ async function handleUpdateVariant(variantId) {
     const data = {
         name,
         price: priceRaw !== "" ? parseFloat(priceRaw) : null,
-        stock: parseInt(document.getElementById(`v-stock-${variantId}`).value) || 0
+        stock: parseInt(document.getElementById(`v-stock-${variantId}`).value) || 0,
+        image_id: document.getElementById(`v-image-${variantId}`).value || null
     };
     try {
         const updated = await apiFetch(`/products/${variantsProductId}/variants/${variantId}`, { method: "PUT", body: JSON.stringify(data) });
@@ -1722,6 +1745,8 @@ async function handleAddImage() {
         if (image.is_primary) setMainImageField(image.url);
         syncImagesToPreviewCache();
         renderImagesList();
+        populateVariantImageSelect();
+        renderVariantsList();
         document.getElementById("img-url").value = "";
         showToast("Imagen agregada ✅", "success");
     } catch (e) { showToast(e.message, "error"); }
@@ -1743,8 +1768,13 @@ async function handleDeleteImage(imageId) {
     try {
         await apiFetch(`/products/${imagesProductId}/images/${imageId}`, { method: "DELETE" });
         currentImages = currentImages.filter(img => img.id !== imageId);
+        // el backend desvincula (SET NULL) las variantes que usaban esta imagen; reflejamos eso localmente
+        currentVariants = currentVariants.map(v => v.image_id === imageId ? { ...v, image_id: null } : v);
         syncImagesToPreviewCache();
+        syncVariantsToPreviewCache();
         renderImagesList();
+        populateVariantImageSelect();
+        renderVariantsList();
         showToast("Imagen eliminada ✅", "success");
     } catch (e) { showToast(e.message, "error"); }
 }

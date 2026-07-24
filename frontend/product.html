@@ -321,6 +321,8 @@ const API = "https://e-commerce-con-fastapi-y-postgreqsl-production.up.railway.a
 let currentProduct = null;
 let currentPage = null;
 let quantity = 1;
+let currentImages = [];    // galería del producto en render (product.images, con fallback a image_url)
+let selectedVariant = null; // variante activa (solo afecta la imagen mostrada, no el precio cobrado)
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
 function showToast(msg, type = "ok") {
@@ -433,8 +435,17 @@ function renderProduct(product, page) {
     const inStock = product.stock > 0;
     const specs = page.specs || [];
     const features = page.features || [];
-    const variants = page.variants || [];
     const description = page.description || product.description || "";
+
+    // Galería real: product.images (múltiples fotos gestionadas desde el admin).
+    // Si el producto no tiene ninguna en la tabla product_images, caemos al único
+    // image_url de siempre para no dejar productos viejos sin foto.
+    const images = (product.images && product.images.length)
+        ? product.images
+        : (product.image_url ? [{ id: null, url: product.image_url, is_primary: true }] : []);
+    const variants = product.variants || [];
+    currentImages = images;
+    selectedVariant = null;
 
     document.getElementById("page-content").innerHTML = `
         <!-- PRODUCTO PRINCIPAL -->
@@ -443,19 +454,20 @@ function renderProduct(product, page) {
             <!-- GALERÍA -->
             <div class="gallery">
                 <div class="gallery-main" id="gallery-main">
-                    ${product.image_url
-                        ? `<img src="${product.image_url}" alt="${product.name}">`
+                    ${images.length
+                        ? `<img src="${images[0].url}" alt="${product.name}">`
                         : `<i class="ti ti-tools-kitchen-2 no-img"></i>`
                     }
                     <span class="gallery-badge">VELONOX</span>
                 </div>
-                <div class="gallery-thumbs">
-                    <div class="gallery-thumb active" onclick="selectThumb(this, '${product.image_url || ''}')">
-                        ${product.image_url
-                            ? `<img src="${product.image_url}" alt="${product.name}">`
-                            : `<i class="ti ti-tools-kitchen-2"></i>`
-                        }
-                    </div>
+                <div class="gallery-thumbs" id="gallery-thumbs">
+                    ${images.length
+                        ? images.map((img, i) => `
+                            <div class="gallery-thumb ${i === 0 ? 'active' : ''}" data-image-id="${img.id || ''}" onclick="selectThumb(this, '${img.url}')">
+                                <img src="${img.url}" alt="${product.name}">
+                            </div>`).join('')
+                        : `<div class="gallery-thumb active"><i class="ti ti-tools-kitchen-2"></i></div>`
+                    }
                 </div>
             </div>
 
@@ -470,27 +482,26 @@ function renderProduct(product, page) {
                 </div>
 
                 <div class="price-row">
-                    <span class="price-main">${vxPrice(product.price)}</span>
+                    <span class="price-main" id="price-main">${vxPrice(product.price)}</span>
                     <span class="price-save">Envío gratis +$30</span>
                 </div>
 
-                <div class="stock-indicator ${inStock ? 'in-stock' : 'out-stock'}">
+                <div class="stock-indicator ${inStock ? 'in-stock' : 'out-stock'}" id="stock-indicator">
                     <div class="stock-dot"></div>
                     ${inStock ? `En stock · ${product.stock} unidades disponibles` : 'Sin stock'}
                 </div>
 
                 ${description ? `<p class="short-desc">${description.substring(0, 200)}${description.length > 200 ? '...' : ''}</p>` : ''}
 
-                ${variants.map(variant => `
+                ${variants.length ? `
                 <div>
-                    <p class="variants-label">${variant.name}</p>
-                    <div class="variants">
-                        ${variant.options.map((opt, i) => `
-                        <button class="variant-btn ${i===0?'active':''}"
-                            onclick="selectVariant(this)">${opt.label}</button>
+                    <p class="variants-label">Variante</p>
+                    <div class="variants" id="variants-list">
+                        ${variants.map((v, i) => `
+                        <button class="variant-btn" data-variant-id="${v.id}" onclick="selectVariant('${v.id}', this)">${v.name}${v.stock <= 0 ? ' (agotado)' : ''}</button>
                         `).join('')}
                     </div>
-                </div>`).join('')}
+                </div>` : ''}
 
                 <div>
                     <p class="qty-label">Cantidad</p>
@@ -709,9 +720,25 @@ function changeQty(delta) {
     document.getElementById("qty-display").textContent = quantity;
 }
 
-function selectVariant(btn) {
+// Seleccionar una variante solo cambia la foto mostrada (si la variante tiene una
+// imagen asignada desde el admin) — el precio y el stock que se cobran siguen siendo
+// los del producto base, todavía no hay selección de variante en carrito/checkout.
+function selectVariant(variantId, btn) {
     btn.closest(".variants").querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
+
+    const variant = (currentProduct.variants || []).find(v => v.id === variantId);
+    selectedVariant = variant || null;
+    if (!variant || !variant.image_id) return;
+
+    const image = currentImages.find(img => img.id === variant.image_id);
+    if (!image) return;
+
+    const main = document.getElementById("gallery-main");
+    main.innerHTML = `<img src="${image.url}" alt="Producto"><span class="gallery-badge">VELONOX</span>`;
+    document.querySelectorAll(".gallery-thumb").forEach(t => {
+        t.classList.toggle("active", t.dataset.imageId === image.id);
+    });
 }
 
 function selectThumb(thumb, imageUrl) {
